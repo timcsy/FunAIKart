@@ -1,0 +1,10 @@
+**/*
+!.gitignore
+!Assets
+Assets/**/*
+!Assets/Karting
+Assets/Karting/**/*
+!Assets/Karting/Scripts
+!Assets/Karting/Scripts/**/*
+!README.md
+.DS_Store
