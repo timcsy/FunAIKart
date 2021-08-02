@@ -4,13 +4,16 @@ namespace KartGame.KartSystems {
 
     public class KeyboardInput : BaseInput
     {
-        public string Horizontal = "Horizontal";
-        public string Vertical = "Vertical";
+        public string TurnInputName = "Horizontal";
+        public string AccelerateButtonName = "Accelerate";
+        public string BrakeButtonName = "Brake";
 
-        public override Vector2 GenerateInput() {
-            return new Vector2 {
-                x = Input.GetAxis(Horizontal),
-                y = Input.GetAxis(Vertical)
+        public override InputData GenerateInput() {
+            return new InputData
+            {
+                Accelerate = Input.GetButton(AccelerateButtonName),
+                Brake = Input.GetButton(BrakeButtonName),
+                TurnInput = Input.GetAxis("Horizontal")
             };
         }
     }

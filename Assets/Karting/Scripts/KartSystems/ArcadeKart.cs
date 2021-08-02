@@ -7,6 +7,7 @@ namespace KartGame.KartSystems
 {
     public class ArcadeKart : MonoBehaviour
     {
+        #region Pick Ups
         [Header("Wheel Stats")]
         [Tooltip("Maxium Amount of Wheel (Default: 50.0)")]
         public float MaxWheel;
@@ -20,6 +21,7 @@ namespace KartGame.KartSystems
         public float SlowRatio;
         public UnityEngine.UI.Image WheelBar;
         private float CurrentWheel;
+        #endregion
 
         [System.Serializable]
         public class StatPowerup
@@ -71,40 +73,40 @@ namespace KartGame.KartSystems
             {
                 return new Stats
                 {
-                    Acceleration        = a.Acceleration + b.Acceleration,
-                    AccelerationCurve   = a.AccelerationCurve + b.AccelerationCurve,
-                    Braking             = a.Braking + b.Braking,
-                    CoastingDrag        = a.CoastingDrag + b.CoastingDrag,
-                    AddedGravity        = a.AddedGravity + b.AddedGravity,
-                    Grip                = a.Grip + b.Grip,
+                    Acceleration = a.Acceleration + b.Acceleration,
+                    AccelerationCurve = a.AccelerationCurve + b.AccelerationCurve,
+                    Braking = a.Braking + b.Braking,
+                    CoastingDrag = a.CoastingDrag + b.CoastingDrag,
+                    AddedGravity = a.AddedGravity + b.AddedGravity,
+                    Grip = a.Grip + b.Grip,
                     ReverseAcceleration = a.ReverseAcceleration + b.ReverseAcceleration,
-                    ReverseSpeed        = a.ReverseSpeed + b.ReverseSpeed,
-                    TopSpeed            = a.TopSpeed + b.TopSpeed,
-                    Steer               = a.Steer + b.Steer,
+                    ReverseSpeed = a.ReverseSpeed + b.ReverseSpeed,
+                    TopSpeed = a.TopSpeed + b.TopSpeed,
+                    Steer = a.Steer + b.Steer,
                 };
             }
         }
 
         public Rigidbody Rigidbody { get; private set; }
-        public InputData Input     { get; private set; }
-        public float AirPercent    { get; private set; }
+        public InputData Input { get; private set; }
+        public float AirPercent { get; private set; }
         public float GroundPercent { get; private set; }
 
         public ArcadeKart.Stats baseStats = new ArcadeKart.Stats
         {
-            TopSpeed            = 10f,
-            Acceleration        = 5f,
-            AccelerationCurve   = 4f,
-            Braking             = 10f,
+            TopSpeed = 10f,
+            Acceleration = 5f,
+            AccelerationCurve = 4f,
+            Braking = 10f,
             ReverseAcceleration = 5f,
-            ReverseSpeed        = 5f,
-            Steer               = 5f,
-            CoastingDrag        = 4f,
-            Grip                = .95f,
-            AddedGravity        = 1f,
+            ReverseSpeed = 5f,
+            Steer = 5f,
+            CoastingDrag = 4f,
+            Grip = .95f,
+            AddedGravity = 1f,
         };
 
-        [Header("Vehicle Visual")] 
+        [Header("Vehicle Visual")]
         public List<GameObject> m_VisualWheels;
 
         [Header("Vehicle Physics")]
@@ -195,6 +197,41 @@ namespace KartGame.KartSystems
         bool m_HasCollision;
         bool m_InAir = false;
 
+        void InitializeStats()
+        {
+            CurrentWheel = MaxWheel;
+        }
+
+        public enum Consumable { Wheel };
+
+        public void PickUpConsumable(Consumable pickUpType)
+        {
+            switch (pickUpType)
+            {
+                case Consumable.Wheel:
+                    CurrentWheel += WheelPickUpAmount;
+                    if (CurrentWheel > MaxWheel)
+                        CurrentWheel = MaxWheel;
+                    break;
+            }
+        }
+
+        void StatsTick()
+        {
+            if (m_CanMove)
+                CurrentWheel -= Time.fixedDeltaTime * WheelConsumeRate;
+
+            if (CurrentWheel < 0)
+                CurrentWheel = 0;
+
+            UpdateUI();
+        }
+
+        void UpdateUI()
+        {
+            WheelBar.fillAmount = CurrentWheel / MaxWheel;
+        }
+
         public void AddPowerup(StatPowerup statPowerup) => m_ActivePowerupList.Add(statPowerup);
         public void SetCanMove(bool move) => m_CanMove = move;
         public float GetMaxSpeed() => Mathf.Max(m_FinalStats.TopSpeed, m_FinalStats.ReverseSpeed);
@@ -213,7 +250,7 @@ namespace KartGame.KartSystems
                     if (vfx.sparks.isPlaying)
                         vfx.sparks.Stop(true, ParticleSystemStopBehavior.StopEmitting);
                 }
-                    
+
             }
 
             foreach (var trail in m_DriftTrailInstances)
@@ -247,7 +284,7 @@ namespace KartGame.KartSystems
 
         void Awake()
         {
-            CurrentWheel = MaxWheel;
+            InitializeStats();
 
             Rigidbody = GetComponent<Rigidbody>();
             m_Inputs = GetComponents<IInput>();
@@ -296,21 +333,9 @@ namespace KartGame.KartSystems
             m_DriftSparkInstances.Add((wheel, horizontalOffset, -rotation, spark));
         }
 
-        public void PickUpWheel()
-        {
-            CurrentWheel += WheelPickUpAmount;
-            if (CurrentWheel > MaxWheel)
-                CurrentWheel = MaxWheel;
-        }
-
         void FixedUpdate()
         {
-            if (m_CanMove)
-                CurrentWheel -= Time.fixedDeltaTime * WheelConsumeRate;
-
-            if (CurrentWheel < 0)
-                CurrentWheel = 0;
-            WheelBar.fillAmount = CurrentWheel / MaxWheel;
+            StatsTick();
 
             UpdateSuspensionParams(FrontLeftWheel);
             UpdateSuspensionParams(FrontRightWheel);
@@ -336,7 +361,7 @@ namespace KartGame.KartSystems
                 groundedCount++;
 
             // calculate how grounded and airborne we are
-            GroundPercent = (float) groundedCount / 4.0f;
+            GroundPercent = (float)groundedCount / 4.0f;
             AirPercent = 1 - GroundPercent;
 
             // apply vehicle physics
@@ -484,7 +509,7 @@ namespace KartGame.KartSystems
             bool wasOverMaxSpeed = currentSpeed >= maxSpeed;
 
             // if over max speed, cannot accelerate faster.
-            if (wasOverMaxSpeed && !isBraking) 
+            if (wasOverMaxSpeed && !isBraking)
                 movement *= 0.0f;
 
             Vector3 newVelocity = Rigidbody.velocity + movement * Time.fixedDeltaTime;
@@ -518,7 +543,7 @@ namespace KartGame.KartSystems
                 float angularVelocitySmoothSpeed = 20f;
 
                 // turning is reversed if we're going in reverse and pressing reverse
-                if (!localVelDirectionIsFwd && !accelDirectionIsFwd) 
+                if (!localVelDirectionIsFwd && !accelDirectionIsFwd)
                     angularVelocitySteering *= -1.0f;
 
                 var angularVel = Rigidbody.angularVelocity;
