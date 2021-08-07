@@ -7,21 +7,8 @@ namespace KartGame.KartSystems
 {
     public class ArcadeKart : MonoBehaviour
     {
-        #region Pick Ups
-        [Header("Wheel Stats")]
-        [Tooltip("Maxium Amount of Wheel (Default: 50.0)")]
-        public float MaxWheel;
-        [Tooltip("The amount each Pick Up gives (Default: 15.0)")]
-        public float WheelPickUpAmount;
-        [Tooltip("The Rate at which Wheel degrades (Default: 1.0)")]
-        public float WheelConsumeRate;
-        [Tooltip("The point at which Speed should slow down (Default: 0.5)")]
-        public float SlowThreshold;
-        [Tooltip("The speed at which degraded Wheels run at (Default: 0.5)")]
-        public float SlowRatio;
-        public UnityEngine.UI.Image WheelBar;
-        private float CurrentWheel;
-        #endregion
+        public int MyID = 0;
+        public float speedModifier = 1.0f;
 
         [System.Serializable]
         public class StatPowerup
@@ -197,41 +184,6 @@ namespace KartGame.KartSystems
         bool m_HasCollision;
         bool m_InAir = false;
 
-        void InitializeStats()
-        {
-            CurrentWheel = MaxWheel;
-        }
-
-        public enum Consumable { Wheel };
-
-        public void PickUpConsumable(Consumable pickUpType)
-        {
-            switch (pickUpType)
-            {
-                case Consumable.Wheel:
-                    CurrentWheel += WheelPickUpAmount;
-                    if (CurrentWheel > MaxWheel)
-                        CurrentWheel = MaxWheel;
-                    break;
-            }
-        }
-
-        void StatsTick()
-        {
-            if (m_CanMove)
-                CurrentWheel -= Time.fixedDeltaTime * WheelConsumeRate;
-
-            if (CurrentWheel < 0)
-                CurrentWheel = 0;
-
-            UpdateUI();
-        }
-
-        void UpdateUI()
-        {
-            WheelBar.fillAmount = CurrentWheel / MaxWheel;
-        }
-
         public void AddPowerup(StatPowerup statPowerup) => m_ActivePowerupList.Add(statPowerup);
         public void SetCanMove(bool move) => m_CanMove = move;
         public float GetMaxSpeed() => Mathf.Max(m_FinalStats.TopSpeed, m_FinalStats.ReverseSpeed);
@@ -284,8 +236,6 @@ namespace KartGame.KartSystems
 
         void Awake()
         {
-            InitializeStats();
-
             Rigidbody = GetComponent<Rigidbody>();
             m_Inputs = GetComponents<IInput>();
 
@@ -335,8 +285,6 @@ namespace KartGame.KartSystems
 
         void FixedUpdate()
         {
-            StatsTick();
-
             UpdateSuspensionParams(FrontLeftWheel);
             UpdateSuspensionParams(FrontRightWheel);
             UpdateSuspensionParams(RearLeftWheel);
@@ -481,7 +429,7 @@ namespace KartGame.KartSystems
 
             // use the max speed for the direction we are going--forward or reverse.
             float maxSpeed = localVelDirectionIsFwd ? m_FinalStats.TopSpeed : m_FinalStats.ReverseSpeed;
-            maxSpeed *= ((CurrentWheel < MaxWheel * SlowThreshold) ? SlowRatio : 1.0f);
+            maxSpeed *= speedModifier;
 
             float accelPower = accelDirectionIsFwd ? m_FinalStats.Acceleration : m_FinalStats.ReverseAcceleration;
 
