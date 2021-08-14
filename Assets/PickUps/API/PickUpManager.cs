@@ -15,6 +15,12 @@ public class PickUpManager : MonoBehaviour
     private Image wheelBar;
     [SerializeField]
     private Image gasBar;
+    [SerializeField]
+    private Transform boostGrid;
+
+    [Header("Prefab")]
+    [SerializeField]
+    private GameObject pfNitroUI;
 
     [Header("General Stats")]
     [Tooltip("The point at which Speed should slow down (Default: 0.5)")]
@@ -23,26 +29,34 @@ public class PickUpManager : MonoBehaviour
     [SerializeField] private float SlowRatio;
 
     [Header("Wheel Stats")]
-    [Tooltip("Maxium Amount of Wheel (Default: 40.0)")]
+    [Tooltip("Maxium Amount of Wheel (Default: 50.0)")]
     [SerializeField] private float MaxWheel;
-    [Tooltip("The amount each Pick Up gives (Default: 15.0)")]
+    [Tooltip("The amount each Pick Up gives (Default: 20.0)")]
     [SerializeField] private float WheelPickUpAmount;
-    [Tooltip("The Rate at which Wheel degrades (Default: 2.0)")]
+    [Tooltip("The Rate at which Wheel degrades (Default: 1.0)")]
     [SerializeField] private float WheelConsumeRate;
 
     [Header("Gas Stats")]
-    [Tooltip("Maxium Amount of Gas (Default: 40.0)")]
+    [Tooltip("Maxium Amount of Gas (Default: 50.0)")]
     [SerializeField] private float MaxGas;
-    [Tooltip("The amount each Pick Up gives (Default: 15.0)")]
+    [Tooltip("The amount each Pick Up gives (Default: 20.0)")]
     [SerializeField] private float GasPickUpAmount;
-    [Tooltip("The Rate at which Gas consumes (Default: 2.0)")]
+    [Tooltip("The Rate at which Gas consumes (Default: 1.0)")]
     [SerializeField] private float GasConsumeRate;
+
+    [Header("Nitro Stats")]
+    [Tooltip("That amount of value increase for Acceleration (Default: 2.5)")]
+    [SerializeField] private float AccelerationBoost;
+    [Tooltip("That amount of value increase for Top Speed (Default: 5.0)")]
+    [SerializeField] private float TopSpeedBoost;
+    [Tooltip("The Duration of the Boost in Seconds (Default: 5.0)")]
+    [SerializeField] private float NitroDuration;
 
     private int currentID;
     private List<GameObject> ListOfCar;
     private List<CarStats> ListOfCarStats;
 
-    public enum PickUpType { Wheel , Gas }
+    public enum PickUpType { Wheel , Gas, Nitro }
 
     void Awake()
     {
@@ -80,6 +94,19 @@ public class PickUpManager : MonoBehaviour
                 if (ListOfCarStats[ID].CurrentGas > MaxGas)
                     ListOfCarStats[ID].CurrentGas = MaxGas;
                 break;
+            case PickUpType.Nitro:
+                ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
+                {
+                    modifiers = new KartGame.KartSystems.ArcadeKart.Stats
+                    {
+                        Acceleration = AccelerationBoost,
+                        TopSpeed = TopSpeedBoost
+                    },
+                    MaxTime = NitroDuration
+                });
+                GameObject pf = Instantiate(pfNitroUI, boostGrid);
+                pf.GetComponent<NitroUI>().SetDuration(NitroDuration);
+                break;
         }
     }
 
@@ -89,13 +116,11 @@ public class PickUpManager : MonoBehaviour
         {
             float speedMod = 1.0f;
 
-            if (ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude > 0.1f)
-                ListOfCarStats[i].CurrentGas -= GasConsumeRate * Time.deltaTime;
+            ListOfCarStats[i].CurrentGas -= (GasConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
             if (ListOfCarStats[i].CurrentGas < MaxWheel * SlowThreshold)
                 speedMod *= SlowRatio;
 
-            if (ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude > 0.1f)
-                ListOfCarStats[i].CurrentWheel -= WheelConsumeRate * Time.deltaTime;
+            ListOfCarStats[i].CurrentWheel -= (WheelConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
             if (ListOfCarStats[i].CurrentWheel < MaxWheel * SlowThreshold)
                 speedMod *= SlowRatio;
 
