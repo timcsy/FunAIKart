@@ -128,7 +128,7 @@ public class PickUpManager : MonoBehaviour
                     MaxTime = TurtleDuration
                 });
                 GameObject pfT = Instantiate(pfTurtleUI, boostGrid);
-                pfT.GetComponent<BoostUI>().SetDuration(NitroDuration);
+                pfT.GetComponent<BoostUI>().SetDuration(TurtleDuration);
                 break;
         }
     }
