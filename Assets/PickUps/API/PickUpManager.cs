@@ -21,6 +21,8 @@ public class PickUpManager : MonoBehaviour
     [Header("Prefab")]
     [SerializeField]
     private GameObject pfNitroUI;
+    [SerializeField]
+    private GameObject pfTurtleUI;
 
     [Header("General Stats")]
     [Tooltip("The point at which Speed should slow down (Default: 0.5)")]
@@ -112,20 +114,21 @@ public class PickUpManager : MonoBehaviour
                     },
                     MaxTime = NitroDuration
                 });
-                GameObject pf = Instantiate(pfNitroUI, boostGrid);
-                pf.GetComponent<NitroUI>().SetDuration(NitroDuration);
+                GameObject pfN = Instantiate(pfNitroUI, boostGrid);
+                pfN.GetComponent<BoostUI>().SetDuration(NitroDuration);
                 break;
             case PickUpType.Turtle:
-                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
+                ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
                 {
                     modifiers = new KartGame.KartSystems.ArcadeKart.Stats
                     {
                         Acceleration = AccelerationDecrease,
                         TopSpeed = TopSpeedDecrease
                     },
-                    MaxTime = TurtleDuration 
+                    MaxTime = TurtleDuration
                 });
-               
+                GameObject pfT = Instantiate(pfTurtleUI, boostGrid);
+                pfT.GetComponent<BoostUI>().SetDuration(NitroDuration);
                 break;
         }
     }

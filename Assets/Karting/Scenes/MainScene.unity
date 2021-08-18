@@ -12642,6 +12642,8 @@ MonoBehaviour:
   gasBar: {fileID: 7689321}
   boostGrid: {fileID: 571661865}
   pfNitroUI: {fileID: 58170998628068306, guid: 171a0550ad1624540bcb25b8892c8117, type: 3}
+  pfTurtleUI: {fileID: 58170998628068306, guid: 4a31c801c862eeb498edfa3a14162990,
+    type: 3}
   SlowThreshold: 0.5
   SlowRatio: 0.75
   MaxWheel: 50

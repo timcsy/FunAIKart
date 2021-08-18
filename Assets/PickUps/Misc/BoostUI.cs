@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class NitroUI : MonoBehaviour
+public class BoostUI : MonoBehaviour
 {
     [SerializeField]
     private UnityEngine.UI.Image progressBar;
