@@ -52,11 +52,25 @@ public class PickUpManager : MonoBehaviour
     [Tooltip("The Duration of the Boost in Seconds (Default: 5.0)")]
     [SerializeField] private float NitroDuration;
 
+    [Header("Turtle Stats")]
+    [Tooltip("That amount of value decrease for Acceleration (Default: -5.0)")]
+    [SerializeField] private float AccelerationDecrease;
+    [Tooltip("That amount of value decrease for Top Speed (Default: -5.0)")]
+    [SerializeField] private float TopSpeedDecrease;
+    [Tooltip("The Duration of the decrease in Seconds (Default: 5.0)")]
+    [SerializeField] private float TurtleDuration;
+
+    [Header("Banana Stats")]
+    [Tooltip("That amount of value increase for Steer (Default: 25.0)")]
+    [SerializeField] private float SteerBoost;
+    [Tooltip("The Duration of rotation in Seconds (Default: 3.0)")]
+    [SerializeField] private float BananaDuration;
+
     private int currentID;
     private List<GameObject> ListOfCar;
     private List<CarStats> ListOfCarStats;
 
-    public enum PickUpType { Wheel , Gas, Nitro }
+    public enum PickUpType { Wheel , Gas, Nitro, Turtle, Banana}
 
     void Awake()
     {
@@ -106,6 +120,28 @@ public class PickUpManager : MonoBehaviour
                 });
                 GameObject pf = Instantiate(pfNitroUI, boostGrid);
                 pf.GetComponent<NitroUI>().SetDuration(NitroDuration);
+                break;
+            case PickUpType.Turtle:
+                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
+                {
+                    modifiers = new KartGame.KartSystems.ArcadeKart.Stats
+                    {
+                        Acceleration = AccelerationDecrease,
+                        TopSpeed = TopSpeedDecrease
+                    },
+                    MaxTime = TurtleDuration 
+                });
+                break;
+            case PickUpType.Banana:
+                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
+                {
+                    modifiers = new KartGame.KartSystems.ArcadeKart.Stats
+                    {
+                        Steer = SteerBoost
+                    },
+                    MaxTime = BananaDuration 
+                });
+               
                 break;
         }
     }
