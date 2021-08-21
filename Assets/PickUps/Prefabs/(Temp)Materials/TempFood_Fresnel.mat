@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Food_Fresnel
+  m_Name: TempFood_Fresnel
   m_Shader: {fileID: 4800000, guid: 457b78bdb98aa83488f603f5d4907484, type: 3}
   m_ShaderKeywords: _EMISSION
   m_LightmapFlags: 1
