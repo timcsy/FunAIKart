@@ -12242,6 +12242,8 @@ MonoBehaviour:
   pfNitroUI: {fileID: 58170998628068306, guid: 171a0550ad1624540bcb25b8892c8117, type: 3}
   pfTurtleUI: {fileID: 58170998628068306, guid: 4a31c801c862eeb498edfa3a14162990,
     type: 3}
+  pfBananaUI: {fileID: 58170998628068306, guid: 4b2d42d774b1d054f91389844edc43db,
+    type: 3}
   SlowThreshold: 0.5
   SlowRatio: 0.75
   MaxWheel: 50
@@ -12256,6 +12258,8 @@ MonoBehaviour:
   AccelerationDecrease: -5
   TopSpeedDecrease: -5
   TurtleDuration: 5
+  SteerBoost: 25
+  BananaDuration: 3
 --- !u!114 &1259952571
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12273,6 +12277,7 @@ MonoBehaviour:
   - {fileID: 1612324779039500, guid: c5c055f783feb1449aa8329cc27ebcb9, type: 3}
   - {fileID: 8690324769962717280, guid: a81c1ff055cb06849bb69eeb445bd897, type: 3}
   - {fileID: 8603874636063020273, guid: 8c0e5d9ebb84f014fba021e00d334fc9, type: 3}
+  - {fileID: 7838230637318647235, guid: 59a4e1087daaeea46891a4271f470f2a, type: 3}
   SpawnPointParent: {fileID: 1384773608}
   SpawnTimeGap: 10
 --- !u!1001 &1268325793

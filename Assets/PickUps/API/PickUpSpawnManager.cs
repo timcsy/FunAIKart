@@ -12,6 +12,7 @@ public class PickUpSpawnManager : MonoBehaviour
     private Transform[] ListOfSpawnLocations;
 
     private int ItemCount;
+    private int SpawnPointCount;
 
     [SerializeField]
     [Tooltip("The Time it takes to spawn a new set of PickUps (Default: 10.0)")]
@@ -20,10 +21,14 @@ public class PickUpSpawnManager : MonoBehaviour
 
     void Start()
     {
-        ItemCount = SpawnPointParent.childCount;
-        ListOfSpawnLocations = new Transform[ItemCount];
-        for (int i = 0; i < ItemCount; i++)
+        ItemCount = ListOfItemsToSpawn.Length;
+        SpawnPointCount = SpawnPointParent.childCount;
+
+        ListOfSpawnLocations = new Transform[SpawnPointCount];
+
+        for (int i = 0; i < SpawnPointCount; i++)
             ListOfSpawnLocations[i] = SpawnPointParent.GetChild(i);
+
         SpawnTimer = -1;
     }
 

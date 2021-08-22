@@ -23,6 +23,8 @@ public class PickUpManager : MonoBehaviour
     private GameObject pfNitroUI;
     [SerializeField]
     private GameObject pfTurtleUI;
+    [SerializeField]
+    private GameObject pfBananaUI;
 
     [Header("General Stats")]
     [Tooltip("The point at which Speed should slow down (Default: 0.5)")]
@@ -62,11 +64,17 @@ public class PickUpManager : MonoBehaviour
     [Tooltip("The Duration of the decrease in Seconds (Default: 5.0)")]
     [SerializeField] private float TurtleDuration;
 
+    [Header("Banana Stats")]
+    [Tooltip("That amount of value increase for Steer (Default: 25.0)")]
+    [SerializeField] private float SteerBoost;
+    [Tooltip("The Duration of rotation in Seconds (Default: 3.0)")]
+    [SerializeField] private float BananaDuration;
+
     private int currentID;
     private List<GameObject> ListOfCar;
     private List<CarStats> ListOfCarStats;
 
-    public enum PickUpType { Wheel , Gas, Nitro, Turtle }
+    public enum PickUpType { Wheel , Gas, Nitro, Turtle, Banana }
 
     void Awake()
     {
@@ -129,6 +137,18 @@ public class PickUpManager : MonoBehaviour
                 });
                 GameObject pfT = Instantiate(pfTurtleUI, boostGrid);
                 pfT.GetComponent<BoostUI>().SetDuration(TurtleDuration);
+                break;
+            case PickUpType.Banana:
+                ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
+                {
+                    modifiers = new KartGame.KartSystems.ArcadeKart.Stats
+                    {
+                        Steer = SteerBoost
+                    },
+                    MaxTime = BananaDuration
+                });
+                GameObject pfB = Instantiate(pfBananaUI, boostGrid);
+                pfB.GetComponent<BoostUI>().SetDuration(TurtleDuration);
                 break;
         }
     }
