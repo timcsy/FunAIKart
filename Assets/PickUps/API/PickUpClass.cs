@@ -3,18 +3,18 @@ using KartGame.KartSystems;
 
 public class PickUpClass : MonoBehaviour
 {
-    private float delta = 0.5f;
-    private float i = 150;
+    private float delta = 0.15f;
+    private float i = 10;
 
     private void Update()
     {
         transform.Rotate(new Vector3(0, 50.0f * Time.deltaTime, 0));
         transform.Translate(Vector3.up * delta * Time.deltaTime);
-        i--;
+        i -= Time.deltaTime * 5.0f;
 
         if (i < 0)
         {
-            i = 100;
+            i = 10;
             delta *= -1;
         }
     }

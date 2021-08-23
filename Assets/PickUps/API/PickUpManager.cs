@@ -80,7 +80,6 @@ public class PickUpManager : MonoBehaviour
     {
         instance = this;
         currentID = 0;
-           
         ListOfCarStats = new List<CarStats>();
     }
 
