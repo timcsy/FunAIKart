@@ -364,7 +364,20 @@ namespace KartGame.KartSystems
             // clamp values in finalstats
             m_FinalStats.Grip = Mathf.Clamp(m_FinalStats.Grip, 0, 1);
         }
-
+        void GroundAirbourne()
+        {
+            // while in the air, fall faster
+            if (AirPercent >= 1)
+            {
+                //Rigidbody.velocity += Physics.gravity * Time.fixedDeltaTime * m_FinalStats.AddedGravity;
+                Rigidbody.AddForce(new Vector3(0,-10000,0));
+                //Rigidbody.velocity = new Vector3(0, 1, 0);
+            }
+            else 
+            {
+                Rigidbody.AddForce((transform.up * -1) * 10000);
+        }
+        /*
         void GroundAirbourne()
         {
             // while in the air, fall faster
@@ -373,7 +386,7 @@ namespace KartGame.KartSystems
                 Rigidbody.velocity += Physics.gravity * Time.fixedDeltaTime * m_FinalStats.AddedGravity;
             }
         }
-
+        */
         public void Reset()
         {
             Vector3 euler = transform.rotation.eulerAngles;
