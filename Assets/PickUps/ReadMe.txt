@@ -1,5 +1,9 @@
 Create your Script and inherit from the PickUpClass, then implement the PickUpEffect function
 
-Check WheelPickUp or GasPickUp for reference
+PickUp now has 2 Categories:
+	- Refill		(Wheel & Gas)
+	- Consumable	(Nitro & Banana)
 
-Remember to Add the Prefab to the ListOfItemsToSpawn on PickUpSpawnManager
+Consumable has 2 Types:
+	- Buff		(Nitro)
+	- Debuff	(Banana)

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 58170998628068307}
   - component: {fileID: 6155360515114723290}
   m_Layer: 5
-  m_Name: pfBananaUI
+  m_Name: pfBoostUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -51,6 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBar: {fileID: 58170999069519771}
+  title: {fileID: 58170999963058251}
 --- !u!1 &58170999069519769
 GameObject:
   m_ObjectHideFlags: 0
@@ -63,7 +64,7 @@ GameObject:
   - component: {fileID: 58170999069519748}
   - component: {fileID: 58170999069519771}
   m_Layer: 5
-  m_Name: Bar
+  m_Name: Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

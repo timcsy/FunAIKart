@@ -20,61 +20,28 @@ public class PickUpManager : MonoBehaviour
 
     [Header("Prefab")]
     [SerializeField]
-    private GameObject pfNitroUI;
-    [SerializeField]
-    private GameObject pfTurtleUI;
-    [SerializeField]
-    private GameObject pfBananaUI;
+    private GameObject pfBoostUI;
 
     [Header("General Stats")]
     [Tooltip("The point at which Speed should slow down (Default: 0.5)")]
-    [SerializeField] private float SlowThreshold;
+    [SerializeField] [Range(0.1f, 1.0f)] private float SlowThreshold;
     [Tooltip("The speed at which below SlowThreshold run at (Default: 0.75)")]
-    [SerializeField] private float SlowRatio;
+    [SerializeField] [Range(0.1f, 1.0f)] private float SlowRatio;
 
-    [Header("Wheel Stats")]
-    [Tooltip("Maxium Amount of Wheel (Default: 50.0)")]
-    [SerializeField] private float MaxWheel;
-    [Tooltip("The amount each Pick Up gives (Default: 20.0)")]
-    [SerializeField] private float WheelPickUpAmount;
-    [Tooltip("The Rate at which Wheel degrades (Default: 1.0)")]
-    [SerializeField] private float WheelConsumeRate;
+    [Header("Refill")]
+    public RefillStats Wheel;
+    public RefillStats Gas;
 
-    [Header("Gas Stats")]
-    [Tooltip("Maxium Amount of Gas (Default: 50.0)")]
-    [SerializeField] private float MaxGas;
-    [Tooltip("The amount each Pick Up gives (Default: 20.0)")]
-    [SerializeField] private float GasPickUpAmount;
-    [Tooltip("The Rate at which Gas consumes (Default: 1.0)")]
-    [SerializeField] private float GasConsumeRate;
-
-    [Header("Nitro Stats")]
-    [Tooltip("That amount of value increase for Acceleration (Default: 2.5)")]
-    [SerializeField] private float AccelerationBoost;
-    [Tooltip("That amount of value increase for Top Speed (Default: 5.0)")]
-    [SerializeField] private float TopSpeedBoost;
-    [Tooltip("The Duration of the Boost in Seconds (Default: 5.0)")]
-    [SerializeField] private float NitroDuration;
-
-    [Header("Turtle Stats")]
-    [Tooltip("That amount of value decrease for Acceleration (Default: -5.0)")]
-    [SerializeField] private float AccelerationDecrease;
-    [Tooltip("That amount of value decrease for Top Speed (Default: -5.0)")]
-    [SerializeField] private float TopSpeedDecrease;
-    [Tooltip("The Duration of the decrease in Seconds (Default: 5.0)")]
-    [SerializeField] private float TurtleDuration;
-
-    [Header("Banana Stats")]
-    [Tooltip("That amount of value increase for Steer (Default: 25.0)")]
-    [SerializeField] private float SteerBoost;
-    [Tooltip("The Duration of rotation in Seconds (Default: 3.0)")]
-    [SerializeField] private float BananaDuration;
+    [Header("Consumable")]
+    public ConsumableStats Nitro;
+    public ConsumableStats Turtle;
+    public ConsumableStats Banana;
 
     private int currentID;
     private List<GameObject> ListOfCar;
     private List<CarStats> ListOfCarStats;
 
-    public enum PickUpType { Wheel , Gas, Nitro, Turtle, Banana }
+    public enum PickUpType { Wheel, Gas, Nitro, Turtle, Banana }
 
     void Awake()
     {
@@ -94,7 +61,7 @@ public class PickUpManager : MonoBehaviour
     {
         kart.MyID = currentID;
         currentID++;
-        ListOfCarStats.Add(new CarStats(MaxWheel, MaxGas));
+        ListOfCarStats.Add(new CarStats(Wheel.MaxAmount, Gas.MaxAmount));
     }
 
     public void PickUp(PickUpType pickUpType, int ID)
@@ -102,52 +69,52 @@ public class PickUpManager : MonoBehaviour
         switch (pickUpType)
         {
             case PickUpType.Wheel:
-                ListOfCarStats[ID].CurrentWheel += WheelPickUpAmount;
-                if (ListOfCarStats[ID].CurrentWheel > MaxWheel)
-                    ListOfCarStats[ID].CurrentWheel = MaxWheel;
+                ListOfCarStats[ID].CurrentWheel += Wheel.PickUpAmount;
+                if (ListOfCarStats[ID].CurrentWheel > Wheel.MaxAmount)
+                    ListOfCarStats[ID].CurrentWheel = Wheel.MaxAmount;
                 break;
             case PickUpType.Gas:
-                ListOfCarStats[ID].CurrentGas += GasPickUpAmount;
-                if (ListOfCarStats[ID].CurrentGas > MaxGas)
-                    ListOfCarStats[ID].CurrentGas = MaxGas;
+                ListOfCarStats[ID].CurrentGas += Gas.PickUpAmount;
+                if (ListOfCarStats[ID].CurrentGas > Gas.MaxAmount)
+                    ListOfCarStats[ID].CurrentGas = Gas.MaxAmount;
                 break;
             case PickUpType.Nitro:
                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
                 {
                     modifiers = new KartGame.KartSystems.ArcadeKart.Stats
                     {
-                        Acceleration = AccelerationBoost,
-                        TopSpeed = TopSpeedBoost
+                        Acceleration = Nitro.Values[0],
+                        TopSpeed = Nitro.Values[1]
                     },
-                    MaxTime = NitroDuration
+                    MaxTime = Nitro.Duration
                 });
-                GameObject pfN = Instantiate(pfNitroUI, boostGrid);
-                pfN.GetComponent<BoostUI>().SetDuration(NitroDuration);
+                GameObject pfN = Instantiate(pfBoostUI, boostGrid);
+                pfN.GetComponent<BoostUI>().Initialize(Nitro.Duration, Color.cyan, "N");
                 break;
             case PickUpType.Turtle:
                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
                 {
                     modifiers = new KartGame.KartSystems.ArcadeKart.Stats
                     {
-                        Acceleration = AccelerationDecrease,
-                        TopSpeed = TopSpeedDecrease
+                        Acceleration = Turtle.Values[0],
+                        TopSpeed = Turtle.Values[1]
                     },
-                    MaxTime = TurtleDuration
+                    MaxTime = Turtle.Duration
                 });
-                GameObject pfT = Instantiate(pfTurtleUI, boostGrid);
-                pfT.GetComponent<BoostUI>().SetDuration(TurtleDuration);
+                GameObject pfT = Instantiate(pfBoostUI, boostGrid);
+                pfT.GetComponent<BoostUI>().Initialize(Turtle.Duration, Color.green, "T");
                 break;
             case PickUpType.Banana:
                 ListOfCar[ID].GetComponent<KartGame.KartSystems.ArcadeKart>().AddPowerup(new KartGame.KartSystems.ArcadeKart.StatPowerup
                 {
                     modifiers = new KartGame.KartSystems.ArcadeKart.Stats
                     {
-                        Steer = SteerBoost
+                        Steer = Banana.Values[0]
                     },
-                    MaxTime = BananaDuration
+                    MaxTime = Banana.Duration
                 });
-                GameObject pfB = Instantiate(pfBananaUI, boostGrid);
-                pfB.GetComponent<BoostUI>().SetDuration(TurtleDuration);
+                GameObject pfB = Instantiate(pfBoostUI, boostGrid);
+                pfB.GetComponent<BoostUI>().Initialize(Banana.Duration, Color.yellow, "B");
                 break;
         }
     }
@@ -158,12 +125,12 @@ public class PickUpManager : MonoBehaviour
         {
             float speedMod = 1.0f;
 
-            ListOfCarStats[i].CurrentGas -= (GasConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
-            if (ListOfCarStats[i].CurrentGas < MaxWheel * SlowThreshold)
+            ListOfCarStats[i].CurrentGas -= (Gas.ConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
+            if (ListOfCarStats[i].CurrentGas < Gas.MaxAmount * SlowThreshold)
                 speedMod *= SlowRatio;
 
-            ListOfCarStats[i].CurrentWheel -= (WheelConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
-            if (ListOfCarStats[i].CurrentWheel < MaxWheel * SlowThreshold)
+            ListOfCarStats[i].CurrentWheel -= (Wheel.ConsumeRate / 100.0f) * Time.deltaTime * ListOfCar[i].GetComponent<Rigidbody>().velocity.sqrMagnitude;
+            if (ListOfCarStats[i].CurrentWheel < Wheel.MaxAmount * SlowThreshold)
                 speedMod *= SlowRatio;
 
             ListOfCar[i].GetComponent<KartGame.KartSystems.ArcadeKart>().speedModifier = speedMod;
@@ -173,8 +140,8 @@ public class PickUpManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        wheelBar.fillAmount = ListOfCarStats[0].CurrentWheel / MaxWheel;
-        gasBar.fillAmount = ListOfCarStats[0].CurrentGas / MaxGas;
+        wheelBar.fillAmount = ListOfCarStats[0].CurrentWheel / Wheel.MaxAmount;
+        gasBar.fillAmount = ListOfCarStats[0].CurrentGas / Gas.MaxAmount;
     }
 }
 
@@ -188,4 +155,24 @@ class CarStats
         CurrentWheel = wheel;
         CurrentGas = gas;
     }
+}
+
+[System.Serializable]
+public class RefillStats
+{
+    [Tooltip("Maxium Amount (Default: 50.0)")]
+    [Range(10, 100)] public float MaxAmount;
+    [Tooltip("The amount each Pick Up gives (Default: 25.0)")]
+    [Range(5, 50)] public float PickUpAmount;
+    [Tooltip("The rate at which it degrades (Default: 0.75)")]
+    [Range(0.5f, 2.5f)] public float ConsumeRate;
+}
+
+[System.Serializable]
+public class ConsumableStats
+{
+    [Tooltip("The amount of value change")]
+    public float[] Values;
+    [Tooltip("The Duration of the Effect in seconds")]
+    public float Duration;
 }
