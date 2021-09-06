@@ -23,6 +23,8 @@ public class FramerateCounter : MonoBehaviour
 
             m_AccumulatedDeltaTime = 0f;
             m_AccumulatedFrameCount = 0;
+            //測試
+
         }
     }
 }
