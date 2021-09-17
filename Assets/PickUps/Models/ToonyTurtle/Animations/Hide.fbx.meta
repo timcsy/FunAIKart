@@ -1,0 +1,293 @@
+fileFormatVersion: 2
+guid: 69a49ac5315613b418f1c6c6bd5d1fbe
+timeCreated: 1499070328
+licenseType: Store
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: AnkleLB
+    100002: AnkleLF
+    100004: AnkleRB
+    100006: AnkleRF
+    100008: FootLB
+    100010: FootLF
+    100012: FootRB
+    100014: FootRF
+    100016: Head
+    100018: //RootNode
+    100020: JawBottom
+    100022: KneeLB
+    100024: KneeLF
+    100026: KneeRB
+    100028: KneeRF
+    100030: LegLB
+    100032: LegLF
+    100034: LegRB
+    100036: LegRF
+    100038: LipsBottom
+    100040: LipsTop
+    100042: Neck
+    100044: Root
+    100046: Shell
+    100048: Tail
+    100050: TailTip
+    400000: AnkleLB
+    400002: AnkleLF
+    400004: AnkleRB
+    400006: AnkleRF
+    400008: FootLB
+    400010: FootLF
+    400012: FootRB
+    400014: FootRF
+    400016: Head
+    400018: //RootNode
+    400020: JawBottom
+    400022: KneeLB
+    400024: KneeLF
+    400026: KneeRB
+    400028: KneeRF
+    400030: LegLB
+    400032: LegLF
+    400034: LegRB
+    400036: LegRF
+    400038: LipsBottom
+    400040: LipsTop
+    400042: Neck
+    400044: Root
+    400046: Shell
+    400048: Tail
+    400050: TailTip
+    7400000: Turtle_Hide
+    7400002: Turtle_UnHide
+    9500000: //RootNode
+  materials:
+    importMaterials: 0
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths:
+    - Root
+    clipAnimations:
+    - serializedVersion: 16
+      name: Turtle_Hide
+      takeName: Take 001
+      firstFrame: 0
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Root
+        weight: 1
+      - path: Root/Shell
+        weight: 1
+      - path: Root/Shell/Neck
+        weight: 1
+      - path: Root/Shell/Neck/Head
+        weight: 1
+      - path: Root/Shell/Neck/Head/LipsTop
+        weight: 1
+      - path: Root/Shell/Neck/Head/JawBottom
+        weight: 1
+      - path: Root/Shell/Neck/Head/JawBottom/LipsBottom
+        weight: 1
+      - path: Root/Shell/Tail
+        weight: 1
+      - path: Root/Shell/Tail/TailTip
+        weight: 1
+      - path: Root/Shell/LegRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB/AnkleRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB/AnkleRB/FootRB
+        weight: 1
+      - path: Root/Shell/LegRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF/AnkleRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF/AnkleRF/FootRF
+        weight: 1
+      - path: Root/Shell/LegLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF/AnkleLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF/AnkleLF/FootLF
+        weight: 1
+      - path: Root/Shell/LegLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB/AnkleLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB/AnkleLB/FootLB
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Turtle_UnHide
+      takeName: Take 001
+      firstFrame: 25
+      lastFrame: 35
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask:
+      - path: 
+        weight: 1
+      - path: Root
+        weight: 1
+      - path: Root/Shell
+        weight: 1
+      - path: Root/Shell/Neck
+        weight: 1
+      - path: Root/Shell/Neck/Head
+        weight: 1
+      - path: Root/Shell/Neck/Head/LipsTop
+        weight: 1
+      - path: Root/Shell/Neck/Head/JawBottom
+        weight: 1
+      - path: Root/Shell/Neck/Head/JawBottom/LipsBottom
+        weight: 1
+      - path: Root/Shell/Tail
+        weight: 1
+      - path: Root/Shell/Tail/TailTip
+        weight: 1
+      - path: Root/Shell/LegRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB/AnkleRB
+        weight: 1
+      - path: Root/Shell/LegRB/KneeRB/AnkleRB/FootRB
+        weight: 1
+      - path: Root/Shell/LegRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF/AnkleRF
+        weight: 1
+      - path: Root/Shell/LegRF/KneeRF/AnkleRF/FootRF
+        weight: 1
+      - path: Root/Shell/LegLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF/AnkleLF
+        weight: 1
+      - path: Root/Shell/LegLF/KneeLF/AnkleLF/FootLF
+        weight: 1
+      - path: Root/Shell/LegLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB/AnkleLB
+        weight: 1
+      - path: Root/Shell/LegLB/KneeLB/AnkleLB/FootLB
+        weight: 1
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: Root
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
