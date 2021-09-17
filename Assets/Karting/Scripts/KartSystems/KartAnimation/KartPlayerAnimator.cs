@@ -3,7 +3,6 @@ using UnityEngine.Assertions;
 
 namespace KartGame.KartSystems 
 {
-
     public class KartPlayerAnimator : MonoBehaviour
     {
         public Animator PlayerAnimator;
@@ -22,15 +21,17 @@ namespace KartGame.KartSystems
             Assert.IsNotNull(PlayerAnimator, "No PlayerAnimator found!");
             m_SteerHash  = Animator.StringToHash(SteeringParam);
             m_GroundHash = Animator.StringToHash(GroundedParam);
+            
         }
 
         void Update()
         {
-            steeringSmoother = Mathf.Lerp(steeringSmoother, Kart.Input.x, Time.deltaTime * 5f);
+            steeringSmoother = Mathf.Lerp(steeringSmoother, Kart.Input.TurnInput, Time.deltaTime * 5f);
             PlayerAnimator.SetFloat(m_SteerHash, steeringSmoother);
 
             // If more than 2 wheels are above the ground then we consider that the kart is airbourne.
             PlayerAnimator.SetBool(m_GroundHash, Kart.GroundPercent >= 0.5f);
+            
         }
     }
 }

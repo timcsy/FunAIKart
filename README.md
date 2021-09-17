@@ -1,35 +1,7 @@
-# GameAIKartDraft
+# Game AI Kart
 
-在 Kart 根目錄新增一個 .gitignore 檔案
-```
-**/*
-!.gitignore
-!Assets
-Assets/**/*
-!Assets/Karting
-Assets/Karting/**/*
-!Assets/Karting/Scripts
-!Assets/Karting/Scripts/**/*
-!README.md
-.DS_Store
-```
+完整專案資料夾
 
-開始一個 Git
-```
-git init
-```
+下載後，可於Unity Hub上按Add以開啟專案
 
-變更 git branch 的名字變成 main（原本是 master 的話）
-```
-可以用 VS Code 操作
-```
-
-```
-git remote add github https://github.com/timcsy/GameAIKartDraft.git
-```
-
-第一次 pull 才要
-```
-git pull github main --allow-unrelated-histories
-```
-
+遊戲場景在 Assets/Karting/Scenes/MainScene
