@@ -170,8 +170,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 1667663687692477411}
   m_SensorName: CameraSensorBack
-  m_Width: 126
-  m_Height: 56
+  m_Width: 252
+  m_Height: 112
   m_Grayscale: 0
   m_ObservationType: 0
   m_ObservationStacks: 1
@@ -312,8 +312,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 3168237710396941925}
   m_SensorName: CameraSensorFront
-  m_Width: 126
-  m_Height: 56
+  m_Width: 252
+  m_Height: 112
   m_Grayscale: 0
   m_ObservationType: 0
   m_ObservationStacks: 1

@@ -39,15 +39,15 @@ public class PAIAKartAgent : Agent, IInput
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
         var continuousActionsOut = actionsOut.ContinuousActions;
-        discreteActionsOut[0] = Input.GetButton(AccelerateButtonName)? 1: -1;
-        discreteActionsOut[1] = Input.GetButton(BrakeButtonName)? 1: -1;
+        discreteActionsOut[0] = Input.GetButton(AccelerateButtonName)? 1: 0;
+        discreteActionsOut[1] = Input.GetButton(BrakeButtonName)? 1: 0;
         continuousActionsOut[0] = Input.GetAxis(TurnInputName);
     }
 
     void InterpretDiscreteActions(ActionBuffers actionBuffers)
     {
-        m_Acceleration = actionBuffers.DiscreteActions[0] > 0; // {..., -1, 0, 1, ...}
-        m_Brake = actionBuffers.DiscreteActions[1] > 0; // {..., -1, 0, 1, ...}
+        m_Acceleration = actionBuffers.DiscreteActions[0] > 0.5; // { 0, 1 }
+        m_Brake = actionBuffers.DiscreteActions[1] > 0.5; // { 0, 1 }
         m_Steering = actionBuffers.ContinuousActions[0]; // [-1, 1]
     }
 

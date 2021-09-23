@@ -13331,17 +13331,22 @@ PrefabInstance:
     - target: {fileID: 2408613737236974647, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_Width
-      value: 126
+      value: 252
       objectReference: {fileID: 0}
     - target: {fileID: 2408613737236974647, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_Height
-      value: 56
+      value: 112
       objectReference: {fileID: 0}
     - target: {fileID: 3168237710396941925, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_TargetDisplay
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565501071799107900, guid: 19954de30401f73428254541a9ad156e,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: PAIAKart
       objectReference: {fileID: 0}
     - target: {fileID: 3565501071799107900, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
@@ -13365,8 +13370,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3565501071799107900, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
+      propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[0]
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3565501071799107900, guid: 19954de30401f73428254541a9ad156e,
+        type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.BranchSizes.Array.data[1]
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4261354827414324865, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
@@ -13496,17 +13506,17 @@ PrefabInstance:
     - target: {fileID: 7956820065763209011, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_Width
-      value: 126
+      value: 252
       objectReference: {fileID: 0}
     - target: {fileID: 7956820065763209011, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_Height
-      value: 56
+      value: 112
       objectReference: {fileID: 0}
     - target: {fileID: 8283364177534883111, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: DecisionPeriod
-      value: 1
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19954de30401f73428254541a9ad156e, type: 3}
