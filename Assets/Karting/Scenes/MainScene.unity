@@ -13338,6 +13338,11 @@ PrefabInstance:
       propertyPath: m_Height
       value: 112
       objectReference: {fileID: 0}
+    - target: {fileID: 2636923271360114578, guid: 19954de30401f73428254541a9ad156e,
+        type: 3}
+      propertyPath: MaxStep
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 3168237710396941925, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: m_TargetDisplay
@@ -13516,7 +13521,7 @@ PrefabInstance:
     - target: {fileID: 8283364177534883111, guid: 19954de30401f73428254541a9ad156e,
         type: 3}
       propertyPath: DecisionPeriod
-      value: 10
+      value: 20
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 19954de30401f73428254541a9ad156e, type: 3}
