@@ -28,6 +28,10 @@ GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can
 
 > Screenshot of the game props
 
+| Gas | Wheel | Nitro | Turtle | Banana |
+|---|---|---|---|---|
+| ![gas](https://user-images.githubusercontent.com/24825631/134625410-1458320f-49a2-44ac-9607-798d2a12f5ba.JPG) | ![wheel](https://user-images.githubusercontent.com/24825631/134625437-8472b5d1-fd00-45f1-a380-8ff18740d88d.JPG) | ![nitro](https://user-images.githubusercontent.com/24825631/134625458-288cac5a-4d49-433c-b81f-6d96e25a8dd4.JPG) | ![turtle](https://user-images.githubusercontent.com/24825631/134625493-76c6a6d2-4c6c-4962-9774-becfd7b6b838.JPG) | ![banana](https://user-images.githubusercontent.com/24825631/134625511-217e310f-31d0-4a7f-9d4d-7624d1d87137.JPG) |
+
 ## Game Controls
 * press "up" key to accelerate
 * press "left" and "right" keys to turn
