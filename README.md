@@ -41,8 +41,7 @@ GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can
 * "Banana" : Influence the value of steer
 
 ## Additional Track
-We only provide the basic 
-There are still other tracks in MainScene/AdditionalTrack can be built for the training process with ML-Agents. 
+We only provide the basic track of the game, and there are still other tracks in MainScene/AdditionalTrack can be built for the training process with ML-Agents. 
 
 ## Technologies
 * Unity 2020.3.14f1
