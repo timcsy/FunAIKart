@@ -22,6 +22,9 @@ GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can
 ## Examples
 
 > Screenshot of the game
+![gameshot](https://user-images.githubusercontent.com/24825631/134624419-dc6c39ba-17d3-4cc8-bce6-ef6a466e54d4.jpg)
+
+
 
 > Screenshot of the game props
 
