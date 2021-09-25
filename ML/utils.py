@@ -13,7 +13,7 @@ import config
 from config import DebugMode
 
 
-def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id) -> None:
+def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, img_id) -> None:
   # Place to store the images
   if config.DEBUG == DebugMode.DETAIL:
     if not os.path.exists(config.IMAGE_DIR):
@@ -23,10 +23,10 @@ def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id) -> Non
   if len(obs_spec.shape) == 3:
     if config.DEBUG == DebugMode.DETAIL:
       # the first dimension is for batch (even if batch is not used)
-      image_tensor = obs[0,:,:,2] # [N,H,W,C] = [Batch, Height, Width, Channel(RGB)]
+      image_tensor = obs[0,:,:,:] # [N,H,W,C] = [Batch, Height, Width, Channel(RGB)]
       img = 255 * image_tensor # Scale from [0,1] to [0,255]
       img = PIL.Image.fromarray(img.astype(np.uint8)) # Convert to PIL format
-      filepath = config.IMAGE_DIR + '/img_' + ('front' if obs_spec.name == 'CameraSensorFront' else 'back') + '_' + str(step_id) + '.png'
+      filepath = config.IMAGE_DIR + '/img_' + ('front' if obs_spec.name == 'CameraSensorFront' else 'back') + '_' + str(img_id) + '.png'
       print('Save image to ' + filepath)
       img.save(filepath)
     elif config.DEBUG == DebugMode.SIMPLE:
@@ -40,9 +40,9 @@ def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id) -> Non
       prefix = 'Front' if obs_spec.name == 'RayPerceptionSensorFront' else 'Back'
       print(prefix + ' Ray Perception: ' + str(ray_vector))
 
-def show_observations(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], step_id) -> None:
+def show_observations(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], img_id) -> None:
   for index, obs_spec in enumerate(behavior_spec.observation_specs):
-    show_observation(obs_list[index], obs_spec, step_id)
+    show_observation(obs_list[index], obs_spec, img_id)
 
 def show_actions(actions: ActionTuple) -> None:
   if config.DEBUG != DebugMode.DISABLE:
@@ -77,7 +77,7 @@ def online(env: UnityEnvironment, behavior_name: str, random: bool = False) -> N
 
   # The following code only concern one agent
 
-  step_id = 0 # Total number of steps for all episodes
+  total_steps = 0 # Total number of steps for all episodes
 
   for episode in range(1, config.MAX_EPISODES + 1):
     done = False # Flag to indicate whether the episode has done
@@ -85,18 +85,18 @@ def online(env: UnityEnvironment, behavior_name: str, random: bool = False) -> N
 
     while not done:
       # Actually, it should be increased by Decision Period, but for convenience, we just add one
-      step_id += 1
+      total_steps += 1
       step_num += 1
       # Get the new simulation results
       decision_steps, terminal_steps = env.get_steps(behavior_name)
 
       # Show the step information
       if config.DEBUG != DebugMode.DISABLE:
-        print('Episode: ' + str(episode) + ', Step: ' + str(step_num) + ', Step ID: ' + str(step_id))
+        print('Episode: ' + str(episode) + ', Step: ' + str(step_num))
       
       for agent_id in decision_steps:
         # Show observations
-        show_observations(behavior_spec, decision_steps.obs, step_id)
+        show_observations(behavior_spec, decision_steps.obs, str(episode) + '_' + str(step_num))
 
         # Generate an action for all agents randomly
         if random:
@@ -118,7 +118,7 @@ def online(env: UnityEnvironment, behavior_name: str, random: bool = False) -> N
       for agent_id in terminal_steps:
         done = True
         # Show observations
-        show_observations(behavior_spec, terminal_steps.obs, step_id)
+        show_observations(behavior_spec, terminal_steps.obs, str(episode) + '_' + str(step_num))
 
         # TODO: Show the reward
 
@@ -135,7 +135,7 @@ def online(env: UnityEnvironment, behavior_name: str, random: bool = False) -> N
       # Move the simulation forward
       env.step()
     
-    print('Finish, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(step_id))
+    print('Finish, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(total_steps))
 
   env.close()
 
@@ -170,7 +170,7 @@ def load_from_demo(filename: Optional[str] = None) -> None:
   episode = 1
   step_num = 0 # The number of steps in an episode
 
-  for step_id in range(buffer.num_experiences):
+  for index in range(buffer.num_experiences):
     step_num += 1
 
     # Show the step information
@@ -178,18 +178,18 @@ def load_from_demo(filename: Optional[str] = None) -> None:
       print('Episode: ' + str(episode) + ', Step: ' + str(step_num))
     
     # Show observations
-    obs_list = get_observations_from_buffer(buffer, behavior_spec, step_id)
-    show_observations(behavior_spec, obs_list, step_id)
+    obs_list = get_observations_from_buffer(buffer, behavior_spec, index)
+    show_observations(behavior_spec, obs_list, str(episode) + '_' + str(step_num))
     
     # Show actions
-    actions = get_actions_from_buffer(buffer, step_id)
+    actions = get_actions_from_buffer(buffer, index)
     show_actions(actions)
 
     # TODO: Show the reward
 
     
     # To check whether episode is done, and show the summary
-    if buffer[BufferKey.DONE][step_id]:
+    if buffer[BufferKey.DONE][index]:
       if config.DEBUG != DebugMode.DISABLE:
         print()
         print('Done, Demo: ' + str(filename) + ', Episode: ' + str(episode) + ', Total Steps: ' + str(step_num))
@@ -197,10 +197,10 @@ def load_from_demo(filename: Optional[str] = None) -> None:
       step_num = 0
     
     # To check whether demo is finished, and show the summary
-    if step_id == buffer.num_experiences - 1:
+    if index == buffer.num_experiences - 1:
       if config.DEBUG != DebugMode.DISABLE:
         print()
-        print('Finish, Demo: ' + str(filename) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(step_id))
+        print('Finish, Demo: ' + str(filename) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(index))
       
 
     if config.DEBUG != DebugMode.DISABLE:
