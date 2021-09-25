@@ -10,8 +10,9 @@ class DebugMode(Enum):
 
 ##################################################################
 
-TRAINING: bool = True
-# TRAINING: bool = False
+# Online or Offline
+ONLINE: bool = True
+# ONLINE: bool = False
 
 # Which Debug mode?
 # DEBUG: DebugMode = DebugMode.DISABLE
@@ -24,3 +25,6 @@ IMAGE_DIR: str = 'cameras/' + datetime.now().strftime('%Y%m%d_%H%M%S')
 # Path to the Demo files (without the last / )
 DEMO_DIR: str = 'Demo'
 DEMO_FILE: str = 'demo.demo'
+
+# Max Episodes for online
+MAX_EPISODES: int = 10

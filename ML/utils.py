@@ -13,29 +13,7 @@ import config
 from config import DebugMode
 
 
-def open_env():
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Waiting for Unity side ...')
-  env = UnityEnvironment(file_name=None)
-  env.reset()
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
-
-  # Behavior infomation
-  if config.DEBUG == DebugMode.DETAIL:
-    print('Behaviors:\n')
-    print(dict(env.behavior_specs))
-    print("--------------------------------")
-
-  # We will only consider the first Behavior
-  behavior_name = list(env.behavior_specs)[0]
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Name of the behavior: ' + str(behavior_name))
-    print('--------------------------------')
-  return env, behavior_name
-
-
-def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id):
+def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id) -> None:
   # Place to store the images
   if config.DEBUG == DebugMode.DETAIL:
     if not os.path.exists(config.IMAGE_DIR):
@@ -63,60 +41,102 @@ def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, step_id):
       print(prefix + ' Ray Perception: ' + str(ray_vector))
 
 def show_observations(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], step_id) -> None:
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Step ID: ' + str(step_id))
-  
   for index, obs_spec in enumerate(behavior_spec.observation_specs):
     show_observation(obs_list[index], obs_spec, step_id)
 
+def show_actions(actions: ActionTuple) -> None:
+  if config.DEBUG != DebugMode.DISABLE:
+    print('Discrete Actions: ' + str(actions.discrete[0,:]))
+    print('Continuous Actions: ' + str(actions.continuous[0,:]))
 
-def inferencing(env: UnityEnvironment, behavior_name: str, random: bool = False):
+
+def open_env() -> None:
+  if config.DEBUG != DebugMode.DISABLE:
+    print('Waiting for Unity side ...')
+  env = UnityEnvironment(file_name=None)
+  env.reset()
+  if config.DEBUG != DebugMode.DISABLE:
+    print('--------------------------------')
+
+  # Behavior infomation
+  if config.DEBUG == DebugMode.DETAIL:
+    print('Behaviors:\n')
+    print(dict(env.behavior_specs))
+    print("--------------------------------")
+
+  # We will only consider the first Behavior
+  behavior_name = list(env.behavior_specs)[0]
+  if config.DEBUG != DebugMode.DISABLE:
+    print('Name of the behavior: ' + str(behavior_name))
+    print('--------------------------------')
+  return env, behavior_name
+
+def online(env: UnityEnvironment, behavior_name: str, random: bool = False) -> None:
   # Get the Behavior Spec by name
   behavior_spec = env.behavior_specs[behavior_name]
 
-  done = False # Flag to indicate whether the episode has done
+  # The following code only concern one agent
 
-  # Initial Step
-  step_id = 0
-  decision_steps, terminal_steps = env.get_steps(behavior_name)
+  step_id = 0 # Total number of steps for all episodes
 
-  while not done:
-    for agent_id in decision_steps:
-      # Show the step information
-      show_observations(behavior_spec, decision_steps.obs, step_id)
+  for episode in range(1, config.MAX_EPISODES + 1):
+    done = False # Flag to indicate whether the episode has done
+    step_num = 0  # The number of steps in an episode
 
-      # Generate an action for all agents randomly
-      if random:
-        action = behavior_spec.action_spec.random_action(len(decision_steps))
-
-      # Generate an action for all agents that only move forward
-      if not random:
-        discrete_actions = np.array([[1,0]], dtype=np.int32)
-        continuous_actions = np.array([[0.0]], dtype=np.float32)
-        action = ActionTuple(discrete=discrete_actions, continuous=continuous_actions)
-      
-      # Set the actions
-      env.set_action_for_agent(behavior_name, agent_id, action)
-
-      # TODO: Show the reward
-
-      # Move the simulation forward
-      env.step()
-      step_id += 1 # Actually, it should be increased by Decision Period, but for convenience, we just add one
+    while not done:
+      # Actually, it should be increased by Decision Period, but for convenience, we just add one
+      step_id += 1
+      step_num += 1
       # Get the new simulation results
       decision_steps, terminal_steps = env.get_steps(behavior_name)
-    
-    for agent_id in terminal_steps:
-      done = True
+
       # Show the step information
-      show_observations(behavior_spec, terminal_steps.obs, step_id)
+      if config.DEBUG != DebugMode.DISABLE:
+        print('Episode: ' + str(episode) + ', Step: ' + str(step_num) + ', Step ID: ' + str(step_id))
+      
+      for agent_id in decision_steps:
+        # Show observations
+        show_observations(behavior_spec, decision_steps.obs, step_id)
+
+        # Generate an action for all agents randomly
+        if random:
+          actions = behavior_spec.action_spec.random_action(len(decision_steps))
+        # Generate an action for all agents that only move forward
+        if not random:
+          discrete_actions = np.array([[1,0]], dtype=np.int32)
+          continuous_actions = np.array([[0.0]], dtype=np.float32)
+          actions = ActionTuple(discrete=discrete_actions, continuous=continuous_actions)
+        
+        # Set actions
+        env.set_action_for_agent(behavior_name, agent_id, actions)
+        # Show actions
+        show_actions(actions)
+
+        # TODO: Show the reward
+
+      
+      for agent_id in terminal_steps:
+        done = True
+        # Show observations
+        show_observations(behavior_spec, terminal_steps.obs, step_id)
+
+        # TODO: Show the reward
+
+        # Show the summary
+        if config.DEBUG != DebugMode.DISABLE:
+          print()
+          print('Done, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Episode: ' + str(episode) + ', Total Steps: ' + str(step_num))
+        
+        step_num = 0
+      
       if config.DEBUG != DebugMode.DISABLE:
         print()
-        print('Done, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Total Steps: ' + str(step_id))
+      
+      # Move the simulation forward
+      env.step()
     
-    if config.DEBUG != DebugMode.DISABLE:
-        print()
-    
+    print('Finish, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(step_id))
+
   env.close()
 
 
@@ -130,17 +150,15 @@ def get_observations_from_buffer(buffer: AgentBuffer, behavior_spec: BehaviorSpe
     obs_list.append(obs_expand)
   return obs_list
 
-def get_discrete_action_from_buffer(buffer: AgentBuffer, index: int) -> np.ndarray:
-  action_single = buffer[BufferKey.DISCRETE_ACTION][index]
+def get_actions_from_buffer(buffer: AgentBuffer, index: int) -> ActionTuple:
   # We need to add a dimention at the front (for agent number)
   # https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html
-  return np.expand_dims(action_single, axis=0)
+  discrete_actions_single = buffer[BufferKey.DISCRETE_ACTION][index]
+  discrete_actions = np.expand_dims(discrete_actions_single, axis=0)
+  continuous_actions_single = buffer[BufferKey.CONTINUOUS_ACTION][index]
+  continuous_actions = np.expand_dims(continuous_actions_single, axis=0)
+  return ActionTuple(discrete=discrete_actions, continuous=continuous_actions)
 
-def get_continuous_action_from_buffer(buffer: AgentBuffer, index: int) -> np.ndarray:
-  action_single = buffer[BufferKey.CONTINUOUS_ACTION][index]
-  # We need to add a dimention at the front (for agent number)
-  # https://numpy.org/doc/stable/reference/generated/numpy.expand_dims.html
-  return np.expand_dims(action_single, axis=0)
 
 def load_from_demo(filename: Optional[str] = None) -> None:
   # A demo file is just for an agent, that means it will have only one behavior
@@ -149,34 +167,41 @@ def load_from_demo(filename: Optional[str] = None) -> None:
   filepath = config.DEMO_DIR + '/' + filename
   behavior_spec, buffer = demo_loader.demo_to_buffer(filepath, sequence_length=None)
 
-  # We take one episode first
+  episode = 1
+  step_num = 0 # The number of steps in an episode
 
   for step_id in range(buffer.num_experiences):
+    step_num += 1
+
     # Show the step information
+    if config.DEBUG != DebugMode.DISABLE:
+      print('Episode: ' + str(episode) + ', Step: ' + str(step_num))
+    
+    # Show observations
     obs_list = get_observations_from_buffer(buffer, behavior_spec, step_id)
     show_observations(behavior_spec, obs_list, step_id)
     
-    # Show discrete actions
-    discrete_action = get_discrete_action_from_buffer(buffer, step_id)
-    print('Discrete Actions: ' + str(discrete_action[0,:]))
-    # Show continuous actions
-    continuous_action = get_continuous_action_from_buffer(buffer, step_id)
-    print('Continuous Actions: ' + str(continuous_action[0,:]))
-
+    # Show actions
+    actions = get_actions_from_buffer(buffer, step_id)
+    show_actions(actions)
 
     # TODO: Show the reward
+
     
-    # To check whether it is done or finished
-    if buffer[BufferKey.DONE] == True:
+    # To check whether episode is done, and show the summary
+    if buffer[BufferKey.DONE][step_id]:
       if config.DEBUG != DebugMode.DISABLE:
         print()
-        print('Done, Demo: ' + str(filename) + ', Total Steps: ' + str(step_id))
-      break
+        print('Done, Demo: ' + str(filename) + ', Episode: ' + str(episode) + ', Total Steps: ' + str(step_num))
+      episode += 1
+      step_num = 0
+    
+    # To check whether demo is finished, and show the summary
     if step_id == buffer.num_experiences - 1:
       if config.DEBUG != DebugMode.DISABLE:
         print()
-        print('Finish, Demo: ' + str(filename) + ', Total Steps: ' + str(step_id))
-      break
+        print('Finish, Demo: ' + str(filename) + ', Episodes: ' + str(episode) + ', Total Steps: ' + str(step_id))
+      
 
     if config.DEBUG != DebugMode.DISABLE:
       print()
