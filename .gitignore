@@ -73,3 +73,6 @@ crashlytics-build.properties
 .DS_Store
 InitCodeMarker
 .vscode
+__pycache__
+ML/cameras
+ML/Demo

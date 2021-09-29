@@ -14,7 +14,9 @@ This is a Full project folder, you can click Add on the Unity Hub to open the pr
   - [Additional Track](#additional-track)
   - [Technologies](#technologies)
   - [Usage](#usage)
+  - [ML-Agents](#ml-agents)
 
+=======
 
 ## Overview
 GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can build each type of scene for training the AIKart.
@@ -57,3 +59,15 @@ We only provide the basic track of the game, and there are still other tracks in
 
 This game can be played [here]()!  
 This repository contains everything needed to get the project up and running on Unity. Just clone the repository and open the project in Unity to edit the game yourself.
+
+遊戲場景在 Assets/Karting/Scenes/MainScene
+
+## ML-Agents
+機器學習的部分放在 `ML` 資料夾中，啟動方式：
+```
+cd ML
+python ml.py
+```
+打開之後再去 Unity 畫面點播放鍵（如果是在開發時）
+
+注意：Python Unity 的 ML-Agents 的版本要對好，本專案用的是 Release 17

@@ -429,7 +429,7 @@ namespace KartGame.KartSystems
 
             // use the max speed for the direction we are going--forward or reverse.
             float maxSpeed = localVelDirectionIsFwd ? m_FinalStats.TopSpeed : m_FinalStats.ReverseSpeed;
-            maxSpeed *= speedModifier;
+            maxSpeed *= speedModifier; // add by PAIAGameAI
 
             float accelPower = accelDirectionIsFwd ? m_FinalStats.Acceleration : m_FinalStats.ReverseAcceleration;
 

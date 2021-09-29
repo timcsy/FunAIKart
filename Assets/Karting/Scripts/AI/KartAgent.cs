@@ -1,6 +1,7 @@
 ﻿using KartGame.KartSystems;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -239,7 +240,8 @@ namespace KartGame.AI
             sensor.AddObservation(m_Acceleration);
         }
 
-        public override void OnActionReceived(float[] vectorAction)
+        // update by timcsy: change float32[] to ActionBuffers
+        public override void OnActionReceived(ActionBuffers vectorAction)
         {
             base.OnActionReceived(vectorAction);
             InterpretDiscreteActions(vectorAction);
@@ -277,11 +279,12 @@ namespace KartGame.AI
             }
         }
 
-        void InterpretDiscreteActions(float[] actions)
+        // update by timcsy: change float32[] to ActionBuffers, and add ContinuousActions
+        void InterpretDiscreteActions(ActionBuffers actions)
         {
-            m_Steering = actions[0] - 1f;
-            m_Acceleration = actions[1] >= 1.0f;
-            m_Brake = actions[1] < 1.0f;
+            m_Steering = actions.ContinuousActions[0] - 1f;
+            m_Acceleration = actions.ContinuousActions[1] >= 1.0f;
+            m_Brake = actions.ContinuousActions[1] < 1.0f;
         }
 
         public InputData GenerateInput()
