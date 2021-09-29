@@ -1,7 +1,6 @@
 # GameAIKart
 This is a Full project folder, you can click Add on the Unity Hub to open the project after downloading, and the game scene is in Assets/Karting/Scenes/MainScene.
 
-
 ## Table of contents
 - [GameAIKart](#gameaikart)
   - [Table of contents](#table-of-contents)
@@ -16,8 +15,6 @@ This is a Full project folder, you can click Add on the Unity Hub to open the pr
   - [Usage](#usage)
   - [ML-Agents](#ml-agents)
 
-=======
-
 ## Overview
 GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can build each type of scene for training the AIKart.
 
@@ -25,8 +22,6 @@ GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can
 
 > Screenshot of the game
 ![gameshot](https://user-images.githubusercontent.com/24825631/134624419-dc6c39ba-17d3-4cc8-bce6-ef6a466e54d4.jpg)
-
-
 
 > Screenshot of the game props
 
