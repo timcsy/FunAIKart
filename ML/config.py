@@ -4,15 +4,21 @@ from datetime import datetime
 # Type definitions ###############################################
 
 class DebugMode(Enum):
-    DISABLE = 0
-    SIMPLE = 1
-    DETAIL = 2
+  DISABLE = 0
+  SIMPLE = 1
+  DETAIL = 2
+
+class RunningMode(Enum):
+  ONLINE = 0
+  OFFLINE = 1
+  HEURISTIC = 2
 
 ##################################################################
 
 # Online or Offline
-ONLINE: bool = True
-# ONLINE: bool = False
+# RUNNING_MODE: RunningMode = RunningMode.ONLINE
+# RUNNING_MODE: RunningMode = RunningMode.OFFLINE
+RUNNING_MODE: RunningMode = RunningMode.HEURISTIC
 
 # Which Debug mode?
 # DEBUG: DebugMode = DebugMode.DISABLE

@@ -205,3 +205,62 @@ def load_from_demo(filename: Optional[str] = None) -> None:
 
     if config.DEBUG != DebugMode.DISABLE:
       print()
+
+
+def heuristic(env: UnityEnvironment, behavior_name: str, filename: Optional[str] = None) -> None:
+  # A demo file is just for an agent, that means it will have only one behavior
+  if filename == None:
+    filename = config.DEMO_FILE
+  filepath = config.DEMO_DIR + '/' + filename
+  _, buffer = demo_loader.demo_to_buffer(filepath, sequence_length=None)
+
+  # Get the Behavior Spec by name
+  behavior_spec = env.behavior_specs[behavior_name]
+
+  # The following code only concern one agent
+
+  done = False
+  total_steps = 0 # Total number of steps for all episodes
+
+  while not done:
+    # Actually, it should be increased by Decision Period, but for convenience, we just add one
+    total_steps += 1
+    # Get the new simulation results
+    decision_steps, terminal_steps = env.get_steps(behavior_name)
+
+    # Show the step information
+    if config.DEBUG != DebugMode.DISABLE:
+      print('Step: ' + str(total_steps))
+    
+    for agent_id in decision_steps:
+      # Show observations
+      show_observations(behavior_spec, decision_steps.obs, str(total_steps))
+
+      # Generate an action from demo
+      actions = get_actions_from_buffer(buffer, total_steps)
+      
+      # Set actions
+      env.set_action_for_agent(behavior_name, agent_id, actions)
+      # Show actions
+      show_actions(actions)
+
+      # TODO: Show the reward
+
+    
+    for agent_id in terminal_steps:
+      done = True
+      # Show observations
+      show_observations(behavior_spec, terminal_steps.obs, str(total_steps))
+
+      # TODO: Show the reward
+
+      # Show the summary
+      
+    if config.DEBUG != DebugMode.DISABLE:
+      print()
+      print('Finish, Behavior: ' + str(behavior_name) + ', Agent: ' + str(agent_id) + ', Total Steps: ' + str(total_steps))
+    
+    # Move the simulation forward
+    env.step()
+    
+  env.close()
