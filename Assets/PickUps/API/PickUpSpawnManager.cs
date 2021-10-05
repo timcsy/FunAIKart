@@ -38,21 +38,14 @@ public class PickUpSpawnManager : MonoBehaviour
     {
         foreach (Transform t in Refill.ListOfLocations)
         {
-            int i;
-            if (t.GetChild(0).childCount > 0)
-                Destroy(t.GetChild(0).GetChild(0).gameObject);
-            i = Random.Range(0, Refill.ItemCount);
-            Instantiate(Refill.ListOfItemsToSpawn[i], t.GetChild(0).position, Quaternion.identity, t.GetChild(0));
-
-            if (t.GetChild(1).childCount > 0)
-                Destroy(t.GetChild(1).GetChild(0).gameObject);
-            i = Random.Range(0, Refill.ItemCount);
-            Instantiate(Refill.ListOfItemsToSpawn[i], t.GetChild(1).position, Quaternion.identity, t.GetChild(1));
-
-            if (t.GetChild(2).childCount > 0)
-                Destroy(t.GetChild(2).GetChild(0).gameObject);
-            i = Random.Range(0, Refill.ItemCount);
-            Instantiate(Refill.ListOfItemsToSpawn[i], t.GetChild(2).position, Quaternion.identity, t.GetChild(2));
+            int childCount = t.childCount;
+            for (int x = 0; x < childCount; x++)
+            {
+                if (t.GetChild(x).childCount > 0)
+                    Destroy(t.GetChild(x).GetChild(0).gameObject);
+                int i = Random.Range(0, Refill.ItemCount);
+                Instantiate(Refill.ListOfItemsToSpawn[i], t.GetChild(x).position, Quaternion.identity, t.GetChild(x));
+            }
         }
     }
 
@@ -60,21 +53,14 @@ public class PickUpSpawnManager : MonoBehaviour
     {
         foreach (Transform t in Consuamble.ListOfLocations)
         {
-            int i;
-            if (t.GetChild(0).childCount > 0)
-                Destroy(t.GetChild(0).GetChild(0).gameObject);
-            i = Random.Range(0, Consuamble.ItemCount);
-            Instantiate(Consuamble.ListOfItemsToSpawn[i], t.GetChild(0).position, Quaternion.identity, t.GetChild(0));
-
-            if (t.GetChild(1).childCount > 0)
-                Destroy(t.GetChild(1).GetChild(0).gameObject);
-            i = Random.Range(0, Consuamble.ItemCount);
-            Instantiate(Consuamble.ListOfItemsToSpawn[i], t.GetChild(1).position, Quaternion.identity, t.GetChild(1));
-
-            if (t.GetChild(2).childCount > 0)
-                Destroy(t.GetChild(2).GetChild(0).gameObject);
-            i = Random.Range(0, Consuamble.ItemCount);
-            Instantiate(Consuamble.ListOfItemsToSpawn[i], t.GetChild(2).position, Quaternion.identity, t.GetChild(2));
+            int childCount = t.childCount;
+            for (int x = 0; x < childCount; x++)
+            {
+                if (t.GetChild(x).childCount > 0)
+                    Destroy(t.GetChild(x).GetChild(0).gameObject);
+                int i = Random.Range(0, Consuamble.ItemCount);
+                Instantiate(Consuamble.ListOfItemsToSpawn[i], t.GetChild(x).position, Quaternion.identity, t.GetChild(x));
+            }
         }
     }
 }
