@@ -8,6 +8,7 @@ namespace KartGame.KartSystems
     public class ArcadeKart : MonoBehaviour
     {
         public int MyID = 0;
+        [HideInInspector]
         public float speedModifier = 1.0f;
 
         [System.Serializable]
@@ -174,7 +175,8 @@ namespace KartGame.KartSystems
         readonly List<(WheelCollider wheel, float horizontalOffset, float rotation, ParticleSystem sparks)> m_DriftSparkInstances = new List<(WheelCollider, float, float, ParticleSystem)>();
 
         // can the kart move?
-        bool m_CanMove = true;
+        [HideInInspector]
+        public bool m_CanMove = true;
         List<StatPowerup> m_ActivePowerupList = new List<StatPowerup>();
         ArcadeKart.Stats m_FinalStats;
 
