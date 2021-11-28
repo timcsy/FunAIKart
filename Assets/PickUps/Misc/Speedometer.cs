@@ -19,8 +19,8 @@ public class Speedometer : MonoBehaviour
         return ((GetSpeed() * 1.6f) - 80.0f) * -1.0f;
     }
 
-    private float GetSpeed()
+    private int GetSpeed()
     {
-        return Mathf.Round(GetComponent<Rigidbody>().velocity.magnitude * 10.0f) / 2.0f;
+        return Mathf.RoundToInt(GetComponent<Rigidbody>().velocity.magnitude * 10.0f / 2.0f);
     }
 }

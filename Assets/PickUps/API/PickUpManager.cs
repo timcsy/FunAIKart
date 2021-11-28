@@ -10,6 +10,12 @@ public class PickUpManager : MonoBehaviour
     // Singleton
     public static PickUpManager instance;
 
+    [SerializeField]
+    private int PlayerID = 0;
+
+    [SerializeField]
+    private GameFlowManager flowManager;
+
     [Header("UI")]
     [SerializeField]
     private Image wheelBar;
@@ -136,6 +142,13 @@ public class PickUpManager : MonoBehaviour
             ListOfCar[i].GetComponent<KartGame.KartSystems.ArcadeKart>().speedModifier = speedMod;
         }
         UpdateUI();
+
+        flowManager.Undrivable = Undrivable();
+    }
+
+    private bool Undrivable()
+    {
+        return ListOfCarStats[PlayerID].CurrentGas <= 0.0f || ListOfCarStats[PlayerID].CurrentWheel <= 0.0f;
     }
 
     private void UpdateUI()
