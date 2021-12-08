@@ -13249,6 +13249,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PAIAKart 3
       objectReference: {fileID: 0}
+    - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_RootOrder
@@ -14409,6 +14414,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: PAIAKart 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_RootOrder
@@ -15167,8 +15177,8 @@ MonoBehaviour:
     Duration: 5
   Turtle:
     Values:
-    - -2.5
-    - -5
+    - -7.5
+    - 5
     Duration: 5
   Banana:
     Values:
@@ -17268,7 +17278,7 @@ PrefabInstance:
     - target: {fileID: 6984847887900053848, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053848, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
@@ -19673,6 +19683,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PAIAKart 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
