@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+// api_version: PAIAKart_1.0
+
+message State {
+  message Observation {
+		message Ray {
+			bool hit = 1;
+			float distance = 2;
+		}
+		message RayList {
+			Ray F = 1;
+			Ray B = 2;
+			Ray R = 3;
+			Ray L = 4;
+			Ray FR = 5;
+			Ray RF = 6;
+			Ray FL = 7;
+			Ray LF = 8;
+			Ray BR = 9;
+			Ray BL = 10;
+		}
+		message Image {
+			repeated float data = 1;
+			repeated int32 shape = 2;
+		}
+		message ImageList {
+			Image front = 1;
+			Image back = 2;
+		}
+		message Refill {
+			float value = 1;
+		}
+		message RefillList {
+			Refill wheel = 1;
+			Refill gas = 2;
+		}
+		message Effect {
+			int32 number = 1;
+		}
+		message EffectList {
+			Effect nitro = 1;
+			Effect turtle = 2;
+			Effect banana = 3;
+		}
+		RayList rays = 1;
+		ImageList images = 2;
+		float progress = 3;
+		float velocity = 4;
+		RefillList refills = 5;
+		EffectList effects = 6;
+	}
+	string api_version = 1;
+	Observation observation = 2;
+	enum EventType {
+		NONE = 1;
+		FINISH = 2;
+		TIMEOUT = 3;
+		UNDRIVABLE = 4;
+	}
+	EventType event = 3;
+}
+
+message Action {
+	string api_version = 1;
+  bool acceleration = 2;
+	bool brake = 3;
+	float steering = 4;
+}
+
+service PAIA {
+  rpc getDecision(State) returns Action {}
+}

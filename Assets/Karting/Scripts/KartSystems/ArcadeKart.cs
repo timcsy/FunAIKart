@@ -7,9 +7,8 @@ namespace KartGame.KartSystems
 {
     public class ArcadeKart : MonoBehaviour
     {
-        public int MyID = 0;
         [HideInInspector]
-        public float speedModifier = 1.0f;
+        public float speedModifier = 1.0f; // add by PAIA Team
 
         [System.Serializable]
         public class StatPowerup
@@ -431,7 +430,7 @@ namespace KartGame.KartSystems
 
             // use the max speed for the direction we are going--forward or reverse.
             float maxSpeed = localVelDirectionIsFwd ? m_FinalStats.TopSpeed : m_FinalStats.ReverseSpeed;
-            maxSpeed *= speedModifier; // add by PAIAGameAI
+            maxSpeed *= speedModifier; // add by PAIA Team
 
             float accelPower = accelDirectionIsFwd ? m_FinalStats.Acceleration : m_FinalStats.ReverseAcceleration;
 

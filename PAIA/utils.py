@@ -36,9 +36,8 @@ def show_observation(obs: np.ndarray, obs_spec: ObservationSpec, img_id) -> None
   if len(obs_spec.shape) == 1:
     if config.DEBUG != DebugMode.DISABLE:
       # the first dimension is for batch (even if batch is not used)
-      ray_vector = obs[0,:]
-      prefix = 'Front' if obs_spec.name == 'RayPerceptionSensorFront' else 'Back'
-      print(prefix + ' Ray Perception: ' + str(ray_vector))
+      vector = obs[0,:]
+      print(obs_spec.name + ': ' + str(vector))
 
 def show_observations(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], img_id) -> None:
   for index, obs_spec in enumerate(behavior_spec.observation_specs):

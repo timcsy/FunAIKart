@@ -8,6 +8,7 @@ public class PickUpClass : MonoBehaviour
 
     private void Update()
     {
+        // slightly move the pickup object
         transform.Rotate(new Vector3(0, 50.0f * Time.deltaTime, 0));
         transform.Translate(Vector3.up * delta * Time.deltaTime);
         i -= Time.deltaTime * 5.0f;
@@ -21,15 +22,16 @@ public class PickUpClass : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.transform.parent.TryGetComponent(out ArcadeKart kart))
+        if (other.transform.parent.TryGetComponent(out PAIAKartAgent kart))
         {
-            PickUpEffect(kart.MyID);
+            PickUpEffect(kart);
             Destroy(gameObject);
         }
     }
 
-    public virtual void PickUpEffect(int CarID)
+    public virtual void PickUpEffect(PAIAKartAgent kart)
     {
         // Implement This in Child Class
+        // PickUpManager.instance.PickUp(PickUpType.PickupTypeName, kart);
     }
 }

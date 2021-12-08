@@ -97,7 +97,7 @@ public class VideoRecorder : MonoBehaviour
         videoFrames = new List<VideoFrame>();
         audioFrames = new List<AudioFrame>();
         sampleRate = AudioSettings.outputSampleRate;
-        instance.Begin();
+        // instance.Begin();
     }
 
     // Update is called once per frame

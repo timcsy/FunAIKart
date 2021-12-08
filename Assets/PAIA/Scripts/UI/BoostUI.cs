@@ -22,7 +22,9 @@ public class BoostUI : MonoBehaviour
     void Update()
     {
         if (Time.time - startTime >= duration)
+        {
             Destroy(gameObject);
+        }
         progressBar.fillAmount = 1 - ((Time.time - startTime) / duration);
     }
 }

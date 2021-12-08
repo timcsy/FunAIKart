@@ -8,10 +8,10 @@ public class TrackProgress : MonoBehaviour
     [SerializeField]
     private Transform FinishLine;
     [SerializeField]
-    private Transform PlayerCar;
-    [SerializeField]
     private Objective objective;
 
+    private PAIAKartAgent m_PAIAKart;
+    private Transform PlayerCar;
     private float totalDistance;
     private float currentDistance;
 
@@ -21,6 +21,8 @@ public class TrackProgress : MonoBehaviour
 
     void Start()
     {
+        m_PAIAKart = GetComponent<PAIAKartAgent>();
+        PlayerCar = GetComponent<Transform>();
         CheckPointCount = CheckPoints.Count;
         CalculateTotal();
     }
@@ -64,8 +66,7 @@ public class TrackProgress : MonoBehaviour
             currentDistance = FastDistance2D(PlayerCar.position, FinishLine.position);
         }
 
-        progress = Mathf.Round((1 - (currentDistance / totalDistance)) * 10000.0f) / 100.0f;
-        Debug.Log("Progress: " + progress + "%");
+        m_PAIAKart.progress = 1 - (currentDistance / totalDistance);
     }
 
     private float FastDistance2D(Vector3 a, Vector3 b)

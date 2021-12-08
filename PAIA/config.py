@@ -16,9 +16,9 @@ class RunningMode(Enum):
 ##################################################################
 
 # Online or Offline
-# RUNNING_MODE: RunningMode = RunningMode.ONLINE
+RUNNING_MODE: RunningMode = RunningMode.ONLINE
 # RUNNING_MODE: RunningMode = RunningMode.OFFLINE
-RUNNING_MODE: RunningMode = RunningMode.HEURISTIC
+# RUNNING_MODE: RunningMode = RunningMode.HEURISTIC
 
 # Which Debug mode?
 # DEBUG: DebugMode = DebugMode.DISABLE

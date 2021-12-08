@@ -7,6 +7,6 @@ public class AudioRecorder : MonoBehaviour
 {
     private void OnAudioFilterRead(float[] data, int channels)
     {
-        VideoRecorder.instance.UpdateAudio(data, channels);
+        // VideoRecorder.instance.UpdateAudio(data, channels);
     }
 }
