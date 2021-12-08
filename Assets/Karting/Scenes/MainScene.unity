@@ -13154,6 +13154,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1370164161}
     m_Modifications:
+    - target: {fileID: 2074020876055267737, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_TargetDisplay
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053844, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: objective
@@ -14309,6 +14314,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1370164161}
     m_Modifications:
+    - target: {fileID: 2074020876055267737, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_TargetDisplay
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053844, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: objective
@@ -14614,7 +14624,7 @@ Camera:
     m_Bits: 4294967295
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
-  m_TargetDisplay: 0
+  m_TargetDisplay: 7
   m_TargetEye: 3
   m_HDR: 1
   m_AllowMSAA: 1
@@ -17185,6 +17195,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1370164161}
     m_Modifications:
+    - target: {fileID: 2074020876055267737, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_TargetDisplay
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053844, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: objective
@@ -19564,6 +19579,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1370164161}
     m_Modifications:
+    - target: {fileID: 2074020876055267737, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_TargetDisplay
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053844, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: objective
