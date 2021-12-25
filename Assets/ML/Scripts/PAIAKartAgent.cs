@@ -16,12 +16,12 @@ public class PAIAKartAgent : Agent, IInput
     bool m_Acceleration;
     bool m_Brake;
     float m_Steering;
-    Vector3 initialPosition;
     bool isReloading = false;
     private void OnCollisionEnter(Collision other) {
         if (!other.gameObject.GetComponent<PickUpClass>()) { 
             EndEpisode();
             if(!isReloading){
+                // Ensure that the scene does not get loaded multiple times in the same frame.
                 isReloading = true;
                 SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
 
@@ -31,14 +31,14 @@ public class PAIAKartAgent : Agent, IInput
     }
     void Start()
     {
-        initialPosition = transform.position;
         m_Kart = GetComponent<ArcadeKart>();
     }
 
     public override void OnEpisodeBegin()
     {
         if(!m_Kart) m_Kart = GetComponent<ArcadeKart>();
-        m_Kart.SendMessage("Awake");
+        m_Kart.SendMessage("Awake"); // For some reason "OnEpisodeBegin" gets called before m_Kart.Awake, so this is necessary
+        // Consider making Awake public or exposing an Initialize method for it.
         m_Kart.Rigidbody.velocity = default;
         m_Acceleration = false;
         m_Brake = false;

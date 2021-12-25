@@ -56,7 +56,8 @@ public class VideoRecorder : MonoBehaviour
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else Destroy(gameObject); // Maintain singleton property
+        else Destroy(gameObject); // Maintain singleton property 
+        // (for some reasons, without this, there may be two Main Cameras with DontDestroyOnLoad after reloading)
     }
 
     public void Begin()
