@@ -5,7 +5,7 @@ using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using KartGame.KartSystems;
-
+using UnityEngine.SceneManagement;
 public class PAIAKartAgent : Agent, IInput
 {
     public string TurnInputName = "Horizontal";
@@ -16,14 +16,29 @@ public class PAIAKartAgent : Agent, IInput
     bool m_Acceleration;
     bool m_Brake;
     float m_Steering;
-    
+    Vector3 initialPosition;
+    bool isReloading = false;
+    private void OnCollisionEnter(Collision other) {
+        if (!other.gameObject.GetComponent<PickUpClass>()) { 
+            EndEpisode();
+            if(!isReloading){
+                isReloading = true;
+                SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+
+
+            }
+        }
+    }
     void Start()
     {
+        initialPosition = transform.position;
         m_Kart = GetComponent<ArcadeKart>();
     }
 
     public override void OnEpisodeBegin()
     {
+        if(!m_Kart) m_Kart = GetComponent<ArcadeKart>();
+        m_Kart.SendMessage("Awake");
         m_Kart.Rigidbody.velocity = default;
         m_Acceleration = false;
         m_Brake = false;
