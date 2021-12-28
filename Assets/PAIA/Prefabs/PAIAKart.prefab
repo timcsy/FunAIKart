@@ -238,7 +238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847887636384104}
   - component: {fileID: 6984847887636384103}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -354,7 +354,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847887646626196}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Kart_test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -408,7 +408,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847887668937657}
   - component: {fileID: 6984847887668937656}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -493,7 +493,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847887689590240}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: joint3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1207,7 +1207,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847887865860102}
   - component: {fileID: 6984847887865860101}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1325,13 +1325,13 @@ GameObject:
   - component: {fileID: 6984847887886938567}
   - component: {fileID: 6984847887886938569}
   - component: {fileID: 2940201224586451652}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CameraBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6984847887886938567
 Transform:
   m_ObjectHideFlags: 0
@@ -1439,7 +1439,6 @@ GameObject:
   - component: {fileID: 6984847887900053853}
   - component: {fileID: 6984847887900053848}
   - component: {fileID: 6984847887900053845}
-  - component: {fileID: 6984847887900053844}
   m_Layer: 2
   m_Name: PAIAKart
   m_TagString: Player
@@ -1454,7 +1453,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6984847887900053855}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 38.972626, y: 0.2500038, z: 2.8581924}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -1499,10 +1498,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedModifier: 1
   baseStats:
-    TopSpeed: 25
-    Acceleration: 7
-    ReverseSpeed: 10
-    ReverseAcceleration: 3
+    TopSpeed: 30
+    Acceleration: 8
+    ReverseSpeed: 12
+    ReverseAcceleration: 4
     AccelerationCurve: 0.5
     Braking: 16
     CoastingDrag: 5
@@ -1614,7 +1613,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: PAIAKart_1
+  m_BehaviorName: PAIAKart
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -1634,7 +1633,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 10000
+  MaxStep: 16000
   TurnInputName: Horizontal
   AccelerateButtonName: Accelerate
   BrakeButtonName: Brake
@@ -1662,7 +1661,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 4
+  DecisionPeriod: 3
   TakeActionsBetweenDecisions: 1
 --- !u!114 &6984847887900053848
 MonoBehaviour:
@@ -1695,32 +1694,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 1
-  NumStepsToRecord: 10000
-  DemonstrationName: demo
+  NumStepsToRecord: 0
+  DemonstrationName: Demo
   DemonstrationDirectory: PAIA/Demo
---- !u!114 &6984847887900053844
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6984847887900053855}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 069b74da279993548af45e55f9424007, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  CheckPoints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  FinishLine: {fileID: 0}
-  objective: {fileID: 0}
 --- !u!1 &6984847887924361248
 GameObject:
   m_ObjectHideFlags: 0
@@ -1947,7 +1923,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888026360268}
   - component: {fileID: 6984847888026360267}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Back Sensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2445,7 +2421,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888116181754}
   - component: {fileID: 6984847888116181753}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Front Sensor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2584,7 +2560,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888146722402}
   - component: {fileID: 6984847888146722401}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2702,7 +2678,7 @@ GameObject:
   - component: {fileID: 6984847888171918674}
   - component: {fileID: 6984847888171918676}
   - component: {fileID: 2940201225467800110}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CameraFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2732,8 +2708,8 @@ Camera:
   m_GameObject: {fileID: 6984847888171918677}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -2754,7 +2730,7 @@ Camera:
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 51200
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 1
@@ -2783,7 +2759,7 @@ MonoBehaviour:
   m_RequiresOpaqueTextureOption: 2
   m_CameraType: 0
   m_Cameras: []
-  m_RendererIndex: -1
+  m_RendererIndex: 1
   m_VolumeLayerMask:
     serializedVersion: 2
     m_Bits: 1
@@ -2929,7 +2905,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888199055678}
   - component: {fileID: 6984847888199055677}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube19
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3107,7 +3083,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888251345363}
   - component: {fileID: 6984847888251345362}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3444,7 +3420,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888303088886}
   - component: {fileID: 6984847888303088885}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3684,7 +3660,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888350755092}
   - component: {fileID: 6984847888350755091}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3799,7 +3775,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847888356322048}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CamaraViews
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3833,7 +3809,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847888369280953}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: joint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3927,7 +3903,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888384939029}
   - component: {fileID: 6984847888384939028}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5148,7 +5124,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847888522886897}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: joint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5366,7 +5342,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888553100185}
   - component: {fileID: 6984847888553100184}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5708,7 +5684,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888625983569}
   - component: {fileID: 6984847888625983568}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CameraSensorFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5790,7 +5766,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888627577635}
   - component: {fileID: 6984847888627577634}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5960,7 +5936,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888747225216}
   - component: {fileID: 6984847888747225247}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6110,13 +6086,13 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888765497612}
   - component: {fileID: 6984847888765497611}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: CameraSensorBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6984847888765497612
 Transform:
   m_ObjectHideFlags: 0
@@ -6537,7 +6513,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888823133466}
   - component: {fileID: 6984847888823133465}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6782,7 +6758,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888868182605}
   - component: {fileID: 6984847888868182604}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube20
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8064,7 +8040,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889273287815}
   - component: {fileID: 6984847889273287814}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8278,7 +8254,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889412813223}
   - component: {fileID: 6984847889412813222}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8624,7 +8600,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889437468932}
   - component: {fileID: 6984847889437468931}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8817,7 +8793,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889481392845}
   - component: {fileID: 6984847889481392844}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8903,7 +8879,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889495849442}
   - component: {fileID: 6984847889495849441}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCube2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -8989,7 +8965,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889544300054}
   - component: {fileID: 6984847889544300053}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9237,7 +9213,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889592220832}
   - component: {fileID: 6984847889592220863}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9322,7 +9298,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6984847889604205256}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: RaySensors
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9508,7 +9484,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847889650729512}
   - component: {fileID: 6984847889650729511}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: pCylinder7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9919,7 +9895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6984847888367573622}
   - component: {fileID: 6984847889669511574}
-  m_Layer: 13
+  m_Layer: 2
   m_Name: KartBouncingCapsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}

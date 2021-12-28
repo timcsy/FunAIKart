@@ -60,7 +60,7 @@ public class SingleUI : MonoBehaviour
 
     private float GetAngle()
     {
-        return ((GetSpeed() * 1.6f) - 80.0f) * -1.0f;
+        return (GetSpeed() - 80.0f) * -1.0f;
     }
 
     private int GetSpeed()

@@ -5,6 +5,12 @@
 /// </summary>
 public class PickupObject : TargetObject
 {
+    [Header("Flow Control")]
+    [SerializeField]
+    private bool IsFirstCheckPoint;
+    [SerializeField]
+    private GameObject Dependency;
+
     [Header("PickupObject")]
 
     [Tooltip("New Gameobject (a VFX for example) to spawn when you trigger this PickupObject")]
@@ -12,11 +18,15 @@ public class PickupObject : TargetObject
 
     [Tooltip("Destroy the spawned spawnPrefabOnPickup gameobject after this delay time. Time is in seconds.")]
     public float destroySpawnPrefabDelay = 10;
-    
+
     [Tooltip("Destroy this gameobject after collectDuration seconds")]
     public float collectDuration = 0f;
 
-    void Start() {
+    void Start()
+    {
+        if (!IsFirstCheckPoint && Dependency == null)
+            Debug.LogError("Please Set Dependency!");
+
         Register();
     }
 
@@ -32,17 +42,17 @@ public class PickupObject : TargetObject
             var vfx = Instantiate(spawnPrefabOnPickup, CollectVFXSpawnPoint.position, Quaternion.identity);
             Destroy(vfx, destroySpawnPrefabDelay);
         }
-               
+
         Objective.OnUnregisterPickup(this);
 
         TimeManager.OnAdjustTime(TimeGained);
 
         Destroy(gameObject, collectDuration);
     }
-    
+
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.transform.parent.CompareTag("Player"))
+        if (other.gameObject.transform.parent.CompareTag("Player") && Dependency == null)
         {
             OnCollect();
         }

@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class TrackProgress : MonoBehaviour
 {
-    [SerializeField] [Tooltip("From Last to First")]
+    [SerializeField] [Tooltip("Sort from FinishLine to First")]
     private List<Transform> CheckPoints;
-    [SerializeField]
-    private Transform FinishLine;
+
     [SerializeField]
     private Objective objective;
 
@@ -15,14 +14,15 @@ public class TrackProgress : MonoBehaviour
     private float totalDistance;
     private float currentDistance;
 
-    private float progress;
-
     private int CheckPointCount;
 
     void Start()
     {
-        m_PAIAKart = GetComponent<PAIAKartAgent>();
-        PlayerCar = GetComponent<Transform>();
+        PAIAKartAgent[] karts = FindObjectsOfType<PAIAKartAgent>();
+        if (karts.Length > 0 && !m_PAIAKart)
+            m_PAIAKart = karts[0];
+
+        PlayerCar = m_PAIAKart.transform;
         CheckPointCount = CheckPoints.Count;
         CalculateTotal();
     }
@@ -34,14 +34,11 @@ public class TrackProgress : MonoBehaviour
 
     private void CalculateTotal()
     {
-        // From Finish to Last Checkpoint
-        totalDistance = FastDistance2D(CheckPoints[0].position, FinishLine.position);
+        totalDistance = 0;
 
         // Distance between each Checkpoint
-        for (int i = 1; i < CheckPointCount; i++)
-        {
-            totalDistance += FastDistance2D(CheckPoints[i - 1].position, CheckPoints[i].position);
-        }
+        for (int i = 0; i < CheckPointCount - 1; i++)
+            totalDistance += FastDistance2D(CheckPoints[i].position, CheckPoints[i + 1].position);
 
         // From First Checkpoint to Spawn
         totalDistance += FastDistance2D(CheckPoints[CheckPointCount - 1].position, PlayerCar.position);
@@ -50,23 +47,19 @@ public class TrackProgress : MonoBehaviour
     private void CalculateProgress()
     {
         int count = objective.NumberOfPickupsRemaining;
+        currentDistance = 0;
+
         //  Still Checkpoint Lasts
         if (count > 0)
         {
-            currentDistance = FastDistance2D(CheckPoints[0].position, FinishLine.position);
-
-            for (int i = 1; i < count; i++)
-                currentDistance += FastDistance2D(CheckPoints[i - 1].position, CheckPoints[i].position);
+            for (int i = 0; i < count - 1; i++)
+                currentDistance += FastDistance2D(CheckPoints[i].position, CheckPoints[i + 1].position);
 
             currentDistance += FastDistance2D(CheckPoints[count - 1].position, PlayerCar.position);
         }
-        else
-        {
-            // From Finish to Player
-            currentDistance = FastDistance2D(PlayerCar.position, FinishLine.position);
-        }
 
-        m_PAIAKart.progress = 1 - (currentDistance / totalDistance);
+        float p = 1 - (currentDistance / totalDistance);
+        m_PAIAKart.progress = Mathf.Round(p * 10000) / 10000.0f;
     }
 
     private float FastDistance2D(Vector3 a, Vector3 b)

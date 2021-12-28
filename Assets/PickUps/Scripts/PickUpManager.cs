@@ -1,12 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections.Generic;
 
 public enum PickUpType { Wheel, Gas, Nitro, Turtle, Banana }
 
-/// <summary>
-/// The class that communicates between Item and Car group
-/// </summary>
 public class PickUpManager : MonoBehaviour
 {
     // Singleton
@@ -144,7 +140,6 @@ public class PickUpManager : MonoBehaviour
         return undrivable;
     }
 }
-
 
 [System.Serializable]
 public class RefillStats
