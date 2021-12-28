@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
@@ -9,14 +8,18 @@ using Unity.MLAgents.Sensors.Reflection;
 
 public class PAIAKartAgent : Agent, IInput
 {
+    [SerializeField]
+    private GameObject TrainingInstance;
+    private GameObject instance;
+
     [Header("Input Settings")]
     public string TurnInputName = "Horizontal";
     public string AccelerateButtonName = "Accelerate";
     public string BrakeButtonName = "Brake";
 
     [Observable(name: "velocity"), HideInInspector]
-    public float velocity
-    {   // [0, oo)
+    public float velocity   // [0, oo)
+    {
         get
         {
             return GetComponent<Rigidbody>().velocity.magnitude * 5.0f;
@@ -25,24 +28,26 @@ public class PAIAKartAgent : Agent, IInput
 
     // Observations
     [Observable(name: "progress"), HideInInspector]
-    public float progress; // (-oo, 1]
+    public float progress;  // (-oo, 1]
     [Observable(name: "wheel"), HideInInspector]
-    public float wheel; // [0, 1]
+    public float wheel;     // [0, 1]
     [Observable(name: "gas"), HideInInspector]
-    public float gas; // [0, 1]
+    public float gas;       // [0, 1]
+
     [Observable(name: "nitro"), HideInInspector]
-    public int nitro; // number of nitros effect
+    public int nitro;   // number of nitros effect
     [Observable(name: "turtle"), HideInInspector]
-    public int turtle; // number of turtles effect
+    public int turtle;  // number of turtles effect
     [Observable(name: "banana"), HideInInspector]
-    public int banana; // number of bananas effect
+    public int banana;  // number of bananas effect
+
     [Observable(name: "undrivable"), HideInInspector]
     public bool undrivable;
 
     // Actions
-    bool m_Acceleration; // { 0, 1 }
-    bool m_Brake; // { 0, 1 }
-    float m_Steering; // [-1, 1]
+    bool m_Acceleration;    // { 0, 1 }
+    bool m_Brake;           // { 0, 1 }
+    float m_Steering;       // [-1, 1 ]
 
     // misc.
     [HideInInspector]
@@ -63,27 +68,97 @@ public class PAIAKartAgent : Agent, IInput
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
         m_UI = GetComponent<SingleUI>();
+
+        TrainingCheckPoints.OnCorrectCheckPoint += CorrectCheckPoint;
+        TrainingCheckPoints.OnWrongCheckPoint += WrongCheckPoint;
+    }
+
+    private void GameEnded(bool win)
+    {
+        if (win)
+            AddReward(10.0f);
+        else
+            AddReward(-50.0f);
+
+        EndEpisode();
+    }
+
+    private void CorrectCheckPoint()
+    {
+        AddReward(5.0f);
+    }
+
+    private void WrongCheckPoint()
+    {
+        AddReward(-5.0f);
+    }
+
+    public void OutOfBound()
+    {
+        AddReward(-1000.0f);
+    }
+
+    public void Crash()
+    {
+        AddReward(-10.0f);
+    }
+
+    public void Grinding()
+    {
+        AddReward(-1.0f);
     }
 
     public override void OnEpisodeBegin()
     {
+        if(instance != null)
+        {
+            GameFlowManager.OnGameEnd -= GameEnded;
+            Destroy(instance);
+        }
+
+        instance = Instantiate(TrainingInstance, Vector3.zero, Quaternion.identity);
+        GameFlowManager.OnGameEnd += GameEnded;
+
         m_Kart.Rigidbody.velocity = Vector3.zero;
+        transform.position = new Vector3(32.0f + Random.Range(-2.5f, 2.5f), 0.25f, 5.0f);
+        transform.rotation = Quaternion.Euler(0.0f, Random.Range(-2.5f, 2.5f), 0.0f);
+
         effects = new List<KartEffect>();
-        wheel = 1.0f;
-        gas = 1.0f;
         nitro = 0;
         turtle = 0;
         banana = 0;
+
+        wheel = 1.0f;
+        gas = 1.0f;
+
         undrivable = false;
+
         PickUpManager.instance.RegisterKart(this);
+
         m_Acceleration = false;
         m_Brake = false;
         m_Steering = 0f;
+
+        SetReward(10.0f);   // Count Down Compensation
+    }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(velocity);
+
+        sensor.AddObservation(progress);
+        sensor.AddObservation(wheel);
+        sensor.AddObservation(gas);
+
+        sensor.AddObservation(nitro);
+        sensor.AddObservation(turtle);
+        sensor.AddObservation(banana);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         InterpretDiscreteActions(actionBuffers);
+        AddReward(-0.1f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -97,9 +172,9 @@ public class PAIAKartAgent : Agent, IInput
 
     void InterpretDiscreteActions(ActionBuffers actionBuffers)
     {
-        m_Acceleration = actionBuffers.DiscreteActions[0] > 0.5; // { 0, 1 }
-        m_Brake = actionBuffers.DiscreteActions[1] > 0.5; // { 0, 1 }
-        m_Steering = actionBuffers.ContinuousActions[0]; // [-1, 1]
+        m_Acceleration = actionBuffers.DiscreteActions[0] == 1;     // { 0, 1 }
+        m_Brake = actionBuffers.DiscreteActions[1] == 1;            // { 0, 1 }
+        m_Steering = actionBuffers.ContinuousActions[0];            // [-1, 1 ]
     }
 
     public InputData GenerateInput()
@@ -137,6 +212,7 @@ public class PAIAKartAgent : Agent, IInput
     void Update()
     {
         effects.RemoveAll(EffectTimeout);
+        // Debug.Log(GetCumulativeReward());
         // Debug.Log("Progress: " + progress * 100.0f + "%");
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
     }

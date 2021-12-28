@@ -157,6 +157,10 @@ public class GameFlowManager : MonoBehaviour
                 EndGame(EndGameReason.Undrivable);
         }
     }
+
+    public delegate void GameEnd(bool win);
+    public static GameEnd OnGameEnd;
+
     private enum EndGameReason { Win, TimeOut, Undrivable };
     void EndGame(EndGameReason reason)
     {
@@ -172,6 +176,7 @@ public class GameFlowManager : MonoBehaviour
         switch (reason)
         {
             case EndGameReason.Win:
+                OnGameEnd?.Invoke(true);
                 m_SceneToLoad = winSceneName;
                 m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
 
@@ -188,6 +193,7 @@ public class GameFlowManager : MonoBehaviour
                 break;
 
             case EndGameReason.TimeOut:
+                OnGameEnd?.Invoke(false);
                 m_SceneToLoad = loseSceneName;
                 m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
 
@@ -198,6 +204,7 @@ public class GameFlowManager : MonoBehaviour
                 break;
 
             case EndGameReason.Undrivable:
+                OnGameEnd?.Invoke(false);
                 m_SceneToLoad = loseSceneName;
                 m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
 
