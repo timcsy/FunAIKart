@@ -5,17 +5,26 @@ public class TrainingCheckPoints : MonoBehaviour
     private int cpCount;
     private int currentIndex;
 
+    public static TrainingCheckPoints instance;
+
     public delegate void CP();
-    public static CP OnCorrectCheckPoint;
-    public static CP OnWrongCheckPoint;
+    public CP OnCorrectCheckPoint;
+    public CP OnWrongCheckPoint;
 
     void Start()
     {
+        instance = this;
+
         cpCount = transform.childCount;
-        currentIndex = 0;
+        ResetEp();
 
         for (int i = 0; i < cpCount; i++)
             transform.GetChild(i).GetComponent<SingleCheckPoint>().SetID(i);
+    }
+
+    public void ResetEp()
+    {
+        currentIndex = 0;
     }
 
     public void CheckPoint(int id)
@@ -27,5 +36,10 @@ public class TrainingCheckPoints : MonoBehaviour
         }
         else
             OnWrongCheckPoint?.Invoke();
+    }
+
+    public Vector3 GetNextDirection()
+    {
+        return transform.GetChild(currentIndex).forward;
     }
 }

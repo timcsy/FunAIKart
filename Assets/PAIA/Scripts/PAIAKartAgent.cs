@@ -62,6 +62,8 @@ public class PAIAKartAgent : Agent, IInput
     public float CurrentGas;
 
     private List<KartEffect> effects;
+    private float v;
+    private float angle;
 
     void Start()
     {
@@ -69,8 +71,8 @@ public class PAIAKartAgent : Agent, IInput
         m_Rigidbody = GetComponent<Rigidbody>();
         m_UI = GetComponent<SingleUI>();
 
-        TrainingCheckPoints.OnCorrectCheckPoint += CorrectCheckPoint;
-        TrainingCheckPoints.OnWrongCheckPoint += WrongCheckPoint;
+        TrainingCheckPoints.instance.OnCorrectCheckPoint += CorrectCheckPoint;
+        TrainingCheckPoints.instance.OnWrongCheckPoint += WrongCheckPoint;
     }
 
     private void GameEnded(bool win)
@@ -78,19 +80,19 @@ public class PAIAKartAgent : Agent, IInput
         if (win)
             AddReward(10.0f);
         else
-            AddReward(-50.0f);
+            AddReward(-10.0f);
 
         EndEpisode();
     }
 
     private void CorrectCheckPoint()
     {
-        AddReward(5.0f);
+        AddReward(10.0f);
     }
 
     private void WrongCheckPoint()
     {
-        AddReward(-5.0f);
+        AddReward(-10.0f);
     }
 
     public void OutOfBound()
@@ -118,10 +120,11 @@ public class PAIAKartAgent : Agent, IInput
 
         instance = Instantiate(TrainingInstance, Vector3.zero, Quaternion.identity);
         GameFlowManager.OnGameEnd += GameEnded;
+        TrainingCheckPoints.instance.ResetEp();
 
         m_Kart.Rigidbody.velocity = Vector3.zero;
         transform.position = new Vector3(32.0f + Random.Range(-2.5f, 2.5f), 0.25f, 5.0f);
-        transform.rotation = Quaternion.Euler(0.0f, Random.Range(-2.5f, 2.5f), 0.0f);
+        transform.rotation = Quaternion.identity;
 
         effects = new List<KartEffect>();
         nitro = 0;
@@ -139,26 +142,22 @@ public class PAIAKartAgent : Agent, IInput
         m_Brake = false;
         m_Steering = 0f;
 
-        SetReward(10.0f);   // Count Down Compensation
+        SetReward(15.0f);   // Count Down Compensation
     }
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(velocity);
-
+        sensor.AddObservation(v);
+        sensor.AddObservation(angle);
         sensor.AddObservation(progress);
         sensor.AddObservation(wheel);
         sensor.AddObservation(gas);
-
-        sensor.AddObservation(nitro);
-        sensor.AddObservation(turtle);
-        sensor.AddObservation(banana);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         InterpretDiscreteActions(actionBuffers);
-        AddReward(-0.1f);
+        //AddReward(-0.1f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -172,9 +171,9 @@ public class PAIAKartAgent : Agent, IInput
 
     void InterpretDiscreteActions(ActionBuffers actionBuffers)
     {
-        m_Acceleration = actionBuffers.DiscreteActions[0] == 1;     // { 0, 1 }
-        m_Brake = actionBuffers.DiscreteActions[1] == 1;            // { 0, 1 }
-        m_Steering = actionBuffers.ContinuousActions[0];            // [-1, 1 ]
+        m_Acceleration = actionBuffers.DiscreteActions[0] > 0.5f;     // { 0, 1 }
+        m_Brake = actionBuffers.DiscreteActions[1] > 0.5f;            // { 0, 1 }
+        m_Steering = actionBuffers.ContinuousActions[0];              // [-1, 1 ]
     }
 
     public InputData GenerateInput()
@@ -211,9 +210,12 @@ public class PAIAKartAgent : Agent, IInput
 
     void Update()
     {
+        v = velocity / 180.0f;
+        angle = Vector3.Dot(transform.forward, TrainingCheckPoints.instance.GetNextDirection());
+
         effects.RemoveAll(EffectTimeout);
         // Debug.Log(GetCumulativeReward());
-        // Debug.Log("Progress: " + progress * 100.0f + "%");
+        // Debug.Log("P: " + progress + ", A: " + angle + ",\nV: " + v + ", G: " + gas + ", W: " + wheel);
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
     }
 
