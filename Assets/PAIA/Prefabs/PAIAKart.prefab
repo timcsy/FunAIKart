@@ -60,9 +60,6 @@ MonoBehaviour:
   TrackLayer:
     serializedVersion: 2
     m_Bits: 2048
-  GroundLayer:
-    serializedVersion: 2
-    m_Bits: 512
   agent: {fileID: 6984847887900053851}
 --- !u!1 &5197887662470824349
 GameObject:
@@ -1518,7 +1515,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6984847887900053855}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.972626, y: 0.2500038, z: 2.8581924}
+  m_LocalPosition: {x: 32, y: 0.25, z: 5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6984847888367573622}
@@ -1698,6 +1695,7 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 24000
+  UseDiscrete: 0
   TrainingInstance: {fileID: 5857832302134469979, guid: 3d992510560c2cf41adfacef9a1d38ca,
     type: 3}
   TurnInputName: Horizontal

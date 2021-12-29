@@ -1,4 +1,6 @@
-# GameAIKart
+# This Branch has been heavily modified in order to support the training of ML-Agents. To see the work in action, apply the model **PAIAKart.onnx** in **PAIA** folder onto the **PAIAKartAgent** script on the **PAIAKart** gameobject, then press play. Remember to select **Inference Only**.
+
+## GameAIKart
 This is a Full project folder, you can click Add on the Unity Hub to open the project after downloading, and the game scene is in Assets/Karting/Scenes/MainScene.
 
 ## Table of contents
@@ -58,11 +60,11 @@ This repository contains everything needed to get the project up and running on 
 遊戲場景在 Assets/Karting/Scenes/MainScene
 
 ## ML-Agents
-機器學習的部分放在 `ML` 資料夾中，啟動方式：
+機器學習的部刁E��在 `ML` 賁E��夾中�E�啟動方式！E
 ```
 cd ML
 python ml.py
 ```
-打開之後再去 Unity 畫面點播放鍵（如果是在開發時）
+打開之後�E去 Unity 畫面點播放鍵�E�如果是在開發時！E
 
-注意：Python Unity 的 ML-Agents 的版本要對好，本專案用的是 Release 17
+注意：Python Unity 皁EML-Agents 皁E��本要對好�E�本專案用皁E�� Release 17

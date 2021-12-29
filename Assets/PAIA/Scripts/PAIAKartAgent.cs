@@ -8,6 +8,9 @@ using Unity.MLAgents.Sensors.Reflection;
 
 public class PAIAKartAgent : Agent, IInput
 {
+    [SerializeField] [Tooltip("New Version?")]
+    private bool UseDiscrete;
+
     [SerializeField]
     private GameObject TrainingInstance;
     private GameObject instance;
@@ -162,20 +165,60 @@ public class PAIAKartAgent : Agent, IInput
         InterpretDiscreteActions(actionBuffers);
     }
 
-    public override void Heuristic(in ActionBuffers actionsOut)
+    private void InterpretDiscreteActions(ActionBuffers actionBuffers)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        var continuousActionsOut = actionsOut.ContinuousActions;
-        discreteActionsOut[0] = Input.GetButton(AccelerateButtonName) ? 1 : 0;
-        discreteActionsOut[1] = Input.GetButton(BrakeButtonName) ? 1 : 0;
-        continuousActionsOut[0] = Input.GetAxis(TurnInputName);
+        if (!UseDiscrete)
+        {
+            m_Acceleration = actionBuffers.DiscreteActions[0] > 0.5f;     // { 0, 1 }
+            m_Brake = actionBuffers.DiscreteActions[1] > 0.5f;            // { 0, 1 }
+            m_Steering = actionBuffers.ContinuousActions[0];              // [-1, 1 ]
+        }
+        else
+        {
+            m_Acceleration = actionBuffers.DiscreteActions[0] == 2;     // { 0, 1 }
+            m_Brake = actionBuffers.DiscreteActions[0] == 0;            // { 0, 1 }
+            switch (actionBuffers.DiscreteActions[1])                   // [-1, 1 ]
+            {
+                case 0:
+                    m_Steering = -0.5f;
+                    break;
+                case 1:
+                    m_Steering = 0.0f;
+                    break;
+                case 2:
+                    m_Steering = 0.5f;
+                    break;
+            }
+        }
     }
 
-    void InterpretDiscreteActions(ActionBuffers actionBuffers)
+    public override void Heuristic(in ActionBuffers actionsOut)
     {
-        m_Acceleration = actionBuffers.DiscreteActions[0] > 0.5f;     // { 0, 1 }
-        m_Brake = actionBuffers.DiscreteActions[1] > 0.5f;            // { 0, 1 }
-        m_Steering = actionBuffers.ContinuousActions[0];              // [-1, 1 ]
+        if (!UseDiscrete)
+        {
+            var discreteActionsOut = actionsOut.DiscreteActions;
+            var continuousActionsOut = actionsOut.ContinuousActions;
+            discreteActionsOut[0] = Input.GetButton(AccelerateButtonName) ? 1 : 0;
+            discreteActionsOut[1] = Input.GetButton(BrakeButtonName) ? 1 : 0;
+            continuousActionsOut[0] = Input.GetAxisRaw(TurnInputName);
+        }
+        else
+        {
+            var discreteActionsOut = actionsOut.DiscreteActions;
+            if (Input.GetButton(AccelerateButtonName))
+                discreteActionsOut[0] = 2;
+            else if (Input.GetButton(BrakeButtonName))
+                discreteActionsOut[0] = 0;
+            else
+                discreteActionsOut[0] = 1;
+
+            if (Input.GetAxis(TurnInputName) < 0)
+                discreteActionsOut[1] = 0;
+            else if (Input.GetAxis(TurnInputName) > 0)
+                discreteActionsOut[1] = 2;
+            else
+                discreteActionsOut[1] = 1;
+        }
     }
 
     public InputData GenerateInput()
