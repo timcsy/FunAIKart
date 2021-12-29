@@ -11,7 +11,7 @@ public class TrainingCheckPoints : MonoBehaviour
     public CP OnCorrectCheckPoint;
     public CP OnWrongCheckPoint;
 
-    void Start()
+    void Awake()
     {
         instance = this;
 

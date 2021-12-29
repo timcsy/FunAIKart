@@ -87,7 +87,7 @@ MonoBehaviour:
   Banana:
     Values:
     - 25
-    Duration: 3
+    Duration: 2.5
 --- !u!114 &5857832301545479261
 MonoBehaviour:
   m_ObjectHideFlags: 0

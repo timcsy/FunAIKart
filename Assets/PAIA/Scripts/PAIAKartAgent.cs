@@ -29,6 +29,9 @@ public class PAIAKartAgent : Agent, IInput
     // Observations
     [Observable(name: "progress"), HideInInspector]
     public float progress;  // (-oo, 1]
+    [Observable(name: "angle"), HideInInspector]
+    public float angle;     // [-1, 1]
+
     [Observable(name: "wheel"), HideInInspector]
     public float wheel;     // [0, 1]
     [Observable(name: "gas"), HideInInspector]
@@ -63,7 +66,16 @@ public class PAIAKartAgent : Agent, IInput
 
     private List<KartEffect> effects;
     private float v;
-    private float angle;
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(v);
+        sensor.AddObservation(progress);
+        sensor.AddObservation(angle);
+
+        sensor.AddObservation(wheel);
+        sensor.AddObservation(gas);
+    }
 
     void Start()
     {
@@ -78,36 +90,37 @@ public class PAIAKartAgent : Agent, IInput
     private void GameEnded(bool win)
     {
         if (win)
-            AddReward(10.0f);
+            AddReward(5.0f);
         else
-            AddReward(-10.0f);
+            AddReward(-5.0f);
 
         EndEpisode();
     }
 
     private void CorrectCheckPoint()
     {
-        AddReward(10.0f);
+        AddReward(1.0f);
     }
 
     private void WrongCheckPoint()
     {
-        AddReward(-10.0f);
+        AddReward(-1.0f);
     }
 
     public void OutOfBound()
     {
-        AddReward(-1000.0f);
+        SetReward(-10.0f);
+        EndEpisode();
     }
 
     public void Crash()
     {
-        AddReward(-10.0f);
+        AddReward(-0.5f);
     }
 
     public void Grinding()
     {
-        AddReward(-1.0f);
+        AddReward(-0.1f);
     }
 
     public override void OnEpisodeBegin()
@@ -141,23 +154,11 @@ public class PAIAKartAgent : Agent, IInput
         m_Acceleration = false;
         m_Brake = false;
         m_Steering = 0f;
-
-        SetReward(15.0f);   // Count Down Compensation
-    }
-
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        sensor.AddObservation(v);
-        sensor.AddObservation(angle);
-        sensor.AddObservation(progress);
-        sensor.AddObservation(wheel);
-        sensor.AddObservation(gas);
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         InterpretDiscreteActions(actionBuffers);
-        //AddReward(-0.1f);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -215,7 +216,7 @@ public class PAIAKartAgent : Agent, IInput
 
         effects.RemoveAll(EffectTimeout);
         // Debug.Log(GetCumulativeReward());
-        // Debug.Log("P: " + progress + ", A: " + angle + ",\nV: " + v + ", G: " + gas + ", W: " + wheel);
+        // Debug.Log("V: " + v + ", A: " + angle + "\nP: " + progress + ", W: " + wheel + ", G: " + gas);
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
     }
 
