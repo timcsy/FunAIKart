@@ -1395,7 +1395,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6984847887886938567
 Transform:
   m_ObjectHideFlags: 0
@@ -1676,7 +1676,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: PAIAKart
   TeamId: 0
   m_UseChildSensors: 1
@@ -1697,7 +1697,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 1600
+  MaxStep: 24000
   TrainingInstance: {fileID: 5857832302134469979, guid: 3d992510560c2cf41adfacef9a1d38ca,
     type: 3}
   TurnInputName: Horizontal
@@ -1728,7 +1728,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 2
+  DecisionPeriod: 1
   TakeActionsBetweenDecisions: 1
 --- !u!114 &6984847887900053848
 MonoBehaviour:
@@ -1760,8 +1760,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2902496c0120472b90269f94a0aec7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Record: 1
-  NumStepsToRecord: 8000
+  Record: 0
+  NumStepsToRecord: 3600
   DemonstrationName: Demo
   DemonstrationDirectory: PAIA/Demo
 --- !u!1 &6984847887924361248
@@ -2760,7 +2760,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6984847888171918677}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 6984847888356322048}
@@ -5786,8 +5786,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Camera: {fileID: 6984847888171918676}
   m_SensorName: CameraSensorFront
-  m_Width: 80
-  m_Height: 45
+  m_Width: 240
+  m_Height: 135
   m_Grayscale: 0
   m_ObservationType: 0
   m_ObservationStacks: 1
@@ -6159,7 +6159,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6984847888765497612
 Transform:
   m_ObjectHideFlags: 0

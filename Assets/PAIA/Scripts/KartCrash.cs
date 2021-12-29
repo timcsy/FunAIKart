@@ -3,7 +3,6 @@ using UnityEngine;
 public class KartCrash : MonoBehaviour
 {
     public LayerMask TrackLayer;
-    public LayerMask GroundLayer;
 
     [SerializeField]
     private PAIAKartAgent agent;
@@ -16,9 +15,6 @@ public class KartCrash : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if ((GroundLayer.value & (1 << other.gameObject.layer)) > 0)
-            agent.OutOfBound();
-
         if ((TrackLayer.value & (1 << other.gameObject.layer)) > 0)
             agent.Grinding();
     }

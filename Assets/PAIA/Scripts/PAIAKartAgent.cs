@@ -115,12 +115,12 @@ public class PAIAKartAgent : Agent, IInput
 
     public void Crash()
     {
-        AddReward(-0.5f);
+        AddReward(-1.0f);
     }
 
     public void Grinding()
     {
-        AddReward(-0.1f);
+        AddReward(-0.2f);
     }
 
     public override void OnEpisodeBegin()
@@ -136,6 +136,7 @@ public class PAIAKartAgent : Agent, IInput
         TrainingCheckPoints.instance.ResetEp();
 
         m_Kart.Rigidbody.velocity = Vector3.zero;
+        m_Kart.Rigidbody.angularVelocity = Vector3.zero;
         transform.position = new Vector3(32.0f + Random.Range(-2.5f, 2.5f), 0.25f, 5.0f);
         transform.rotation = Quaternion.identity;
 
