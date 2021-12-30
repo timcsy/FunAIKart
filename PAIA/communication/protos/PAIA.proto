@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+// api_version: PAIAKart_1.0
+
+enum EventType {
+	EVENT_NONE = 0;
+	EVENT_FINISH = 1;
+	EVENT_TIMEOUT = 2;
+	EVENT_UNDRIVABLE = 3;
+}
+
+message State {
+  message Observation {
+		message Ray {
+			optional bool hit = 1;
+			optional float distance = 2;
+		}
+		message RayList {
+			optional Ray F = 1;
+			optional Ray B = 2;
+			optional Ray R = 3;
+			optional Ray L = 4;
+			optional Ray FR = 5;
+			optional Ray RF = 6;
+			optional Ray FL = 7;
+			optional Ray LF = 8;
+			optional Ray BR = 9;
+			optional Ray BL = 10;
+		}
+		message Image {
+			bytes img = 1;
+			optional bytes data = 2;
+			optional int32 height = 3;
+			optional int32 width = 4;
+			optional int32 channels = 5;
+		}
+		message ImageList {
+			optional Image front = 1;
+			optional Image back = 2;
+		}
+		message Refill {
+			optional float value = 1;
+		}
+		message RefillList {
+			optional Refill wheel = 1;
+			optional Refill gas = 2;
+		}
+		message Effect {
+			optional int32 number = 1;
+		}
+		message EffectList {
+			optional Effect nitro = 1;
+			optional Effect turtle = 2;
+			optional Effect banana = 3;
+		}
+		optional RayList rays = 1;
+		optional ImageList images = 2;
+		optional float progress = 3;
+		optional float velocity = 4;
+		optional RefillList refills = 5;
+		optional EffectList effects = 6;
+	}
+	optional string api_version = 1;
+	optional string id = 2;
+	optional Observation observation = 3;
+	optional EventType event = 4;
+	optional float reward = 5;
+}
+
+enum StateType {
+	STATE_NONE = 0;
+	STATE_START = 1;
+	STATE_FINISH = 2;
+	STATE_RESTART = 3;
+}
+
+message Action {
+	optional string api_version = 1;
+	optional string id = 2;
+	optional StateType state = 3;
+	optional bool acceleration = 4;
+	optional bool brake = 5;
+	optional float steering = 6;
+}
+
+service PAIA {
+  rpc hook(Action) returns (State) {}
+}

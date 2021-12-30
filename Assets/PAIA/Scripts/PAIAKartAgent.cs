@@ -81,6 +81,7 @@ public class PAIAKartAgent : Agent, IInput
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
+        SetReward(0.1f);
         InterpretDiscreteActions(actionBuffers);
     }
 

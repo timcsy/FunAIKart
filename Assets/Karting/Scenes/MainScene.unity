@@ -13252,7 +13252,7 @@ PrefabInstance:
     - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
@@ -14417,7 +14417,7 @@ PrefabInstance:
     - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
@@ -15165,11 +15165,11 @@ MonoBehaviour:
   Wheel:
     MaxAmount: 100
     PickUpAmount: 50
-    ConsumeRate: 0.5
+    ConsumeRate: 1
   Gas:
     MaxAmount: 100
     PickUpAmount: 50
-    ConsumeRate: 0.5
+    ConsumeRate: 1
   Nitro:
     Values:
     - 2.5
@@ -17299,6 +17299,26 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: PAIAKart 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984847888116181753, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_RayLength
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984847888116181753, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_SphereCastRadius
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984847888116181753, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_EndVerticalOffset
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6984847888116181753, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: m_StartVerticalOffset
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
@@ -19687,7 +19707,7 @@ PrefabInstance:
     - target: {fileID: 6984847887900053855, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6984847888367573623, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}

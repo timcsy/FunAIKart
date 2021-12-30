@@ -1,45 +1,30 @@
 import config
-from config import DebugMode, RunningMode
+from config import RunningMode
+from demo import Demo
 import utils
+from utils import debug_print
 
 if config.RUNNING_MODE == RunningMode.ONLINE:
-  env, behavior_name = utils.open_env()
-
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
-
-  # Online
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Online:\n')
-
-  utils.online(env, behavior_name)
-
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
+    # Online
+    env, behavior_name = utils.open_env()
+    debug_print('--------------------------------')
+    debug_print('Online:\n')
+    utils.online(env, behavior_name)
+    debug_print('--------------------------------')
 
 
 if config.RUNNING_MODE == RunningMode.OFFLINE:
-  # Load from demo
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Offline:\n')
-  
-  utils.load_from_demo(config.DEMO_FILE)
-
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
+    # Load from demo
+    debug_print('Offline:\n')
+    # utils.load_from_demo(config.DEMO_FILE)
+    demo = Demo(config.DEMO_PATH)
+    debug_print('--------------------------------')
 
 
 if config.RUNNING_MODE == RunningMode.HEURISTIC:
-  env, behavior_name = utils.open_env()
-
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
-
-  # Online
-  if config.DEBUG != DebugMode.DISABLE:
-    print('Heuristic:\n')
-
-  utils.heuristic(env, behavior_name, config.DEMO_FILE)
-
-  if config.DEBUG != DebugMode.DISABLE:
-    print('--------------------------------')
+    # Online
+    env, behavior_name = utils.open_env()
+    debug_print('--------------------------------')
+    debug_print('Heuristic:\n')
+    utils.heuristic(env, behavior_name, config.DEMO_FILE)
+    debug_print('--------------------------------')

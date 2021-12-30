@@ -123,7 +123,11 @@ public class PickUpManager : MonoBehaviour
             var wheel = karts[i].CurrentWheel / Wheel.MaxAmount;
             var gas = karts[i].CurrentGas / Gas.MaxAmount;
             karts[i].UpdateRefill(wheel, gas);
-            if (karts[i].CurrentGas <= 0.0f || karts[i].CurrentWheel <= 0.0f) karts[i].undrivable = true;
+            if (karts[i].CurrentGas <= 0.0f || karts[i].CurrentWheel <= 0.0f)
+            {
+                karts[i].undrivable = true;
+                karts[i].m_Kart.enabled = false;
+            }
         }
 
         flowManager.Undrivable = Undrivable();
