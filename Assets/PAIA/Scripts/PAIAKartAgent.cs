@@ -8,11 +8,22 @@ using Unity.MLAgents.Sensors.Reflection;
 
 public class PAIAKartAgent : Agent, IInput
 {
+    [Header("Debug")]
+    [SerializeField]
+    private bool ShowReward;
+    [SerializeField]
+    private bool ShowObservation;
+
+    [Header("Training Settings")]
     [SerializeField] [Tooltip("New Version?")]
     private bool UseDiscrete;
 
     [SerializeField]
     private GameObject TrainingInstance;
+
+    [SerializeField]
+    private Transform SpawnPoint;
+
     private GameObject instance;
 
     [Header("Input Settings")]
@@ -95,7 +106,7 @@ public class PAIAKartAgent : Agent, IInput
         if (win)
             AddReward(5.0f);
         else
-            AddReward(-5.0f);
+            AddReward(-2.5f);
 
         EndEpisode();
     }
@@ -118,12 +129,12 @@ public class PAIAKartAgent : Agent, IInput
 
     public void Crash()
     {
-        AddReward(-1.0f);
+        AddReward(-2.0f);
     }
 
     public void Grinding()
     {
-        AddReward(-0.2f);
+        AddReward(-0.1f);
     }
 
     public override void OnEpisodeBegin()
@@ -140,8 +151,8 @@ public class PAIAKartAgent : Agent, IInput
 
         m_Kart.Rigidbody.velocity = Vector3.zero;
         m_Kart.Rigidbody.angularVelocity = Vector3.zero;
-        transform.position = new Vector3(32.0f + Random.Range(-2.5f, 2.5f), 0.25f, 5.0f);
-        transform.rotation = Quaternion.identity;
+        transform.position = SpawnPoint.position + new Vector3(Random.Range(-2.5f, 2.5f), 0.0f, 0.0f);
+        transform.rotation = SpawnPoint.rotation;
 
         effects = new List<KartEffect>();
         nitro = 0;
@@ -259,8 +270,8 @@ public class PAIAKartAgent : Agent, IInput
         angle = Vector3.Dot(transform.forward, TrainingCheckPoints.instance.GetNextDirection());
 
         effects.RemoveAll(EffectTimeout);
-        // Debug.Log(GetCumulativeReward());
-        // Debug.Log("V: " + v + ", A: " + angle + "\nP: " + progress + ", W: " + wheel + ", G: " + gas);
+        if (ShowReward) Debug.Log(GetCumulativeReward());
+        if (ShowObservation) Debug.Log("V: " + v + ", A: " + angle + "\nP: " + progress + ", W: " + wheel + ", G: " + gas);
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
     }
 

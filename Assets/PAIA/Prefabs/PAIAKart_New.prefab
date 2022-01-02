@@ -9025,8 +9025,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 3600
-  DemonstrationName: Demo_Dis
+  NumStepsToRecord: 4000
+  DemonstrationName: DemoDis
   DemonstrationDirectory: PAIA/Demo
 --- !u!1 &3368409491254196036
 GameObject:

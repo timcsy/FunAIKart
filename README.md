@@ -1,7 +1,15 @@
-# This Branch has been heavily modified in order to support the training of ML-Agents. To see the work in action, apply the model **PAIAKart.onnx** in **PAIA** folder onto the **PAIAKartAgent** script on the **PAIAKart** gameobject, then press play. Remember to select **Inference Only**.
+# ML-Agents
+This Branch has been heavily modified in order to support the training of ML-Agents. The correct NN-Model has already been applied. There are currently 3 trained Models in Assets/PAIA folder. Scenes can be found in Assets/Karting/Scenes folder.
+- **Kart**: Continous. Trained in MainScene. Most unstable.
+- **Kart_New**: Discrete. Trained in MainScene. Rather Stable.
+- **Complex**: Discrete. Stacked Vector = 2. Trained in MainScene02. Rather Stable.
+
+PAIAKart GameObject uses **Kart** model; PAIAKart_New can use both **Kart_New** and **Complex** *. Remember to change the **CinemachineVirtualCamera** as well if you wish to change the kart.
+
+*With a few differences you need to change
 
 ## GameAIKart
-This is a Full project folder, you can click Add on the Unity Hub to open the project after downloading, and the game scene is in Assets/Karting/Scenes/MainScene.
+This is a Full project folder, you can click Add on the Unity Hub to open the project after downloading.
 
 ## Table of contents
 - [GameAIKart](#gameaikart)
