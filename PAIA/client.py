@@ -18,6 +18,7 @@ def run(id: str=None) -> None:
             break
         action = brain.decision(state)
         action.id = id
+        # TODO: Set some commands
 
 if __name__ == '__main__':
     run(sys.argv[1])

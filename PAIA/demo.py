@@ -71,25 +71,25 @@ class Demo:
             obs_list = Demo.get_observations_from_buffer(buffer, behavior_spec, index)
             state = PAIA.convert_state_to_object(behavior_spec, obs_list, event, reward)
 
-            # Action status
-            status = PAIA.Status.STATUS_NONE
+            # Command
+            command = PAIA.Command.COMMAND_GENERAL
             if buffer[BufferKey.DONE][index]:
-                status = PAIA.Status.STATE_FINISH
+                command = PAIA.Command.COMMAND_FINISH
             
             # Actions
             actions = Demo.get_actions_from_buffer(buffer, index)
-            action = PAIA.convert_action_to_object(actions, status, id)
+            action = PAIA.convert_action_to_object(actions, command, id)
 
             # Step
             steps.append(PAIA.Step(state=state, action=action))
 
-            # To check whether episode is done, and show the summary
+            # To check whether episode is done
             if buffer[BufferKey.DONE][index]:
                 episode = PAIA.Episode(steps=steps)
                 episodes.append(episode)
                 steps = []
             
-            # To check whether demo is finished, and show the summary
+            # To check whether demo is finished
             if index == buffer.num_experiences - 1:
                 episode = PAIA.Episode(steps=steps)
                 episodes.append(episode)

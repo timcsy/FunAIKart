@@ -23,6 +23,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.open_env()
     
     def matching(self):
+        '''
+        Mapping behavior_name and id
+        '''
         while not self.behavior_name_queue.empty() and not self.id_queue.empty():
             behavior_name = self.behavior_name_queue.get()
             id = self.id_queue.get()
@@ -39,7 +42,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         debug_print('--------------------------------')
 
         # Behavior names
-        debug_print('Behavior names:\n')
+        debug_print('Behavior names:')
         debug_print(list(self.env.behavior_specs.keys()))
 
         # Behavior infomation
@@ -47,11 +50,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         debug_print('Behavior informations:\n', depth=3)
         debug_print(dict(self.env.behavior_specs), depth=3)
 
+        debug_print('--------------------------------')
+
         # Matching
-        debug_print('--------------------------------')
-        debug_print('Online:\n')
-        debug_print('--------------------------------')
-        # mapping behavior_name and id
         for behavior_name in self.env.behavior_specs.keys():
             self.behavior_name_queue.put(behavior_name)
         self.matching()
@@ -96,9 +97,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         if len(self.actions) == len(self.behavior_names):
             restart = False
             for action in self.actions.values():
-                if action.status == PAIA.Status.STATUS_FINISH:
+                if action.command == PAIA.Command.COMMAND_FINISH:
                     self.remove(action.id)
-                elif action.status == PAIA.Status.STATUS_RESTART:
+                elif action.command == PAIA.Command.COMMAND_RESTART:
                     restart = True
             
             if restart:
@@ -119,10 +120,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         del self.ids[behavior_name]
         del self.states[behavior_name]
         del self.actions[behavior_name]
+        debug_print('Removed client:', id)
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
-        if action.status == PAIA.Status.STATUS_START:
+        if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
+            debug_print('New client:', action.id)
             self.matching()
         else:
             self.actions[self.behavior_names[action.id]] = action

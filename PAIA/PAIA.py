@@ -15,7 +15,7 @@ import config
 
 Event = PAIA_pb2.Event
 State = PAIA_pb2.State
-Status = PAIA_pb2.Status
+Command = PAIA_pb2.Command
 Action = PAIA_pb2.Action
 Step = PAIA_pb2.Step
 Episode = PAIA_pb2.Episode
@@ -125,15 +125,15 @@ def init_action_object(id: str=None) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        status=Status.STATUS_START
+        command=Command.COMMAND_START
     )
     return action
 
-def create_action_object(id: str=None, acceleration: bool=False, brake: bool=False, steering: float=0.0, status: Status=Status.STATUS_NONE) -> Action:
+def create_action_object(id: str=None, acceleration: bool=False, brake: bool=False, steering: float=0.0, command: Command=Command.COMMAND_GENERAL) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        status=status,
+        command=command,
         acceleration=acceleration,
         brake=brake,
         steering=steering
@@ -148,11 +148,11 @@ def convert_action_to_data(action: Action) -> ActionTuple:
     continuous_actions = np.array([[steering]], dtype=np.float32)
     return ActionTuple(discrete=discrete_actions, continuous=continuous_actions)
 
-def convert_action_to_object(data: ActionTuple, status: Status, id: str=None) -> Action:
+def convert_action_to_object(data: ActionTuple, command: Command, id: str=None) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        status=status,
+        command=command,
         acceleration=data.discrete[0][0],
         brake=data.discrete[0][1],
         steering=data.continuous[0][0]

@@ -66,17 +66,17 @@ message State {
 	optional float reward = 5;
 }
 
-enum Status {
-	STATUS_NONE = 0;
-	STATUS_START = 1;
-	STATUS_FINISH = 2;
-	STATUS_RESTART = 3;
+enum Command {
+	COMMAND_GENERAL = 0;
+	COMMAND_START = 1;
+	COMMAND_FINISH = 2;
+	COMMAND_RESTART = 3;
 }
 
 message Action {
 	optional string api_version = 1;
 	optional string id = 2;
-	optional Status status = 3;
+	optional Command command = 3;
 	optional bool acceleration = 4;
 	optional bool brake = 5;
 	optional float steering = 6;

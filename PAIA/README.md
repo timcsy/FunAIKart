@@ -184,13 +184,13 @@ struct State { // 狀態資訊
 ```
 
 ### 動作資訊
-Action 狀態（`PAIA.Status`）定義：
+動作指令（`PAIA.Command`）定義：
 ```C++
-enum Status { // 想要做的指令
-	STATUS_NONE; // 一般狀態
-	STATUS_START; // 開始
-	STATUS_FINISH; // 結束
-	STATUS_RESTART; // 重新開始
+enum Command { // 想要做的指令
+	COMMAND_GENERAL; // 一般動作
+	COMMAND_START; // 開始
+	COMMAND_FINISH; // 結束
+	COMMAND_RESTART; // 重新開始
 }
 ```
 
@@ -199,7 +199,7 @@ enum Status { // 想要做的指令
 struct Action { // 動作資訊
 	string api_version; // API 版本
 	string id; // 使用者名稱
-	Status status; // 想要做的指令
+	Command command; // 動作指令
 	bool acceleration; // 是否加速
 	bool brake; // 是否減速
 	float steering; // 轉彎（-1.0 ~ 1.0，0 是不轉，偏向 -1 式左轉，偏向 1 是右轉）
