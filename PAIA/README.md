@@ -118,7 +118,7 @@ enum Event { 事件
 狀態資訊（`PAIA.State`）定義：
 ```
 struct State { 狀態資訊
-  struct Observation { 觀測資訊
+	struct Observation { 觀測資訊
 		struct Ray { 單一雷達資訊
 			bool hit; 是否在觀測範圍內
 			float distance; 距離（最大觀測範圍定為 1）
