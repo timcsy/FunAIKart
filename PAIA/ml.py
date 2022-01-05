@@ -1,4 +1,5 @@
 import sys
+import threading
 
 import config
 from config import RunningMode
@@ -12,11 +13,16 @@ def main(id: str=None):
         client.run(id)
     elif config.RUNNING_MODE == RunningMode.SERVER:
         # Online server
-        server.serve_online()
+        server.serve()
     elif config.RUNNING_MODE == RunningMode.OFFLINE:
-        # Offline server and client
-        server.serve_offline()
-        client.run(id)
+        # Offline server and clients
+        threads = []
+        threads.append(threading.Thread(target=server.serve))
+        threads.append(threading.Thread(target=client.run, args = (id,)))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
 
 if __name__ == '__main__':
     id = ''

@@ -1,5 +1,6 @@
 from concurrent import futures
 import queue
+import threading
 
 import grpc
 import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
@@ -19,8 +20,11 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.actions = {} # Indexed by behavior_name
         self.behavior_name_queue = queue.Queue()
         self.id_queue = queue.Queue()
+        self.env = False
+        self.env_ready = False
         self.states_ready = False
-        self.open_env()
+        t = threading.Thread(target=self.open_env)
+        t.start()
     
     def matching(self):
         '''
@@ -31,11 +35,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             id = self.id_queue.get()
             self.behavior_names[id] = behavior_name
             self.ids[behavior_name] = id
-        if len(self.env.behavior_specs) == len(self.ids):
+        if self.env and len(self.env.behavior_specs) == len(self.ids):
             # Get the first states
             self.get_states()
     
     def open_env(self) -> UnityEnvironment:
+        debug_print('NOTICE: Do not terminate until you start your Unity game!', depth=1)
         debug_print('Waiting for Unity side ...', depth=1)
         self.env = UnityEnvironment(file_name=None)
         self.env.reset()
@@ -138,17 +143,8 @@ def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(), server)
     server.add_insecure_port('[::]:50051')
-    return server
-
-def serve_online():
-    server = serve()
     server.start()
     server.wait_for_termination()
-    
-
-def serve_offline():
-    server = serve()
-    server.start()
 
 if __name__ == '__main__':
-    serve_online()
+    serve()
