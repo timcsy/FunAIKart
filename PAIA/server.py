@@ -69,7 +69,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
                     obs_list=decision_steps.obs,
-                    event=PAIA.EventType.EVENT_NONE,
+                    event=PAIA.Event.EVENT_NONE,
                     reward=decision_steps.reward
                 )
             
@@ -78,7 +78,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
                     obs_list=terminal_steps.obs,
-                    event=PAIA.EventType.EVENT_FINISH,
+                    event=PAIA.Event.EVENT_FINISH,
                     reward=terminal_steps.reward
                 )
 
@@ -95,11 +95,10 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     def check_status(self):
         if len(self.actions) == len(self.behavior_names):
             restart = False
-            tmp_actions = self.actions
-            for action in tmp_actions:
-                if action is PAIA.StateType.STATE_FINISH:
+            for action in self.actions.values():
+                if action.status == PAIA.Status.STATUS_FINISH:
                     self.remove(action.id)
-                elif action is PAIA.StateType.STATE_RESTART:
+                elif action.status == PAIA.Status.STATUS_RESTART:
                     restart = True
             
             if restart:
@@ -122,7 +121,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         del self.actions[behavior_name]
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
-        if action.state == PAIA.StateType.STATE_START:
+        if action.status == PAIA.Status.STATUS_START:
             self.id_queue.put(action.id)
             self.matching()
         else:
@@ -142,6 +141,7 @@ def serve_online():
     server = serve()
     server.start()
     server.wait_for_termination()
+    
 
 def serve_offline():
     server = serve()

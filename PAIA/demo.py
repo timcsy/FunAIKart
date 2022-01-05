@@ -1,9 +1,9 @@
-from typing import Dict, List, Optional
+from typing import List, Optional
 from pathlib import Path
 import zlib
 
 from mlagents.trainers import demo_loader
-from mlagents.trainers.buffer import AgentBuffer, BufferKey, ObservationKeyPrefix, RewardSignalKeyPrefix
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, ObservationKeyPrefix
 from mlagents_envs.base_env import ActionTuple, BehaviorSpec
 
 import numpy as np
@@ -60,9 +60,9 @@ class Demo:
 
         for index in range(buffer.num_experiences):
             # Event
-            event = PAIA.EventType.EVENT_NONE
+            event = PAIA.Event.EVENT_NONE
             if buffer[BufferKey.DONE][index]:
-                event = PAIA.EventType.EVENT_FINISH
+                event = PAIA.Event.EVENT_FINISH
             
             # Reward
             reward = Demo.get_rewards_from_buffer(buffer, index)
@@ -71,14 +71,14 @@ class Demo:
             obs_list = Demo.get_observations_from_buffer(buffer, behavior_spec, index)
             state = PAIA.convert_state_to_object(behavior_spec, obs_list, event, reward)
 
-            # Action state
-            action_state = PAIA.StateType.STATE_NONE
+            # Action status
+            status = PAIA.Status.STATUS_NONE
             if buffer[BufferKey.DONE][index]:
-                action_state = PAIA.EventType.STATE_FINISH
+                status = PAIA.Status.STATE_FINISH
             
             # Actions
             actions = Demo.get_actions_from_buffer(buffer, index)
-            action = PAIA.convert_action_to_object(actions, action_state, id)
+            action = PAIA.convert_action_to_object(actions, status, id)
 
             # Step
             steps.append(PAIA.Step(state=state, action=action))

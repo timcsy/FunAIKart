@@ -2,7 +2,7 @@ syntax = "proto3";
 
 // api_version: PAIAKart_1.0
 
-enum EventType {
+enum Event {
 	EVENT_NONE = 0;
 	EVENT_FINISH = 1;
 	EVENT_TIMEOUT = 2;
@@ -62,21 +62,21 @@ message State {
 	optional string api_version = 1;
 	optional string id = 2;
 	optional Observation observation = 3;
-	optional EventType event = 4;
+	optional Event event = 4;
 	optional float reward = 5;
 }
 
-enum StateType {
-	STATE_NONE = 0;
-	STATE_START = 1;
-	STATE_FINISH = 2;
-	STATE_RESTART = 3;
+enum Status {
+	STATUS_NONE = 0;
+	STATUS_START = 1;
+	STATUS_FINISH = 2;
+	STATUS_RESTART = 3;
 }
 
 message Action {
 	optional string api_version = 1;
 	optional string id = 2;
-	optional StateType state = 3;
+	optional Status status = 3;
 	optional bool acceleration = 4;
 	optional bool brake = 5;
 	optional float steering = 6;

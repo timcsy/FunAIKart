@@ -20,12 +20,12 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n\nPAIA.proto\"\xd9\r\n\x05State\x12\x18\n\x0b\x61pi_version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0f\n\x02id\x18\x02 \x01(\tH\x01\x88\x01\x01\x12,\n\x0bobservation\x18\x03 \x01(\x0b\x32\x12.State.ObservationH\x02\x88\x01\x01\x12\x1e\n\x05\x65vent\x18\x04 \x01(\x0e\x32\n.EventTypeH\x03\x88\x01\x01\x12\x13\n\x06reward\x18\x05 \x01(\x02H\x04\x88\x01\x01\x1a\x85\x0c\n\x0bObservation\x12-\n\x04rays\x18\x01 \x01(\x0b\x32\x1a.State.Observation.RayListH\x00\x88\x01\x01\x12\x31\n\x06images\x18\x02 \x01(\x0b\x32\x1c.State.Observation.ImageListH\x01\x88\x01\x01\x12\x15\n\x08progress\x18\x03 \x01(\x02H\x02\x88\x01\x01\x12\x15\n\x08velocity\x18\x04 \x01(\x02H\x03\x88\x01\x01\x12\x33\n\x07refills\x18\x05 \x01(\x0b\x32\x1d.State.Observation.RefillListH\x04\x88\x01\x01\x12\x33\n\x07\x65\x66\x66\x65\x63ts\x18\x06 \x01(\x0b\x32\x1d.State.Observation.EffectListH\x05\x88\x01\x01\x1a\x43\n\x03Ray\x12\x10\n\x03hit\x18\x01 \x01(\x08H\x00\x88\x01\x01\x12\x15\n\x08\x64istance\x18\x02 \x01(\x02H\x01\x88\x01\x01\x42\x06\n\x04_hitB\x0b\n\t_distance\x1a\xe1\x03\n\x07RayList\x12&\n\x01\x46\x18\x01 \x01(\x0b\x32\x16.State.Observation.RayH\x00\x88\x01\x01\x12&\n\x01\x42\x18\x02 \x01(\x0b\x32\x16.State.Observation.RayH\x01\x88\x01\x01\x12&\n\x01R\x18\x03 \x01(\x0b\x32\x16.State.Observation.RayH\x02\x88\x01\x01\x12&\n\x01L\x18\x04 \x01(\x0b\x32\x16.State.Observation.RayH\x03\x88\x01\x01\x12\'\n\x02\x46R\x18\x05 \x01(\x0b\x32\x16.State.Observation.RayH\x04\x88\x01\x01\x12\'\n\x02RF\x18\x06 \x01(\x0b\x32\x16.State.Observation.RayH\x05\x88\x01\x01\x12\'\n\x02\x46L\x18\x07 \x01(\x0b\x32\x16.State.Observation.RayH\x06\x88\x01\x01\x12\'\n\x02LF\x18\x08 \x01(\x0b\x32\x16.State.Observation.RayH\x07\x88\x01\x01\x12\'\n\x02\x42R\x18\t \x01(\x0b\x32\x16.State.Observation.RayH\x08\x88\x01\x01\x12\'\n\x02\x42L\x18\n \x01(\x0b\x32\x16.State.Observation.RayH\t\x88\x01\x01\x42\x04\n\x02_FB\x04\n\x02_BB\x04\n\x02_RB\x04\n\x02_LB\x05\n\x03_FRB\x05\n\x03_RFB\x05\n\x03_FLB\x05\n\x03_LFB\x05\n\x03_BRB\x05\n\x03_BL\x1a\x85\x01\n\x05Image\x12\x11\n\x04\x64\x61ta\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x13\n\x06height\x18\x02 \x01(\x05H\x01\x88\x01\x01\x12\x12\n\x05width\x18\x03 \x01(\x05H\x02\x88\x01\x01\x12\x15\n\x08\x63hannels\x18\x04 \x01(\x05H\x03\x88\x01\x01\x42\x07\n\x05_dataB\t\n\x07_heightB\x08\n\x06_widthB\x0b\n\t_channels\x1ay\n\tImageList\x12,\n\x05\x66ront\x18\x01 \x01(\x0b\x32\x18.State.Observation.ImageH\x00\x88\x01\x01\x12+\n\x04\x62\x61\x63k\x18\x02 \x01(\x0b\x32\x18.State.Observation.ImageH\x01\x88\x01\x01\x42\x08\n\x06_frontB\x07\n\x05_back\x1a&\n\x06Refill\x12\x12\n\x05value\x18\x01 \x01(\x02H\x00\x88\x01\x01\x42\x08\n\x06_value\x1az\n\nRefillList\x12-\n\x05wheel\x18\x01 \x01(\x0b\x32\x19.State.Observation.RefillH\x00\x88\x01\x01\x12+\n\x03gas\x18\x02 \x01(\x0b\x32\x19.State.Observation.RefillH\x01\x88\x01\x01\x42\x08\n\x06_wheelB\x06\n\x04_gas\x1a(\n\x06\x45\x66\x66\x65\x63t\x12\x13\n\x06number\x18\x01 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_number\x1a\xbb\x01\n\nEffectList\x12-\n\x05nitro\x18\x01 \x01(\x0b\x32\x19.State.Observation.EffectH\x00\x88\x01\x01\x12.\n\x06turtle\x18\x02 \x01(\x0b\x32\x19.State.Observation.EffectH\x01\x88\x01\x01\x12.\n\x06\x62\x61nana\x18\x03 \x01(\x0b\x32\x19.State.Observation.EffectH\x02\x88\x01\x01\x42\x08\n\x06_nitroB\t\n\x07_turtleB\t\n\x07_bananaB\x07\n\x05_raysB\t\n\x07_imagesB\x0b\n\t_progressB\x0b\n\t_velocityB\n\n\x08_refillsB\n\n\x08_effectsB\x0e\n\x0c_api_versionB\x05\n\x03_idB\x0e\n\x0c_observationB\x08\n\x06_eventB\t\n\x07_reward\"\xe2\x01\n\x06\x41\x63tion\x12\x18\n\x0b\x61pi_version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0f\n\x02id\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x1e\n\x05state\x18\x03 \x01(\x0e\x32\n.StateTypeH\x02\x88\x01\x01\x12\x19\n\x0c\x61\x63\x63\x65leration\x18\x04 \x01(\x08H\x03\x88\x01\x01\x12\x12\n\x05\x62rake\x18\x05 \x01(\x08H\x04\x88\x01\x01\x12\x15\n\x08steering\x18\x06 \x01(\x02H\x05\x88\x01\x01\x42\x0e\n\x0c_api_versionB\x05\n\x03_idB\x08\n\x06_stateB\x0f\n\r_accelerationB\x08\n\x06_brakeB\x0b\n\t_steering\"U\n\x04Step\x12\x1a\n\x05state\x18\x01 \x01(\x0b\x32\x06.StateH\x00\x88\x01\x01\x12\x1c\n\x06\x61\x63tion\x18\x02 \x01(\x0b\x32\x07.ActionH\x01\x88\x01\x01\x42\x08\n\x06_stateB\t\n\x07_action\"\x1f\n\x07\x45pisode\x12\x14\n\x05steps\x18\x01 \x03(\x0b\x32\x05.Step\"\"\n\x04\x44\x65mo\x12\x1a\n\x08\x65pisodes\x18\x01 \x03(\x0b\x32\x08.Episode*V\n\tEventType\x12\x0e\n\nEVENT_NONE\x10\x00\x12\x10\n\x0c\x45VENT_FINISH\x10\x01\x12\x11\n\rEVENT_TIMEOUT\x10\x02\x12\x14\n\x10\x45VENT_UNDRIVABLE\x10\x03*Q\n\tStateType\x12\x0e\n\nSTATE_NONE\x10\x00\x12\x0f\n\x0bSTATE_START\x10\x01\x12\x10\n\x0cSTATE_FINISH\x10\x02\x12\x11\n\rSTATE_RESTART\x10\x03\x32!\n\x04PAIA\x12\x19\n\x04hook\x12\x07.Action\x1a\x06.State\"\x00\x62\x06proto3'
+  serialized_pb=b'\n\nPAIA.proto\"\xd5\r\n\x05State\x12\x18\n\x0b\x61pi_version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0f\n\x02id\x18\x02 \x01(\tH\x01\x88\x01\x01\x12,\n\x0bobservation\x18\x03 \x01(\x0b\x32\x12.State.ObservationH\x02\x88\x01\x01\x12\x1a\n\x05\x65vent\x18\x04 \x01(\x0e\x32\x06.EventH\x03\x88\x01\x01\x12\x13\n\x06reward\x18\x05 \x01(\x02H\x04\x88\x01\x01\x1a\x85\x0c\n\x0bObservation\x12-\n\x04rays\x18\x01 \x01(\x0b\x32\x1a.State.Observation.RayListH\x00\x88\x01\x01\x12\x31\n\x06images\x18\x02 \x01(\x0b\x32\x1c.State.Observation.ImageListH\x01\x88\x01\x01\x12\x15\n\x08progress\x18\x03 \x01(\x02H\x02\x88\x01\x01\x12\x15\n\x08velocity\x18\x04 \x01(\x02H\x03\x88\x01\x01\x12\x33\n\x07refills\x18\x05 \x01(\x0b\x32\x1d.State.Observation.RefillListH\x04\x88\x01\x01\x12\x33\n\x07\x65\x66\x66\x65\x63ts\x18\x06 \x01(\x0b\x32\x1d.State.Observation.EffectListH\x05\x88\x01\x01\x1a\x43\n\x03Ray\x12\x10\n\x03hit\x18\x01 \x01(\x08H\x00\x88\x01\x01\x12\x15\n\x08\x64istance\x18\x02 \x01(\x02H\x01\x88\x01\x01\x42\x06\n\x04_hitB\x0b\n\t_distance\x1a\xe1\x03\n\x07RayList\x12&\n\x01\x46\x18\x01 \x01(\x0b\x32\x16.State.Observation.RayH\x00\x88\x01\x01\x12&\n\x01\x42\x18\x02 \x01(\x0b\x32\x16.State.Observation.RayH\x01\x88\x01\x01\x12&\n\x01R\x18\x03 \x01(\x0b\x32\x16.State.Observation.RayH\x02\x88\x01\x01\x12&\n\x01L\x18\x04 \x01(\x0b\x32\x16.State.Observation.RayH\x03\x88\x01\x01\x12\'\n\x02\x46R\x18\x05 \x01(\x0b\x32\x16.State.Observation.RayH\x04\x88\x01\x01\x12\'\n\x02RF\x18\x06 \x01(\x0b\x32\x16.State.Observation.RayH\x05\x88\x01\x01\x12\'\n\x02\x46L\x18\x07 \x01(\x0b\x32\x16.State.Observation.RayH\x06\x88\x01\x01\x12\'\n\x02LF\x18\x08 \x01(\x0b\x32\x16.State.Observation.RayH\x07\x88\x01\x01\x12\'\n\x02\x42R\x18\t \x01(\x0b\x32\x16.State.Observation.RayH\x08\x88\x01\x01\x12\'\n\x02\x42L\x18\n \x01(\x0b\x32\x16.State.Observation.RayH\t\x88\x01\x01\x42\x04\n\x02_FB\x04\n\x02_BB\x04\n\x02_RB\x04\n\x02_LB\x05\n\x03_FRB\x05\n\x03_RFB\x05\n\x03_FLB\x05\n\x03_LFB\x05\n\x03_BRB\x05\n\x03_BL\x1a\x85\x01\n\x05Image\x12\x11\n\x04\x64\x61ta\x18\x01 \x01(\x0cH\x00\x88\x01\x01\x12\x13\n\x06height\x18\x02 \x01(\x05H\x01\x88\x01\x01\x12\x12\n\x05width\x18\x03 \x01(\x05H\x02\x88\x01\x01\x12\x15\n\x08\x63hannels\x18\x04 \x01(\x05H\x03\x88\x01\x01\x42\x07\n\x05_dataB\t\n\x07_heightB\x08\n\x06_widthB\x0b\n\t_channels\x1ay\n\tImageList\x12,\n\x05\x66ront\x18\x01 \x01(\x0b\x32\x18.State.Observation.ImageH\x00\x88\x01\x01\x12+\n\x04\x62\x61\x63k\x18\x02 \x01(\x0b\x32\x18.State.Observation.ImageH\x01\x88\x01\x01\x42\x08\n\x06_frontB\x07\n\x05_back\x1a&\n\x06Refill\x12\x12\n\x05value\x18\x01 \x01(\x02H\x00\x88\x01\x01\x42\x08\n\x06_value\x1az\n\nRefillList\x12-\n\x05wheel\x18\x01 \x01(\x0b\x32\x19.State.Observation.RefillH\x00\x88\x01\x01\x12+\n\x03gas\x18\x02 \x01(\x0b\x32\x19.State.Observation.RefillH\x01\x88\x01\x01\x42\x08\n\x06_wheelB\x06\n\x04_gas\x1a(\n\x06\x45\x66\x66\x65\x63t\x12\x13\n\x06number\x18\x01 \x01(\x05H\x00\x88\x01\x01\x42\t\n\x07_number\x1a\xbb\x01\n\nEffectList\x12-\n\x05nitro\x18\x01 \x01(\x0b\x32\x19.State.Observation.EffectH\x00\x88\x01\x01\x12.\n\x06turtle\x18\x02 \x01(\x0b\x32\x19.State.Observation.EffectH\x01\x88\x01\x01\x12.\n\x06\x62\x61nana\x18\x03 \x01(\x0b\x32\x19.State.Observation.EffectH\x02\x88\x01\x01\x42\x08\n\x06_nitroB\t\n\x07_turtleB\t\n\x07_bananaB\x07\n\x05_raysB\t\n\x07_imagesB\x0b\n\t_progressB\x0b\n\t_velocityB\n\n\x08_refillsB\n\n\x08_effectsB\x0e\n\x0c_api_versionB\x05\n\x03_idB\x0e\n\x0c_observationB\x08\n\x06_eventB\t\n\x07_reward\"\xe1\x01\n\x06\x41\x63tion\x12\x18\n\x0b\x61pi_version\x18\x01 \x01(\tH\x00\x88\x01\x01\x12\x0f\n\x02id\x18\x02 \x01(\tH\x01\x88\x01\x01\x12\x1c\n\x06status\x18\x03 \x01(\x0e\x32\x07.StatusH\x02\x88\x01\x01\x12\x19\n\x0c\x61\x63\x63\x65leration\x18\x04 \x01(\x08H\x03\x88\x01\x01\x12\x12\n\x05\x62rake\x18\x05 \x01(\x08H\x04\x88\x01\x01\x12\x15\n\x08steering\x18\x06 \x01(\x02H\x05\x88\x01\x01\x42\x0e\n\x0c_api_versionB\x05\n\x03_idB\t\n\x07_statusB\x0f\n\r_accelerationB\x08\n\x06_brakeB\x0b\n\t_steering\"U\n\x04Step\x12\x1a\n\x05state\x18\x01 \x01(\x0b\x32\x06.StateH\x00\x88\x01\x01\x12\x1c\n\x06\x61\x63tion\x18\x02 \x01(\x0b\x32\x07.ActionH\x01\x88\x01\x01\x42\x08\n\x06_stateB\t\n\x07_action\"\x1f\n\x07\x45pisode\x12\x14\n\x05steps\x18\x01 \x03(\x0b\x32\x05.Step\"\"\n\x04\x44\x65mo\x12\x1a\n\x08\x65pisodes\x18\x01 \x03(\x0b\x32\x08.Episode*R\n\x05\x45vent\x12\x0e\n\nEVENT_NONE\x10\x00\x12\x10\n\x0c\x45VENT_FINISH\x10\x01\x12\x11\n\rEVENT_TIMEOUT\x10\x02\x12\x14\n\x10\x45VENT_UNDRIVABLE\x10\x03*R\n\x06Status\x12\x0f\n\x0bSTATUS_NONE\x10\x00\x12\x10\n\x0cSTATUS_START\x10\x01\x12\x11\n\rSTATUS_FINISH\x10\x02\x12\x12\n\x0eSTATUS_RESTART\x10\x03\x32!\n\x04PAIA\x12\x19\n\x04hook\x12\x07.Action\x1a\x06.State\"\x00\x62\x06proto3'
 )
 
-_EVENTTYPE = _descriptor.EnumDescriptor(
-  name='EventType',
-  full_name='EventType',
+_EVENT = _descriptor.EnumDescriptor(
+  name='Event',
+  full_name='Event',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
@@ -53,56 +53,56 @@ _EVENTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2155,
-  serialized_end=2241,
+  serialized_start=2150,
+  serialized_end=2232,
 )
-_sym_db.RegisterEnumDescriptor(_EVENTTYPE)
+_sym_db.RegisterEnumDescriptor(_EVENT)
 
-EventType = enum_type_wrapper.EnumTypeWrapper(_EVENTTYPE)
-_STATETYPE = _descriptor.EnumDescriptor(
-  name='StateType',
-  full_name='StateType',
+Event = enum_type_wrapper.EnumTypeWrapper(_EVENT)
+_STATUS = _descriptor.EnumDescriptor(
+  name='Status',
+  full_name='Status',
   filename=None,
   file=DESCRIPTOR,
   create_key=_descriptor._internal_create_key,
   values=[
     _descriptor.EnumValueDescriptor(
-      name='STATE_NONE', index=0, number=0,
+      name='STATUS_NONE', index=0, number=0,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='STATE_START', index=1, number=1,
+      name='STATUS_START', index=1, number=1,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='STATE_FINISH', index=2, number=2,
+      name='STATUS_FINISH', index=2, number=2,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
     _descriptor.EnumValueDescriptor(
-      name='STATE_RESTART', index=3, number=3,
+      name='STATUS_RESTART', index=3, number=3,
       serialized_options=None,
       type=None,
       create_key=_descriptor._internal_create_key),
   ],
   containing_type=None,
   serialized_options=None,
-  serialized_start=2243,
-  serialized_end=2324,
+  serialized_start=2234,
+  serialized_end=2316,
 )
-_sym_db.RegisterEnumDescriptor(_STATETYPE)
+_sym_db.RegisterEnumDescriptor(_STATUS)
 
-StateType = enum_type_wrapper.EnumTypeWrapper(_STATETYPE)
+Status = enum_type_wrapper.EnumTypeWrapper(_STATUS)
 EVENT_NONE = 0
 EVENT_FINISH = 1
 EVENT_TIMEOUT = 2
 EVENT_UNDRIVABLE = 3
-STATE_NONE = 0
-STATE_START = 1
-STATE_FINISH = 2
-STATE_RESTART = 3
+STATUS_NONE = 0
+STATUS_START = 1
+STATUS_FINISH = 2
+STATUS_RESTART = 3
 
 
 
@@ -150,8 +150,8 @@ _STATE_OBSERVATION_RAY = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=432,
-  serialized_end=499,
+  serialized_start=428,
+  serialized_end=495,
 )
 
 _STATE_OBSERVATION_RAYLIST = _descriptor.Descriptor(
@@ -294,8 +294,8 @@ _STATE_OBSERVATION_RAYLIST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=502,
-  serialized_end=983,
+  serialized_start=498,
+  serialized_end=979,
 )
 
 _STATE_OBSERVATION_IMAGE = _descriptor.Descriptor(
@@ -366,8 +366,8 @@ _STATE_OBSERVATION_IMAGE = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=986,
-  serialized_end=1119,
+  serialized_start=982,
+  serialized_end=1115,
 )
 
 _STATE_OBSERVATION_IMAGELIST = _descriptor.Descriptor(
@@ -414,8 +414,8 @@ _STATE_OBSERVATION_IMAGELIST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1121,
-  serialized_end=1242,
+  serialized_start=1117,
+  serialized_end=1238,
 )
 
 _STATE_OBSERVATION_REFILL = _descriptor.Descriptor(
@@ -450,8 +450,8 @@ _STATE_OBSERVATION_REFILL = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1244,
-  serialized_end=1282,
+  serialized_start=1240,
+  serialized_end=1278,
 )
 
 _STATE_OBSERVATION_REFILLLIST = _descriptor.Descriptor(
@@ -498,8 +498,8 @@ _STATE_OBSERVATION_REFILLLIST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1284,
-  serialized_end=1406,
+  serialized_start=1280,
+  serialized_end=1402,
 )
 
 _STATE_OBSERVATION_EFFECT = _descriptor.Descriptor(
@@ -534,8 +534,8 @@ _STATE_OBSERVATION_EFFECT = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1408,
-  serialized_end=1448,
+  serialized_start=1404,
+  serialized_end=1444,
 )
 
 _STATE_OBSERVATION_EFFECTLIST = _descriptor.Descriptor(
@@ -594,8 +594,8 @@ _STATE_OBSERVATION_EFFECTLIST = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1451,
-  serialized_end=1638,
+  serialized_start=1447,
+  serialized_end=1634,
 )
 
 _STATE_OBSERVATION = _descriptor.Descriptor(
@@ -690,8 +690,8 @@ _STATE_OBSERVATION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=167,
-  serialized_end=1708,
+  serialized_start=163,
+  serialized_end=1704,
 )
 
 _STATE = _descriptor.Descriptor(
@@ -775,7 +775,7 @@ _STATE = _descriptor.Descriptor(
     fields=[]),
   ],
   serialized_start=15,
-  serialized_end=1768,
+  serialized_end=1764,
 )
 
 
@@ -802,7 +802,7 @@ _ACTION = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
     _descriptor.FieldDescriptor(
-      name='state', full_name='Action.state', index=2,
+      name='status', full_name='Action.status', index=2,
       number=3, type=14, cpp_type=8, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -851,7 +851,7 @@ _ACTION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
     _descriptor.OneofDescriptor(
-      name='_state', full_name='Action._state',
+      name='_status', full_name='Action._status',
       index=2, containing_type=None,
       create_key=_descriptor._internal_create_key,
     fields=[]),
@@ -871,8 +871,8 @@ _ACTION = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1771,
-  serialized_end=1997,
+  serialized_start=1767,
+  serialized_end=1992,
 )
 
 
@@ -920,8 +920,8 @@ _STEP = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=1999,
-  serialized_end=2084,
+  serialized_start=1994,
+  serialized_end=2079,
 )
 
 
@@ -952,8 +952,8 @@ _EPISODE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2086,
-  serialized_end=2117,
+  serialized_start=2081,
+  serialized_end=2112,
 )
 
 
@@ -984,8 +984,8 @@ _DEMO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2119,
-  serialized_end=2153,
+  serialized_start=2114,
+  serialized_end=2148,
 )
 
 _STATE_OBSERVATION_RAY.containing_type = _STATE_OBSERVATION
@@ -1112,7 +1112,7 @@ _STATE_OBSERVATION.oneofs_by_name['_effects'].fields.append(
   _STATE_OBSERVATION.fields_by_name['effects'])
 _STATE_OBSERVATION.fields_by_name['effects'].containing_oneof = _STATE_OBSERVATION.oneofs_by_name['_effects']
 _STATE.fields_by_name['observation'].message_type = _STATE_OBSERVATION
-_STATE.fields_by_name['event'].enum_type = _EVENTTYPE
+_STATE.fields_by_name['event'].enum_type = _EVENT
 _STATE.oneofs_by_name['_api_version'].fields.append(
   _STATE.fields_by_name['api_version'])
 _STATE.fields_by_name['api_version'].containing_oneof = _STATE.oneofs_by_name['_api_version']
@@ -1128,16 +1128,16 @@ _STATE.fields_by_name['event'].containing_oneof = _STATE.oneofs_by_name['_event'
 _STATE.oneofs_by_name['_reward'].fields.append(
   _STATE.fields_by_name['reward'])
 _STATE.fields_by_name['reward'].containing_oneof = _STATE.oneofs_by_name['_reward']
-_ACTION.fields_by_name['state'].enum_type = _STATETYPE
+_ACTION.fields_by_name['status'].enum_type = _STATUS
 _ACTION.oneofs_by_name['_api_version'].fields.append(
   _ACTION.fields_by_name['api_version'])
 _ACTION.fields_by_name['api_version'].containing_oneof = _ACTION.oneofs_by_name['_api_version']
 _ACTION.oneofs_by_name['_id'].fields.append(
   _ACTION.fields_by_name['id'])
 _ACTION.fields_by_name['id'].containing_oneof = _ACTION.oneofs_by_name['_id']
-_ACTION.oneofs_by_name['_state'].fields.append(
-  _ACTION.fields_by_name['state'])
-_ACTION.fields_by_name['state'].containing_oneof = _ACTION.oneofs_by_name['_state']
+_ACTION.oneofs_by_name['_status'].fields.append(
+  _ACTION.fields_by_name['status'])
+_ACTION.fields_by_name['status'].containing_oneof = _ACTION.oneofs_by_name['_status']
 _ACTION.oneofs_by_name['_acceleration'].fields.append(
   _ACTION.fields_by_name['acceleration'])
 _ACTION.fields_by_name['acceleration'].containing_oneof = _ACTION.oneofs_by_name['_acceleration']
@@ -1162,8 +1162,8 @@ DESCRIPTOR.message_types_by_name['Action'] = _ACTION
 DESCRIPTOR.message_types_by_name['Step'] = _STEP
 DESCRIPTOR.message_types_by_name['Episode'] = _EPISODE
 DESCRIPTOR.message_types_by_name['Demo'] = _DEMO
-DESCRIPTOR.enum_types_by_name['EventType'] = _EVENTTYPE
-DESCRIPTOR.enum_types_by_name['StateType'] = _STATETYPE
+DESCRIPTOR.enum_types_by_name['Event'] = _EVENT
+DESCRIPTOR.enum_types_by_name['Status'] = _STATUS
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 State = _reflection.GeneratedProtocolMessageType('State', (_message.Message,), {
@@ -1282,8 +1282,8 @@ _PAIA = _descriptor.ServiceDescriptor(
   index=0,
   serialized_options=None,
   create_key=_descriptor._internal_create_key,
-  serialized_start=2326,
-  serialized_end=2359,
+  serialized_start=2318,
+  serialized_end=2351,
   methods=[
   _descriptor.MethodDescriptor(
     name='hook',

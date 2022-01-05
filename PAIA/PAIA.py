@@ -13,10 +13,10 @@ from communication.generated import PAIA_pb2
 from utils import debug_print
 import config
 
+Event = PAIA_pb2.Event
 State = PAIA_pb2.State
-StateType = PAIA_pb2.StateType
+Status = PAIA_pb2.Status
 Action = PAIA_pb2.Action
-EventType = PAIA_pb2.EventType
 Step = PAIA_pb2.Step
 Episode = PAIA_pb2.Episode
 Demo = PAIA_pb2.Demo
@@ -42,7 +42,7 @@ def array_to_image(array: np.ndarray) -> bytes:
     image.save(imgByteArr, format='PNG')
     return imgByteArr.getvalue()
 
-def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], event: EventType, reward: float=0.0) -> State:
+def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], event: Event, reward: float=0.0) -> State:
     state = State(api_version='PAIAKart_1.0')
     for index, obs_spec in enumerate(behavior_spec.observation_specs):
         # the first dimension is for batch (even if batch is not used)
@@ -125,15 +125,15 @@ def init_action_object(id: str=None) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        state=StateType.STATE_START
+        status=Status.STATUS_START
     )
     return action
 
-def create_action_object(id: str=None, acceleration: bool=False, brake: bool=False, steering: float=0.0, state: StateType=StateType.STATE_NONE) -> Action:
+def create_action_object(id: str=None, acceleration: bool=False, brake: bool=False, steering: float=0.0, status: Status=Status.STATUS_NONE) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        state=state,
+        status=status,
         acceleration=acceleration,
         brake=brake,
         steering=steering
@@ -148,11 +148,11 @@ def convert_action_to_data(action: Action) -> ActionTuple:
     continuous_actions = np.array([[steering]], dtype=np.float32)
     return ActionTuple(discrete=discrete_actions, continuous=continuous_actions)
 
-def convert_action_to_object(data: ActionTuple, state: StateType, id: str=None) -> Action:
+def convert_action_to_object(data: ActionTuple, status: Status, id: str=None) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,
-        state=state,
+        status=status,
         acceleration=data.discrete[0][0],
         brake=data.discrete[0][1],
         steering=data.continuous[0][0]

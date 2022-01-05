@@ -14,7 +14,7 @@ def run(id: str=None) -> None:
     while True:
         state = stub.hook(action)
         # TODO: React to other events
-        if state.event != PAIA.EventType.EVENT_NONE:
+        if state.event != PAIA.Event.EVENT_NONE:
             break
         action = brain.decision(state)
         action.id = id
