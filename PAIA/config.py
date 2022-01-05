@@ -11,8 +11,8 @@ class RunningMode(Enum):
 ##################################################################
 
 # Online or Offline
-# RUNNING_MODE: RunningMode = RunningMode.ONLINE
-RUNNING_MODE: RunningMode = RunningMode.OFFLINE
+RUNNING_MODE: RunningMode = RunningMode.ONLINE
+# RUNNING_MODE: RunningMode = RunningMode.OFFLINE
 # RUNNING_MODE: RunningMode = RunningMode.HEURISTIC
 
 # The depth of the log (< 0 if log all)

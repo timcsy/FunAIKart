@@ -1,19 +1,51 @@
 # api_version: PAIAKart_1.0
-from communication.generated import PAIA_pb2
+
+import io
+import os
+from typing import List
 
 import numpy as np
+from PIL import Image
 
-from typing import List
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
+
+from communication.generated import PAIA_pb2
+from utils import debug_print
+import config
 
 State = PAIA_pb2.State
 StateType = PAIA_pb2.StateType
 Action = PAIA_pb2.Action
 EventType = PAIA_pb2.EventType
+Step = PAIA_pb2.Step
+Episode = PAIA_pb2.Episode
+Demo = PAIA_pb2.Demo
+
+def image_to_array(data: bytes) -> np.ndarray:
+    """
+    Convert bytes data field of protocol buffer to numpy array.
+    :param data: bytes (with PNG, ... format).
+    :return: Numpy array (range from 0 to 1).
+    """
+    image = Image.open(io.BytesIO(data))
+    array = np.array(image).astype(np.float32) / 255.0
+    return array
+
+def array_to_image(array: np.ndarray) -> bytes:
+    """
+    Convert numpy array to bytes data (can be used by the field of protocol buffer).
+    :param array: Numpy array (range from 0 to 1).
+    :return: bytes (PNG format).
+    """
+    image = Image.fromarray((255 * array).astype(np.uint8)) # Convert to PIL format
+    imgByteArr = io.BytesIO()
+    image.save(imgByteArr, format='PNG')
+    return imgByteArr.getvalue()
 
 def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], event: EventType, reward: float=0.0) -> State:
     state = State(api_version='PAIAKart_1.0')
     for index, obs_spec in enumerate(behavior_spec.observation_specs):
+        # the first dimension is for batch (even if batch is not used)
         if obs_spec.name == 'RayPerceptionSensorFront':
             state.observation.rays.F.hit = not bool(obs_list[index][0, 0])
             state.observation.rays.F.distance = obs_list[index][0, 1]
@@ -37,12 +69,12 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
             state.observation.rays.BR.hit = not bool(obs_list[index][0, 4])
             state.observation.rays.BR.distance = obs_list[index][0, 5]
         elif obs_spec.name == 'CameraSensorFront':
-            state.observation.images.front.data = np.ndarray.tobytes(obs_list[index][0, :, :, :])
+            state.observation.images.front.data = array_to_image(obs_list[index][0, :, :, :])
             state.observation.images.front.height = obs_spec.shape[0]
             state.observation.images.front.width = obs_spec.shape[1]
             state.observation.images.front.channels = obs_spec.shape[2]
         elif obs_spec.name == 'CameraSensorBack':
-            state.observation.images.back.data = np.ndarray.tobytes(obs_list[index][0, :, :, :])
+            state.observation.images.back.data = array_to_image(obs_list[index][0, :, :, :])
             state.observation.images.back.height = obs_spec.shape[0]
             state.observation.images.back.width = obs_spec.shape[1]
             state.observation.images.back.channels = obs_spec.shape[2]
@@ -65,11 +97,29 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
     state.reward = reward
     return state
 
-def state_info(state: State) -> str:
-    # TODO: Save image and show file path if config.LOG > 1
-    state.observation.images.front.data = b'image buffer'
-    state.observation.images.back.data = b'image buffer'
-    return str(state)
+def state_info(state: State, img_id: str) -> str:
+    s = State()
+    s.CopyFrom(state)
+    if config.LOG > 1:
+        # Save the image to the disk
+        if not os.path.exists(config.IMAGE_DIR):
+            os.makedirs(config.IMAGE_DIR)
+        
+        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_id) + '.png'
+        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_id) + '.png'
+
+        with open(filepath_front, 'wb') as fout:
+            fout.write(s.observation.images.front.data)
+        with open(filepath_back, 'wb') as fout:
+            fout.write(s.observation.images.back.data)
+        
+        s.observation.images.front.data = bytes(filepath_front, encoding='utf8')
+        s.observation.images.back.data = bytes(filepath_back, encoding='utf8')
+    else:
+        # Not to save the image to the disk, just leave it in memory
+        s.observation.images.front.data = b'PNG image data'
+        s.observation.images.back.data = b'PNG image data'
+    return str(s)
 
 def init_action_object(id: str=None) -> Action:
     action = Action(
@@ -110,14 +160,12 @@ def convert_action_to_object(data: ActionTuple, state: StateType, id: str=None) 
     return action
 
 def action_info(action: Action) -> str:
-    return str(action)
+    a = Action()
+    a.CopyFrom(action)
+    return str(a)
 
-def hook(action: Action) -> State:
-    # TODO: np.ndarray.tobytes(obs_list[index][0, :, :, :])
-    # TODO: to PNG
-    pass
-
-def decision(state: State) -> Action:
+def decision(state: State, step: int=0) -> Action:
     # Implement Your Algorithm
-    action = create_action_object(id=state.id, acceleration=False, brake=False, steering=0.0)
+    debug_print(state_info(state, step))
+    action = create_action_object(acceleration=True, brake=False, steering=0.0)
     return action

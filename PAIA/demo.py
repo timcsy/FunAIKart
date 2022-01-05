@@ -1,4 +1,6 @@
 from typing import Dict, List, Optional
+from pathlib import Path
+import zlib
 
 from mlagents.trainers import demo_loader
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, ObservationKeyPrefix, RewardSignalKeyPrefix
@@ -11,9 +13,13 @@ from utils import debug_print
 
 class Demo:
     def __init__(self, path, id: str=None):
-        self.behavior_spec, self.buffer = demo_loader.demo_to_buffer(path, sequence_length=None)
-        self.load(id)
-        self.index = 0
+        if Path(path).suffix == '.demo':
+            self.load_demo(path, id)
+        elif Path(path).suffix == '.paia':
+            self.load_paia(path)
+        else:
+            self.load_paia(path)
+        self.show()
 
     def get_observations_from_buffer(buffer: AgentBuffer, behavior_spec: BehaviorSpec, index: int) -> List[np.ndarray]:
         obs_list: List[np.ndarray] = []
@@ -46,87 +52,110 @@ class Demo:
             rewards = buffer[BufferKey.ENVIRONMENT_REWARDS][index]
         return rewards
     
-    def load(self, id: str=None) -> None:
-        self.episodes = []
+    def load_demo(self, path, id: str=None) -> PAIA.Demo:
+        behavior_spec, buffer = demo_loader.demo_to_buffer(path, sequence_length=None)
+
+        episodes = []
         steps = []
 
-        for index in range(self.buffer.num_experiences):
-            # Show the step information
-            debug_print('Episode: ' + str(len(self.episodes)) + ', Step: ' + str(len(steps)))
-            
+        for index in range(buffer.num_experiences):
             # Event
             event = PAIA.EventType.EVENT_NONE
-            if self.buffer[BufferKey.DONE][index]:
+            if buffer[BufferKey.DONE][index]:
                 event = PAIA.EventType.EVENT_FINISH
             
-            # Show the reward
-            reward = Demo.get_rewards_from_buffer(self.buffer, index)
-            debug_print('Reward: ' + str(reward))
-            
-            # Show observations
-            obs_list = Demo.get_observations_from_buffer(self.buffer, self.behavior_spec, index)
-            state = PAIA.convert_state_to_object(self.behavior_spec, obs_list, event, reward)
-            debug_print('State:\n' + PAIA.state_info(state))
+            # Reward
+            reward = Demo.get_rewards_from_buffer(buffer, index)
+
+            # Observations
+            obs_list = Demo.get_observations_from_buffer(buffer, behavior_spec, index)
+            state = PAIA.convert_state_to_object(behavior_spec, obs_list, event, reward)
 
             # Action state
             action_state = PAIA.StateType.STATE_NONE
-            if self.buffer[BufferKey.DONE][index]:
+            if buffer[BufferKey.DONE][index]:
                 action_state = PAIA.EventType.STATE_FINISH
             
-            # Show actions
-            actions = Demo.get_actions_from_buffer(self.buffer, index)
+            # Actions
+            actions = Demo.get_actions_from_buffer(buffer, index)
             action = PAIA.convert_action_to_object(actions, action_state, id)
-            debug_print('Action:\n' + PAIA.action_info(action))
 
-            steps.append({
-                'state': state,
-                'action': action
-            })
+            # Step
+            steps.append(PAIA.Step(state=state, action=action))
 
             # To check whether episode is done, and show the summary
-            if self.buffer[BufferKey.DONE][index]:
-                debug_print()
-                debug_print('Done, Episode: ' + str(len(self.episodes)) + ', Total Steps: ' + str(len(steps)))
-                self.episodes.append(steps)
+            if buffer[BufferKey.DONE][index]:
+                episode = PAIA.Episode(steps=steps)
+                episodes.append(episode)
                 steps = []
             
             # To check whether demo is finished, and show the summary
-            if index == self.buffer.num_experiences - 1:
-                self.episodes.append(steps)
-                debug_print()
-                debug_print('Finish, Episodes: ' + str(len(self.episodes)) + ', Total Steps: ' + str(len(steps)))
-            
-            debug_print()
+            if index == buffer.num_experiences - 1:
+                episode = PAIA.Episode(steps=steps)
+                episodes.append(episode)
+        
+        self.demo = PAIA.Demo(episodes=episodes)
+        return self.demo
     
-    def get_step(self, episode: int, step: int) -> Optional[Dict]:
-        if episode < len(self.episodes):
-            if step < len(self.episodes[episode]):
-                return self.episodes[episode][step]
+    def load_paia(self, path: str):
+        with open(path, "rb") as fin:
+            decompressed = zlib.decompress(fin.read())
+            self.demo = PAIA.Demo()
+            self.demo.ParseFromString(decompressed)
+    
+    def export(self, path: str='demo.paia'):
+        with open(path, "wb") as fout:
+            compressed = zlib.compress(self.demo.SerializeToString())
+            fout.write(compressed)
+    
+    def show(self):
+        for i in range(len(self.demo.episodes)):
+            for j in range(len(self.demo.episodes[i].steps)):
+                debug_print('Episode: ' + str(i) + ', Step: ' + str(j))
+                debug_print('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j)))
+                debug_print('Action:\n' + PAIA.action_info(self.demo.episodes[i].steps[j].action))
+            debug_print('Done, Episode: ' + str(i) + ', Total Steps: ' + str(len(self.demo.episodes[i].steps)) + '\n')
+    
+    def get_demo(self) -> PAIA.Demo:
+        return self.demo
+    
+    def get_episode(self, episode: int) -> Optional[PAIA.Episode]:
+        if episode < len(self.demo.episodes):
+            return self.demo.episodes[episode]
         return None
     
-    def get_steps(self, episode: int) -> Optional[List[Dict]]:
-        if episode < len(self.episodes):
-            return self.episodes[episode]
+    def get_episodes(self) -> List[PAIA.Episode]:
+        return list(self.demo.episodes)
+    
+    def get_step(self, episode: int, step: int) -> Optional[PAIA.Step]:
+        if episode < len(self.demo.episodes):
+            if step < len(self.demo.episodes[episode].steps):
+                return self.demo.episodes[episode].steps[step]
+        return None
+    
+    def get_steps(self, episode: int) -> Optional[List[PAIA.Step]]:
+        if episode < len(self.demo.episodes):
+            return list(self.demo.episodes[episode].steps)
         return None
     
     def get_state(self, episode: int, step: int) -> Optional[PAIA.State]:
-        if episode < len(self.episodes):
-            if step < len(self.episodes[episode]):
-                return self.episodes[episode][step]['state']
+        if episode < len(self.demo.episodes):
+            if step < len(self.demo.episodes[episode].steps):
+                return self.demo.episodes[episode].steps[step].state
         return None
     
     def get_states(self, episode: int) -> Optional[List[PAIA.State]]:
-        if episode < len(self.episodes):
-            return [step['state'] for step in self.episodes[episode]]
+        if episode < len(self.demo.episodes):
+            return [step.state for step in self.demo.episodes[episode].steps]
         return None
     
     def get_action(self, episode: int, step: int) -> Optional[PAIA.Action]:
-        if episode < len(self.episodes):
-            if step < len(self.episodes[episode]):
-                return self.episodes[episode][step]['action']
+        if episode < len(self.demo.episodes):
+            if step < len(self.demo.episodes[episode].steps):
+                return self.demo.episodes[episode].steps[step].action
         return None
     
     def get_actions(self, episode: int) -> Optional[List[PAIA.Action]]:
-        if episode < len(self.episodes):
-            return [step['action'] for step in self.episodes[episode]]
+        if episode < len(self.demo.episodes):
+            return [step.action for step in self.demo.episodes[episode].steps]
         return None

@@ -17260,6 +17260,11 @@ PrefabInstance:
       propertyPath: CheckPoints.Array.data[7]
       value: 
       objectReference: {fileID: 294538554}
+    - target: {fileID: 6984847887900053845, guid: b3bd1a5789c874f74b191805ce3d9c51,
+        type: 3}
+      propertyPath: NumStepsToRecord
+      value: 10000
+      objectReference: {fileID: 0}
     - target: {fileID: 6984847887900053848, guid: b3bd1a5789c874f74b191805ce3d9c51,
         type: 3}
       propertyPath: gasBar

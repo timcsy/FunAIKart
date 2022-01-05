@@ -28,11 +28,10 @@ message State {
 			optional Ray BL = 10;
 		}
 		message Image {
-			bytes img = 1;
-			optional bytes data = 2;
-			optional int32 height = 3;
-			optional int32 width = 4;
-			optional int32 channels = 5;
+			optional bytes data = 1;
+			optional int32 height = 2;
+			optional int32 width = 3;
+			optional int32 channels = 4;
 		}
 		message ImageList {
 			optional Image front = 1;
@@ -81,6 +80,19 @@ message Action {
 	optional bool acceleration = 4;
 	optional bool brake = 5;
 	optional float steering = 6;
+}
+
+message Step {
+	optional State state = 1;
+	optional Action action = 2;
+}
+
+message Episode {
+	repeated Step steps = 1;
+}
+
+message Demo {
+	repeated Episode episodes = 1;
 }
 
 service PAIA {
