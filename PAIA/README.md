@@ -104,7 +104,7 @@ actions = demo.get_actions(episode)
 ## 資料格式 Spec
 參考 `communication/protos/PAIA.proto` 檔案
 
-### 狀態資訊 `PAIA.State`
+### 狀態資訊
 事件（`PAIA.Event`）定義：
 ```
 enum Event { 事件
@@ -175,7 +175,7 @@ struct State { 狀態資訊
 }
 ```
 
-### 動作資訊 `PAIA.Action`
+### 動作資訊
 Action 狀態（`PAIA.Status`）定義：
 ```
 enum Status { 想要做的指令
@@ -198,7 +198,7 @@ struct Action { 動作資訊
 }
 ```
 
-### 錄製資訊 `PAIA.Demo`
+### 錄製資訊
 步的資訊（`PAIA.Step`）定義：
 ```
 struct Step { 一步的資訊
@@ -207,14 +207,14 @@ struct Step { 一步的資訊
 }
 ```
 
-回合資訊（`PAIA.Step`）定義：
+回合資訊（`PAIA.Episode`）定義：
 ```
 struct Episode { 回合資訊
 	Step[] steps; 所有步的資訊（是一個陣列/List）
 }
 ```
 
-錄製資訊（`PAIA.Step`）定義：
+錄製資訊（`PAIA.Demo`）定義：
 ```
 struct Demo { 錄製資訊
 	Episode[] episodes; 所有回合的資訊（是一個陣列/List）
