@@ -107,116 +107,116 @@ actions = demo.get_actions(episode)
 ### 狀態資訊 `PAIA.State`
 事件（`PAIA.Event`）定義：
 ```
-enum Event {
-	EVENT_NONE = 0;
-	EVENT_FINISH = 1;
-	EVENT_TIMEOUT = 2;
-	EVENT_UNDRIVABLE = 3;
+enum Event { 事件
+	EVENT_NONE; 一般狀態
+	EVENT_FINISH; 結束
+	EVENT_TIMEOUT; 超時
+	EVENT_UNDRIVABLE; 不能動了（用完油料或輪胎）
 }
 ```
 
-狀態資訊（`PAIA.Event`）定義：
+狀態資訊（`PAIA.State`）定義：
 ```
-message State {
-  message Observation {
-		message Ray {
-			optional bool hit = 1;
-			optional float distance = 2;
+struct State { 狀態資訊
+  struct Observation { 觀測資訊
+		struct Ray { 單一雷達資訊
+			bool hit; 是否在觀測範圍內
+			float distance; 距離（最大觀測範圍定為 1）
 		}
-		message RayList {
-			optional Ray F = 1;
-			optional Ray B = 2;
-			optional Ray R = 3;
-			optional Ray L = 4;
-			optional Ray FR = 5;
-			optional Ray RF = 6;
-			optional Ray FL = 7;
-			optional Ray LF = 8;
-			optional Ray BR = 9;
-			optional Ray BL = 10;
+		struct RayList { 所有雷達資訊
+			Ray F; 前方
+			Ray B; 後方
+			Ray R; 右方
+			Ray L; 左方
+			Ray FR; 前方偏向右方 30 度
+			Ray RF; 前方偏向右方 60 度
+			Ray FL; 前方偏向左方 30 度
+			Ray LF; 前方偏向左方 60 度
+			Ray BR; 後方偏向右方 45 度
+			Ray BL; 後方偏向左方 45 度
 		}
-		message Image {
-			optional bytes data = 1;
-			optional int32 height = 2;
-			optional int32 width = 3;
-			optional int32 channels = 4;
+		struct Image { 影像資料
+			bytes data; 位元資訊
+			int32 height; 高
+			int32 width; 寬
+			int32 channels; 頻道數（RGB = 3）
 		}
-		message ImageList {
-			optional Image front = 1;
-			optional Image back = 2;
+		struct ImageList { 影像資料們
+			Image front; 前方的影像
+			Image back; 後方的影像
 		}
-		message Refill {
-			optional float value = 1;
+		struct Refill { 補充類道具
+			float value; 剩餘量
 		}
-		message RefillList {
-			optional Refill wheel = 1;
-			optional Refill gas = 2;
+		struct RefillList { 補充類道具們（其中之一用完就動不了）
+			Refill wheel; 輪胎
+			Refill gas; 油料
 		}
-		message Effect {
-			optional int32 number = 1;
+		struct Effect { 效果類道具
+			int32 number; 數量
 		}
-		message EffectList {
-			optional Effect nitro = 1;
-			optional Effect turtle = 2;
-			optional Effect banana = 3;
+		struct EffectList { 效果類道具們
+			Effect nitro; 氮氣（加速）
+			Effect turtle; 烏龜（減速）
+			Effect banana; 香蕉（打滑）
 		}
-		optional RayList rays = 1;
-		optional ImageList images = 2;
-		optional float progress = 3;
-		optional float velocity = 4;
-		optional RefillList refills = 5;
-		optional EffectList effects = 6;
+		RayList rays; 雷達資料們
+		ImageList images; 影像資料們
+		float progress; 進度（全部設為 1）
+		float velocity; 速度
+		RefillList refills; 補充類道具們
+		EffectList effects; 效果類道具
 	}
-	optional string api_version = 1;
-	optional string id = 2;
-	optional Observation observation = 3;
-	optional Event event = 4;
-	optional float reward = 5;
+	string api_version; API 版本
+	string id; 使用者名稱
+	Observation observation; 觀察資料
+	Event event; 事件
+	float reward; 獎勵（Unity 端提供的）
 }
 ```
 
 ### 動作資訊 `PAIA.Action`
 Action 狀態（`PAIA.Status`）定義：
 ```
-enum Status {
-	STATUS_NONE = 0;
-	STATUS_START = 1;
-	STATUS_FINISH = 2;
-	STATUS_RESTART = 3;
+enum Status { 想要做的指令
+	STATUS_NONE; 一般狀態
+	STATUS_START; 開始
+	STATUS_FINISH; 結束
+	STATUS_RESTART; 重新開始
 }
 ```
 
 動作資訊（`PAIA.Action`）定義：
 ```
-message Action {
-	optional string api_version = 1;
-	optional string id = 2;
-	optional Status status = 3;
-	optional bool acceleration = 4;
-	optional bool brake = 5;
-	optional float steering = 6;
+struct Action { 動作資訊
+	string api_version; API 版本
+	string id; 使用者名稱
+	Status status; 想要做的指令
+	bool acceleration; 是否加速
+	bool brake; 是否減速
+	float steering; 轉彎（-1.0 ~ 1.0，0 是不轉，偏向 -1 式左轉，偏向 1 是右轉）
 }
 ```
 
 ### 錄製資訊 `PAIA.Demo`
 步的資訊（`PAIA.Step`）定義：
 ```
-message Step {
-	optional State state = 1;
-	optional Action action = 2;
+struct Step { 一步的資訊
+	State state; 狀態資訊
+	Action action; 動作資訊
 }
 ```
 
 回合資訊（`PAIA.Step`）定義：
 ```
-message Episode {
-	repeated Step steps = 1;
+struct Episode { 回合資訊
+	Step[] steps; 所有步的資訊（是一個陣列/List）
 }
 ```
 
 錄製資訊（`PAIA.Step`）定義：
 ```
-message Demo {
-	repeated Episode episodes = 1;
+struct Demo { 錄製資訊
+	Episode[] episodes; 所有回合的資訊（是一個陣列/List）
 }
 ```
