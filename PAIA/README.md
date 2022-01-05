@@ -59,6 +59,14 @@ img_back = PAIA.image_to_array(state.observation.images.back.data)
 注意轉換後的影像為三維度的 Numpy array，值的範圍在 0 到 1 之間。
 
 ### Demo 檔案處理
+在手動玩 Unity 時，可以使用 Demonstration Recorder 收集資料。
+
+在 Unity 當中可以設定 Agent 的 Demonstration Recorder
+是否運作以及放置 `.demo` 檔的路徑（預設值為：根目錄/PAIA/Demo）。
+
+使用 `demo.Demo` 中的初始化可以讀入 `.demo` 或是 `.paia` 檔。
+使用 `demo.Demo` 中的 `export()` function 可以將 `.demo` 匯出成 `.paia` 檔，方便日後更快速讀入資料。
+
 注意：`PAIA.Demo` 和 `demo.Demo` 不一樣，前者是 Protocol Buffers 的定義，後者是用來讀取錄製資料的類別。
 
 使用 `Demo` 類別讀取/匯出錄製的資料：
@@ -121,7 +129,7 @@ struct State { 狀態資訊
 	struct Observation { 觀測資訊
 		struct Ray { 單一雷達資訊
 			bool hit; 是否在觀測範圍內
-			float distance; 距離（最大觀測範圍定為 1）
+			float distance; 距離（把最大觀測範圍當作 1）
 		}
 		struct RayList { 所有雷達資訊
 			Ray F; 前方
@@ -153,7 +161,7 @@ struct State { 狀態資訊
 			Refill gas; 油料
 		}
 		struct Effect { 效果類道具
-			int32 number; 數量
+			int32 number; 作用中的道具數量
 		}
 		struct EffectList { 效果類道具們
 			Effect nitro; 氮氣（加速）
@@ -162,16 +170,16 @@ struct State { 狀態資訊
 		}
 		RayList rays; 雷達資料們
 		ImageList images; 影像資料們
-		float progress; 進度（全部設為 1）
+		float progress; 進度（把全部完成當作 1）
 		float velocity; 速度
 		RefillList refills; 補充類道具們
-		EffectList effects; 效果類道具
+		EffectList effects; 效果類道具們
 	}
 	string api_version; API 版本
 	string id; 使用者名稱
 	Observation observation; 觀察資料
 	Event event; 事件
-	float reward; 獎勵（Unity 端提供的）
+	float reward; 獎勵（由 Unity 端提供的）
 }
 ```
 
