@@ -4,16 +4,16 @@ from datetime import datetime
 # Type definitions ###############################################
 
 class RunningMode(Enum):
-  ONLINE = 0
-  OFFLINE = 1
-  HEURISTIC = 2
+  CLIENT = 0
+  SERVER = 1
+  OFFLINE = 2
 
 ##################################################################
 
 # Online or Offline
-RUNNING_MODE: RunningMode = RunningMode.ONLINE
+# RUNNING_MODE: RunningMode = RunningMode.CLIENT
+# RUNNING_MODE: RunningMode = RunningMode.SERVER
 # RUNNING_MODE: RunningMode = RunningMode.OFFLINE
-# RUNNING_MODE: RunningMode = RunningMode.HEURISTIC
 
 # The depth of the log (< 0 if log all)
 LOG: int = 2

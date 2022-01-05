@@ -163,9 +163,3 @@ def action_info(action: Action) -> str:
     a = Action()
     a.CopyFrom(action)
     return str(a)
-
-def decision(state: State, step: int=0) -> Action:
-    # Implement Your Algorithm
-    debug_print(state_info(state, step))
-    action = create_action_object(acceleration=True, brake=False, steering=0.0)
-    return action

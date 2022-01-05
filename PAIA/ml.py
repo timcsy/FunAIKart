@@ -1,30 +1,32 @@
+import sys
+
 import config
 from config import RunningMode
-from demo import Demo
-import utils
+import client
+import server
 from utils import debug_print
 
-if config.RUNNING_MODE == RunningMode.ONLINE:
-    # Online
-    env, behavior_name = utils.open_env()
-    debug_print('--------------------------------')
-    debug_print('Online:\n')
-    utils.online(env, behavior_name)
-    debug_print('--------------------------------')
+def main(id: str=None):
+    if config.RUNNING_MODE == RunningMode.CLIENT:
+        # Online client
+        client.run(id)
+    elif config.RUNNING_MODE == RunningMode.SERVER:
+        # Online server
+        server.serve_online()
+    elif config.RUNNING_MODE == RunningMode.OFFLINE:
+        # Offline server and client
+        server.serve_offline()
+        client.run(id)
 
-
-if config.RUNNING_MODE == RunningMode.OFFLINE:
-    # Load from demo
-    debug_print('Offline:\n')
-    # utils.load_from_demo(config.DEMO_FILE)
-    demo = Demo(config.DEMO_PATH)
-    debug_print('--------------------------------')
-
-
-if config.RUNNING_MODE == RunningMode.HEURISTIC:
-    # Online
-    env, behavior_name = utils.open_env()
-    debug_print('--------------------------------')
-    debug_print('Heuristic:\n')
-    utils.heuristic(env, behavior_name, config.DEMO_FILE)
-    debug_print('--------------------------------')
+if __name__ == '__main__':
+    id = ''
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'client':
+            config.RUNNING_MODE = RunningMode.CLIENT
+            if len(sys.argv) > 2 and sys.argv[2] == '-n' and len(sys.argv) > 3:
+                id = sys.argv[3]
+        elif sys.argv[1] == 'server':
+            config.RUNNING_MODE = RunningMode.SERVER
+        elif sys.argv[1] == 'offline':
+            config.RUNNING_MODE = RunningMode.OFFLINE
+    main(id)

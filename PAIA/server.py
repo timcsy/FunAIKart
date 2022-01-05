@@ -132,12 +132,20 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             pass
         return self.states[self.behavior_names[action.id]]
 
-def serve() -> None:
+def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(), server)
     server.add_insecure_port('[::]:50051')
+    return server
+
+def serve_online():
+    server = serve()
     server.start()
     server.wait_for_termination()
 
+def serve_offline():
+    server = serve()
+    server.start()
+
 if __name__ == '__main__':
-    serve()
+    serve_online()
