@@ -13,7 +13,7 @@ class RunningMode(Enum):
 # Online or Offline
 # RUNNING_MODE: RunningMode = RunningMode.CLIENT
 # RUNNING_MODE: RunningMode = RunningMode.SERVER
-# RUNNING_MODE: RunningMode = RunningMode.OFFLINE
+RUNNING_MODE: RunningMode = RunningMode.OFFLINE
 
 # The depth of the log (< 0 if log all)
 LOG: int = 2

@@ -52,8 +52,12 @@ public class VideoRecorder : MonoBehaviour
     private void Awake()
     {
         // Assign the static instance
-        instance = this;
-        DontDestroyOnLoad(this);
+        if (!instance) { 
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else Destroy(gameObject); // Maintain singleton property 
+        // (for some reasons, without this, there may be two Main Cameras with DontDestroyOnLoad after reloading)
     }
 
     public void Begin()

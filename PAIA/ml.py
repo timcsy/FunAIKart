@@ -18,7 +18,7 @@ def main(id: str=None):
         # Offline server and clients
         threads = []
         threads.append(threading.Thread(target=server.serve))
-        threads.append(threading.Thread(target=client.run, args = (id,)))
+        threads.append(threading.Thread(target=client.run, args = (id)))
         for thread in threads:
             thread.start()
         for thread in threads:

@@ -3,7 +3,7 @@
 ## 使用方法
 
 ### 主要的部分
-將你所寫的 `MLPlay` 類別放在 `ml_play.py` 中，如下：
+將你所寫的 `MLPlay` 類別放在 `ml_play.py` （可以改檔名）中，如下：
 ```python
 import PAIA
 from utils import debug_print
@@ -31,19 +31,52 @@ class MLPlay:
 修改 `decision` function，由 State 產生 Action。
 
 ### 執行方式
+
+#### 線上（Online）模式
 伺服器端（與 Unity 在同一台機器上）：
 ```
-python ml.py server
+python ml.py server -p 50051
 ```
 
 用戶端（用來作 training 或 inferencing 的）：
 ```
-python ml.py client -n 使用者id
+python ml.py client 使用者id ml_play_檔名.py 使用者id2 ml_play_檔名2.py ...
 ```
 
 開啟順序：
-伺服器端 -> 執行 Unity 遊戲本身 -> 用戶端（可以開始連進來）
+開啟伺服器端 -> 執行 Unity 遊戲、用戶端（可以開始連進來）
 
+#### 離線（Offline）模式
+```
+python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名2.py ...
+```
+
+開啟順序：
+執行離線版 -> 執行 Unity 遊戲
+
+# 參數說明
+- -h, --help
+- -v, --verbose
+- -V, --version
+- offline
+		- -r, --record
+				- demo path
+		- -e, --env
+		- -p, --port
+		- players
+				- id code ...
+- server
+		- -r, --record
+				- demo path
+		- -e, --env
+		- -p, --port
+		- -n, --player-number
+- client
+		- -a, --server-address
+		- -r, --record
+				- demo path
+		- players
+				- id code ...
 
 ### 影像資料轉換
 `PAIA.State` 所提供的影像格式為 bytes 形式的 PNG，存放於影像類別觀察資料的 `data` 欄位中。

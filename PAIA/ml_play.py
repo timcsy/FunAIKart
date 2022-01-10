@@ -19,4 +19,6 @@ class MLPlay:
         debug_print('Step:', self.step)
         debug_print(PAIA.state_info(state, self.step))
         action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+        if state.event == PAIA.Event.EVENT_FINISH:
+            action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
         return action

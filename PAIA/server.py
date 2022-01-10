@@ -40,7 +40,6 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.get_states()
     
     def open_env(self) -> UnityEnvironment:
-        debug_print('NOTICE: Do not terminate until you start your Unity game!', depth=1)
         debug_print('Waiting for Unity side ...', depth=1)
         self.env = UnityEnvironment(file_name=None)
         self.env.reset()
@@ -101,19 +100,27 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     def check_status(self):
         if len(self.actions) == len(self.behavior_names):
             restart = False
-            for action in self.actions.values():
+            for action in list(self.actions.values()):
                 if action.command == PAIA.Command.COMMAND_FINISH:
                     self.remove(action.id)
                 elif action.command == PAIA.Command.COMMAND_RESTART:
                     restart = True
             
             if restart:
-                self.env.reset()
+                self.restart()
             elif len(self.actions) == 0:
                 self.env.close()
             else:
                 self.resume()
     
+    def restart(self):
+        self.env.reset()
+        self.env.close()
+        for id in self.ids.values():
+            self.id_queue.put(id)
+        self.ids = []
+        self.open_env()
+
     def resume(self):
         self.states_ready = False
         self.set_actions()
@@ -137,7 +144,10 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.check_status()
         while not self.states_ready:
             pass
-        return self.states[self.behavior_names[action.id]]
+        if action.id in self.behavior_names:
+            return self.states[self.behavior_names[action.id]]
+        else:
+            return PAIA.State(event=PAIA.Event.EVENT_FINISH)
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
