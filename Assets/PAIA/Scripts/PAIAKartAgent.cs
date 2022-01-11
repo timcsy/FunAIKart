@@ -71,6 +71,7 @@ public class PAIAKartAgent : Agent, IInput
         m_Demo.DemonstrationName = "ggg";
         m_Demo.DemonstrationDirectory = "PAIA/Demo";
         m_UI = GetComponent<SingleUI>();
+        RequestDecision();
     }
 
     public override void OnEpisodeBegin()
@@ -79,6 +80,8 @@ public class PAIAKartAgent : Agent, IInput
         m_Kart.SendMessage("Awake"); // For some reason "OnEpisodeBegin" gets called before m_Kart.Awake, so this is necessary
         // Consider making Awake public or exposing an Initialize method for it.
         progress = 0;
+        m_Kart.Rigidbody.transform.localPosition = new Vector3(38.97263f, 0.2500038f, 2.858192f);
+        m_Kart.Rigidbody.transform.rotation = Quaternion.identity;
         m_Kart.Rigidbody.velocity = default;
         wheel = 1;
         gas = 1;
@@ -131,8 +134,7 @@ public class PAIAKartAgent : Agent, IInput
         {
             // Ensure that the scene does not get loaded multiple times in the same frame.
             isReloading = true;
-            EndEpisode();
-            Academy.Instance.Dispose();
+            // Academy.Instance.Dispose();
             SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
         }
     }

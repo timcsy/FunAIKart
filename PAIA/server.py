@@ -1,5 +1,6 @@
 from concurrent import futures
 import queue
+import sys
 import threading
 
 import grpc
@@ -13,13 +14,14 @@ from utils import debug_print
 class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     """Provides methods that implement functionality of PAIA server."""
 
-    def __init__(self):
+    def __init__(self, env_filepath=None):
         self.behavior_names = {} # Indexed by id, We let a behavior correspond to an unique agent (agent_id = 0)
         self.ids = {} # Indexed by behavior_name
         self.states = {} # Indexed by behavior_name
         self.actions = {} # Indexed by behavior_name
         self.behavior_name_queue = queue.Queue()
         self.id_queue = queue.Queue()
+        self.env_filepath = env_filepath
         self.env = False
         self.env_ready = False
         self.states_ready = False
@@ -41,7 +43,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     
     def open_env(self) -> UnityEnvironment:
         debug_print('Waiting for Unity side ...', depth=1)
-        self.env = UnityEnvironment(file_name=None)
+        self.env = UnityEnvironment(file_name=self.env_filepath)
         self.env.reset()
         debug_print('--------------------------------')
 
@@ -114,11 +116,10 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 self.resume()
     
     def restart(self):
-        self.env.reset()
         self.env.close()
         for id in self.ids.values():
             self.id_queue.put(id)
-        self.ids = []
+        self.ids = {}
         self.open_env()
 
     def resume(self):
@@ -149,12 +150,15 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         else:
             return PAIA.State(event=PAIA.Event.EVENT_FINISH)
 
-def serve():
+def serve(env_filepath=None):
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(), server)
+    PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(env_filepath), server)
     server.add_insecure_port('[::]:50051')
     server.start()
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    serve()
+    env_filepath = None
+    if len(sys.argv) > 1:
+        env_filepath = sys.argv[1]
+    serve(env_filepath)
