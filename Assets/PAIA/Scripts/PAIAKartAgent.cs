@@ -65,13 +65,17 @@ public class PAIAKartAgent : Agent, IInput
     {
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
-        m_Demo = gameObject.AddComponent(typeof(DemonstrationRecorder)) as DemonstrationRecorder;
-        m_Demo.Record = true;
-        m_Demo.NumStepsToRecord = 10000;
-        m_Demo.DemonstrationName = "ggg";
-        m_Demo.DemonstrationDirectory = "PAIA/Demo";
+        InitDemo(true, "PAIA/Demo", "tet", 10000);
         m_UI = GetComponent<SingleUI>();
-        RequestDecision();
+    }
+
+    void InitDemo(bool Record=true, string DemonstrationDirectory = "PAIA/Demo", string DemonstrationName="demo", int NumStepsToRecord=10000)
+    {
+        m_Demo = gameObject.AddComponent(typeof(DemonstrationRecorder)) as DemonstrationRecorder;
+        m_Demo.NumStepsToRecord = NumStepsToRecord;
+        m_Demo.DemonstrationName = DemonstrationName;
+        m_Demo.DemonstrationDirectory = DemonstrationDirectory;
+        m_Demo.Record = Record;
     }
 
     public override void OnEpisodeBegin()
@@ -80,8 +84,6 @@ public class PAIAKartAgent : Agent, IInput
         m_Kart.SendMessage("Awake"); // For some reason "OnEpisodeBegin" gets called before m_Kart.Awake, so this is necessary
         // Consider making Awake public or exposing an Initialize method for it.
         progress = 0;
-        m_Kart.Rigidbody.transform.localPosition = new Vector3(38.97263f, 0.2500038f, 2.858192f);
-        m_Kart.Rigidbody.transform.rotation = Quaternion.identity;
         m_Kart.Rigidbody.velocity = default;
         wheel = 1;
         gas = 1;
@@ -128,19 +130,9 @@ public class PAIAKartAgent : Agent, IInput
         };
     }
 
-    public void Reload()
-    {
-        if(!isReloading)
-        {
-            // Ensure that the scene does not get loaded multiple times in the same frame.
-            isReloading = true;
-            // Academy.Instance.Dispose();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
-        }
-    }
-
     private void OnCollisionEnter(Collision other) {
         if (!other.gameObject.GetComponent<PickUpClass>()) { 
+            EndEpisode();
             Reload();
         }
     }
@@ -184,6 +176,18 @@ public class PAIAKartAgent : Agent, IInput
         }
         return timeout;
     }
+
+    public void Reload()
+    {
+        if(!isReloading)
+        {
+            // Ensure that the scene does not get loaded multiple times in the same frame.
+            isReloading = true;
+            // Academy.Instance.Dispose();
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
+        }
+    }
+
 }
 
 

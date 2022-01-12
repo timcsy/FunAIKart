@@ -92,21 +92,21 @@ class Demo:
             # To check whether demo is finished
             if index == buffer.num_experiences - 1:
                 episode = PAIA.Episode(steps=steps)
-                episodes.append(episode)
+                if len(steps) > 0:
+                    episodes.append(episode)
         
         self.demo = PAIA.Demo(episodes=episodes)
         return self.demo
+    
+    def load(self):
+        # TODO: Add multi path support
+        pass
     
     def load_paia(self, path: str):
         with open(path, "rb") as fin:
             decompressed = zlib.decompress(fin.read())
             self.demo = PAIA.Demo()
             self.demo.ParseFromString(decompressed)
-    
-    def export(self, path: str='demo.paia'):
-        with open(path, "wb") as fout:
-            compressed = zlib.compress(self.demo.SerializeToString())
-            fout.write(compressed)
     
     def show(self):
         for i in range(len(self.demo.episodes)):

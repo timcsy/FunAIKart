@@ -30,7 +30,21 @@ class MLPlay:
 ```
 修改 `decision` function，由 State 產生 Action。
 
-### 執行方式
+### 執行方式（修改中）
+
+### 目前測試版本
+伺服器端（與 Unity 在同一台機器上）：
+```
+python server.py 執行檔位置(如果沒有加這項就是使用 Unity Editor)
+```
+用戶端（用來作 training 或 inferencing 的）：
+```
+python client.py 使用者id ml_play_檔名.py
+```
+離線（Offline）模式，目前只支援 Unity Editor：
+```
+python ml.py offline 使用者id ml_play_檔名.py
+```
 
 #### 線上（Online）模式
 伺服器端（與 Unity 在同一台機器上）：
@@ -58,25 +72,27 @@ python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名
 - -h, --help
 - -v, --verbose
 - -V, --version
+- -m, --manual
+  - restart times
 - offline
-		- -r, --record
-				- demo path
-		- -e, --env
-		- -p, --port
-		- players
-				- id code ...
+  - -r, --record
+  	- demo path
+  - -e, --env
+  - -p, --port
+  - players
+  	- id code ...
 - server
-		- -r, --record
-				- demo path
-		- -e, --env
-		- -p, --port
-		- -n, --player-number
+  - -r, --record
+  	- demo path
+  - -e, --env
+  - -p, --port
+  - -n, --player-number
 - client
-		- -a, --server-address
-		- -r, --record
-				- demo path
-		- players
-				- id code ...
+  - -a, --server-address
+  - -r, --record
+  	- demo path
+  - players
+  	- id code ...
 
 ### 影像資料轉換
 `PAIA.State` 所提供的影像格式為 bytes 形式的 PNG，存放於影像類別觀察資料的 `data` 欄位中。
