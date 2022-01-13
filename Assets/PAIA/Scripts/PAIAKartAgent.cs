@@ -65,7 +65,7 @@ public class PAIAKartAgent : Agent, IInput
     {
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
-        InitDemo(true, "PAIA/Demo", "tet", 10000);
+        InitDemo(false, "PAIA/Demo", "tet", 10000);
         m_UI = GetComponent<SingleUI>();
     }
 

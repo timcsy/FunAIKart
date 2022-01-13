@@ -22,5 +22,8 @@ class MLPlay:
         if state.event == PAIA.Event.EVENT_FINISH:
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
             # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
+        elif state.event == PAIA.Event.EVENT_RESTART:
+            # You can do something when the game restarts
+            pass
         debug_print(PAIA.action_info(action))
         return action
