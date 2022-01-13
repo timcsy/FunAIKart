@@ -98,15 +98,15 @@ class Demo:
         self.demo = PAIA.Demo(episodes=episodes)
         return self.demo
     
-    def load(self):
-        # TODO: Add multi path support
-        pass
-    
     def load_paia(self, path: str):
         with open(path, "rb") as fin:
             decompressed = zlib.decompress(fin.read())
             self.demo = PAIA.Demo()
             self.demo.ParseFromString(decompressed)
+    
+    def load(self):
+        # TODO: Add multi path support
+        pass
     
     def show(self):
         for i in range(len(self.demo.episodes)):

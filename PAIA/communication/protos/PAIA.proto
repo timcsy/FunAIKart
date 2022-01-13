@@ -4,9 +4,10 @@ syntax = "proto3";
 
 enum Event {
 	EVENT_NONE = 0;
-	EVENT_FINISH = 1;
-	EVENT_TIMEOUT = 2;
-	EVENT_UNDRIVABLE = 3;
+	EVENT_RESTART = 1;
+	EVENT_FINISH = 2;
+	EVENT_TIMEOUT = 3;
+	EVENT_UNDRIVABLE = 4;
 }
 
 message State {

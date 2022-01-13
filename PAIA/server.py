@@ -25,6 +25,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.env = False
         self.env_ready = False
         self.states_ready = False
+        self.restarting = False
         t = threading.Thread(target=self.open_env)
         t.start()
     
@@ -76,7 +77,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
                     obs_list=decision_steps.obs,
-                    event=PAIA.Event.EVENT_NONE,
+                    event=PAIA.Event.EVENT_RESTART if self.restarting else PAIA.Event.EVENT_NONE,
                     reward=decision_steps.reward
                 )
             
@@ -91,6 +92,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
 
             self.states[behavior_name] = state
             self.states_ready = True
+        self.restarting = False
     
     def set_actions(self):
         for behavior_name in self.behavior_names.values():
@@ -116,6 +118,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 self.resume()
     
     def restart(self):
+        self.restarting = True
         self.env.close()
         for id in self.ids.values():
             self.id_queue.put(id)

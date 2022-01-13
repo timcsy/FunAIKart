@@ -35,8 +35,7 @@ def run(id: str='', filepath: str='ml_play') -> None:
             if action.command == PAIA.Command.COMMAND_FINISH:
                 stub.hook(action)
                 break
-            elif action.command == PAIA.Command.COMMAND_RESTART:
-                # action = PAIA.init_action_object(id)
+            elif action.command == PAIA.Command.COMMAND_RESTART or state.event == PAIA.Event.EVENT_RESTART:
                 pass
             else:
                 action.command = PAIA.Command.COMMAND_FINISH

@@ -166,6 +166,7 @@ actions = demo.get_actions(episode)
 ```C++
 enum Event { // 事件
 	EVENT_NONE; // 一般狀態
+	EVENT_RESTART; // 重新開始回合
 	EVENT_FINISH; // 結束
 	EVENT_TIMEOUT; // 超時
 	EVENT_UNDRIVABLE; // 不能動了（用完油料或輪胎）
