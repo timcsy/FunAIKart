@@ -66,7 +66,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.behavior_name_queue.put(behavior_name)
         self.matching()
 
-        self.env_ready = True
+        self.env_ready = True # Release spin lock
 
         return self.env
     
@@ -75,13 +75,11 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             # Get the new simulation results
             decision_steps, terminal_steps = self.env.get_steps(behavior_name)
 
-            print('behavior_name: ' + str(behavior_name))
             state = None
 
             # We let a behavior correspond to an unique agent (agent_id = 0)
             for agent_id in decision_steps:
                 self.agent_ids[self.ids[behavior_name]] = int(agent_id)
-                print('d, agent_id: ' + str(agent_id))
                 behavior_spec = self.env.behavior_specs[behavior_name]
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
@@ -92,7 +90,6 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             
             for agent_id in terminal_steps:
                 self.agent_ids[self.ids[behavior_name]] = int(agent_id)
-                print('t , agent_id: ' + str(agent_id))
                 behavior_spec = self.env.behavior_specs[behavior_name]
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
@@ -103,9 +100,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
 
             if state is not None:
                 self.states[behavior_name] = state
-            else:
+            else: # Occurs when some of the other agents terminate
                 self.states[behavior_name].event = PAIA.Event.EVENT_FINISH
-        self.states_ready = True
+        self.states_ready = True # Release spin lock
         self.restarting = False
     
     def set_actions(self):
@@ -117,9 +114,10 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.env.step()
 
         self.actions = {}
-        self.settting_actions = False
+        self.settting_actions = False # Release spin lock
 
     def check_status(self):
+        # Check if we can do the following actions: restart, finish and resume
         if len(self.actions) == len(self.behavior_names) and self.env_ready:
             restart = False
             for action in list(self.actions.values()):
@@ -129,18 +127,20 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                     restart = True
             
             if restart:
+                # Finish when an agent want to restart
                 self.restarting = True
                 self.restart()
             elif len(self.actions) == 0 and self.env_ready:
-                self.env_ready = False
+                # Finish when everyone want to finish
+                self.env_ready = False # Using spin lock
                 self.env.close()
             elif not self.settting_actions:
-                self.settting_actions = True
+                self.settting_actions = True # Using spin lock
                 self.resume()
     
     def restart(self):
         if self.env_ready:
-            self.env_ready = False
+            self.env_ready = False # Using spin lock
             self.env.close()
             for id in self.ids.values():
                 self.id_queue.put(id)
@@ -148,8 +148,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.open_env()
 
     def resume(self):
-        print("Resuming")
-        self.states_ready = False
+        self.states_ready = False # Using spin lock
         self.set_actions()
         self.get_states()
     
@@ -162,8 +161,6 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         debug_print('Removed client:', id)
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
-        # print('action:')
-        # print(PAIA.action_info(action))
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
             debug_print('New client:', action.id)
