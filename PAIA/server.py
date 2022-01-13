@@ -15,8 +15,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     """Provides methods that implement functionality of PAIA server."""
 
     def __init__(self, env_filepath=None):
-        self.behavior_names = {} # Indexed by id, We let a behavior correspond to an unique agent (agent_id = 0)
+        self.behavior_names = {} # Indexed by id, We let a behavior correspond to an unique agent
         self.ids = {} # Indexed by behavior_name
+        self.agent_ids = {} # Indexed by id, an unique agent of a behavior
         self.states = {} # Indexed by behavior_name
         self.actions = {} # Indexed by behavior_name
         self.behavior_name_queue = queue.Queue()
@@ -25,6 +26,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.env = False
         self.env_ready = False
         self.states_ready = False
+        self.settting_actions = False
         self.restarting = False
         t = threading.Thread(target=self.open_env)
         t.start()
@@ -64,6 +66,8 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.behavior_name_queue.put(behavior_name)
         self.matching()
 
+        self.env_ready = True
+
         return self.env
     
     def get_states(self):
@@ -71,8 +75,13 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             # Get the new simulation results
             decision_steps, terminal_steps = self.env.get_steps(behavior_name)
 
+            print('behavior_name: ' + str(behavior_name))
+            state = None
+
             # We let a behavior correspond to an unique agent (agent_id = 0)
-            for _ in decision_steps:
+            for agent_id in decision_steps:
+                self.agent_ids[self.ids[behavior_name]] = int(agent_id)
+                print('d, agent_id: ' + str(agent_id))
                 behavior_spec = self.env.behavior_specs[behavior_name]
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
@@ -81,7 +90,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                     reward=decision_steps.reward
                 )
             
-            for _ in terminal_steps:
+            for agent_id in terminal_steps:
+                self.agent_ids[self.ids[behavior_name]] = int(agent_id)
+                print('t , agent_id: ' + str(agent_id))
                 behavior_spec = self.env.behavior_specs[behavior_name]
                 state = PAIA.convert_state_to_object(
                     behavior_spec=behavior_spec,
@@ -90,19 +101,26 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                     reward=terminal_steps.reward
                 )
 
-            self.states[behavior_name] = state
-            self.states_ready = True
+            if state is not None:
+                self.states[behavior_name] = state
+            else:
+                self.states[behavior_name].event = PAIA.Event.EVENT_FINISH
+        self.states_ready = True
         self.restarting = False
     
     def set_actions(self):
+        self.settting_actions = True
         for behavior_name in self.behavior_names.values():
             action = PAIA.convert_action_to_data(self.actions[behavior_name])
-            self.env.set_action_for_agent(behavior_name, 0, action)
+            self.env.set_action_for_agent(behavior_name, self.agent_ids[self.ids[behavior_name]], action)
 
         self.env.step()
 
+        self.actions = {}
+        self.settting_actions = False
+
     def check_status(self):
-        if len(self.actions) == len(self.behavior_names):
+        if len(self.actions) == len(self.behavior_names) and self.env_ready:
             restart = False
             for action in list(self.actions.values()):
                 if action.command == PAIA.Command.COMMAND_FINISH:
@@ -111,21 +129,26 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                     restart = True
             
             if restart:
+                self.restarting = True
                 self.restart()
-            elif len(self.actions) == 0:
+            elif len(self.actions) == 0 and self.env_ready:
+                self.env_ready = False
                 self.env.close()
-            else:
+            elif not self.settting_actions:
+                self.settting_actions = True
                 self.resume()
     
     def restart(self):
-        self.restarting = True
-        self.env.close()
-        for id in self.ids.values():
-            self.id_queue.put(id)
-        self.ids = {}
-        self.open_env()
+        if self.env_ready:
+            self.env_ready = False
+            self.env.close()
+            for id in self.ids.values():
+                self.id_queue.put(id)
+            self.ids = {}
+            self.open_env()
 
     def resume(self):
+        print("Resuming")
         self.states_ready = False
         self.set_actions()
         self.get_states()
@@ -139,6 +162,8 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         debug_print('Removed client:', id)
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
+        # print('action:')
+        # print(PAIA.action_info(action))
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
             debug_print('New client:', action.id)
@@ -146,7 +171,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         else:
             self.actions[self.behavior_names[action.id]] = action
             self.check_status()
-        while not self.states_ready:
+        while not self.states_ready or not self.env_ready:
             pass
         if action.id in self.behavior_names:
             return self.states[self.behavior_names[action.id]]

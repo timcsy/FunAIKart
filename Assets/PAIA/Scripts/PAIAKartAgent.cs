@@ -81,8 +81,8 @@ public class PAIAKartAgent : Agent, IInput
     public override void OnEpisodeBegin()
     {
         if(!m_Kart) m_Kart = GetComponent<ArcadeKart>();
-        m_Kart.SendMessage("Awake"); // For some reason "OnEpisodeBegin" gets called before m_Kart.Awake, so this is necessary
         // Consider making Awake public or exposing an Initialize method for it.
+        m_Kart.SendMessage("Awake"); // For some reason "OnEpisodeBegin" gets called before m_Kart.Awake, so this is necessary
         progress = 0;
         m_Kart.Rigidbody.velocity = default;
         wheel = 1;
@@ -133,7 +133,7 @@ public class PAIAKartAgent : Agent, IInput
     private void OnCollisionEnter(Collision other) {
         if (!other.gameObject.GetComponent<PickUpClass>()) { 
             EndEpisode();
-            Reload();
+            // Reload();
         }
     }
 
