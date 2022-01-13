@@ -20,12 +20,16 @@ class MLPlay:
         # Implement Your Algorithm
         # Note: You can use PAIA.image_to_array() to convert
         #       state.observation.images.front.data and 
-        #       state.observation.images.back.data to numpy array
+        #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
         self.step += 1
         debug_print('Step:', self.step)
         debug_print(PAIA.state_info(state, self.step))
         action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+        if state.event == PAIA.Event.EVENT_FINISH:
+            action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
+            # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
+        debug_print(PAIA.action_info(action))
         return action
 ```
 修改 `decision` function，由 State 產生 Action。
@@ -124,6 +128,9 @@ from demo import Demo
 
 # 匯入資料
 demo = Demo('.demo 或 .paia 檔的路徑')
+
+# 匯入資料（List 版本）
+demo = Demo(['.demo 或 .paia 檔的路徑1', '.demo 或 .paia 檔的路徑2', ...])
 
 # 匯出成 .paia 檔
 demo.export('.paia 檔的路徑')

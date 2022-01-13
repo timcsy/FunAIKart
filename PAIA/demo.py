@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Union
 from pathlib import Path
 import zlib
 
@@ -12,13 +12,8 @@ import PAIA
 from utils import debug_print
 
 class Demo:
-    def __init__(self, path, id: str=None):
-        if Path(path).suffix == '.demo':
-            self.load_demo(path, id)
-        elif Path(path).suffix == '.paia':
-            self.load_paia(path)
-        else:
-            self.load_paia(path)
+    def __init__(self, paths: Union[List[str], str, None], id: str=None):
+        self.load(paths)
         self.show()
 
     def get_observations_from_buffer(buffer: AgentBuffer, behavior_spec: BehaviorSpec, index: int) -> List[np.ndarray]:
@@ -95,18 +90,35 @@ class Demo:
                 if len(steps) > 0:
                     episodes.append(episode)
         
-        self.demo = PAIA.Demo(episodes=episodes)
-        return self.demo
+        demo = PAIA.Demo(episodes=episodes)
+        return demo
     
     def load_paia(self, path: str):
         with open(path, "rb") as fin:
             decompressed = zlib.decompress(fin.read())
-            self.demo = PAIA.Demo()
-            self.demo.ParseFromString(decompressed)
+            demo = PAIA.Demo()
+            demo.ParseFromString(decompressed)
+            return demo
     
-    def load(self):
-        # TODO: Add multi path support
-        pass
+    def load(self, paths: Union[List[str], str, None], id: str=None):
+        if paths is None:
+            paths = []
+        elif type(paths) is str:
+            paths = [paths]
+        
+        
+        self.demo = PAIA.Demo()
+        for path in paths:
+            demo = PAIA.Demo()
+            if Path(path).suffix == '.demo':
+                demo = self.load_demo(path, id)
+            elif Path(path).suffix == '.paia':
+                demo = self.load_paia(path)
+            else:
+                demo = self.load_paia(path)
+            self.demo.episodes.extend(demo.episodes)
+        
+        return self.demo
     
     def show(self):
         for i in range(len(self.demo.episodes)):

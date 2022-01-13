@@ -29,8 +29,6 @@ def run(id: str='', filepath: str='ml_play') -> None:
         state = stub.hook(action)
         action = brain.decision(state)
         action.id = id
-        # TODO: React to other events
-        # TODO: Set some commands
         if state.event != PAIA.Event.EVENT_NONE:
             if action.command == PAIA.Command.COMMAND_FINISH:
                 stub.hook(action)
@@ -38,6 +36,7 @@ def run(id: str='', filepath: str='ml_play') -> None:
             elif action.command == PAIA.Command.COMMAND_RESTART or state.event == PAIA.Event.EVENT_RESTART:
                 pass
             else:
+                # Force to finish when the user doesn't want to restart
                 action.command = PAIA.Command.COMMAND_FINISH
                 stub.hook(action)
                 break
