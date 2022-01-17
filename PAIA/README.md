@@ -44,7 +44,7 @@ class MLPlay:
 
 ### 執行方式（修改中）
 
-### 目前測試版本
+#### 目前測試版本
 伺服器端（與 Unity 在同一台機器上）：
 ```
 python server.py 執行檔位置(如果沒有加這項就是使用 Unity Editor)
@@ -66,7 +66,7 @@ Demo 錄製檔案的位置（Build 好的執行檔）：
 執行檔所在目錄/PAIA/Demo
 ```
 
-#### 線上（Online）模式
+#### 線上（Online）模式（未完成）
 伺服器端（與 Unity 在同一台機器上）：
 ```
 python ml.py server -p 50051
@@ -80,7 +80,7 @@ python ml.py client 使用者id ml_play_檔名.py 使用者id2 ml_play_檔名2.p
 開啟順序：
 開啟伺服器端 -> 執行 Unity 遊戲、用戶端（可以開始連進來）
 
-#### 離線（Offline）模式
+#### 離線（Offline）模式（未完成）
 ```
 python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名2.py ...
 ```
@@ -88,7 +88,7 @@ python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名
 開啟順序：
 執行離線版 -> 執行 Unity 遊戲
 
-# 參數說明
+#### 參數說明（未完成）
 - -h, --help
 - -v, --verbose
 - -V, --version
@@ -282,7 +282,7 @@ struct Action { // 動作資訊
 ```
 
 ### 錄製資訊
-步的資訊（`PAIA.Step`）定義：
+「步（Step）」的資訊（`PAIA.Step`）定義：
 ```C++
 struct Step { // 一步的資訊
 	State state; // 狀態資訊
@@ -296,6 +296,7 @@ struct Episode { // 回合資訊
 	Step[] steps; // 所有步的資訊（是一個陣列/List）
 }
 ```
+一回合裡面有多個「步」。
 
 錄製資訊（`PAIA.Demo`）定義：
 ```C++
@@ -303,3 +304,4 @@ struct Demo { // 錄製資訊
 	Episode[] episodes; // 所有回合的資訊（是一個陣列/List）
 }
 ```
+一個錄製資訊裡面有多個回合。
