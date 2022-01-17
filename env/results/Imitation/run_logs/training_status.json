@@ -1,0 +1,65 @@
+{
+    "PAIAKart": {
+        "checkpoints": [
+            {
+                "steps": 200002,
+                "file_path": "results\\Imitation\\PAIAKart\\PAIAKart-200002.onnx",
+                "reward": -57.950006656348705,
+                "creation_time": 1640762926.934009,
+                "auxillary_file_paths": [
+                    "results\\Imitation\\PAIAKart\\PAIAKart-200002.pt"
+                ]
+            },
+            {
+                "steps": 400059,
+                "file_path": "results\\Imitation\\PAIAKart\\PAIAKart-400059.onnx",
+                "reward": -59.02000636458397,
+                "creation_time": 1640768119.954092,
+                "auxillary_file_paths": [
+                    "results\\Imitation\\PAIAKart\\PAIAKart-400059.pt"
+                ]
+            },
+            {
+                "steps": 499981,
+                "file_path": "results\\Imitation\\PAIAKart\\PAIAKart-499981.onnx",
+                "reward": -119.40000829845667,
+                "creation_time": 1640772611.8933444,
+                "auxillary_file_paths": [
+                    "results\\Imitation\\PAIAKart\\PAIAKart-499981.pt"
+                ]
+            },
+            {
+                "steps": 500045,
+                "file_path": "results\\Imitation\\PAIAKart\\PAIAKart-500045.onnx",
+                "reward": -119.40000829845667,
+                "creation_time": 1640772612.543208,
+                "auxillary_file_paths": [
+                    "results\\Imitation\\PAIAKart\\PAIAKart-500045.pt"
+                ]
+            },
+            {
+                "steps": 600016,
+                "file_path": "results\\Imitation\\PAIAKart\\PAIAKart-600016.onnx",
+                "reward": -92.0166733811299,
+                "creation_time": 1640775666.868013,
+                "auxillary_file_paths": [
+                    "results\\Imitation\\PAIAKart\\PAIAKart-600016.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 600016,
+            "file_path": "results\\Imitation\\PAIAKart.onnx",
+            "reward": -92.0166733811299,
+            "creation_time": 1640775666.868013,
+            "auxillary_file_paths": [
+                "results\\Imitation\\PAIAKart\\PAIAKart-600016.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.27.0",
+        "torch_version": "1.10.1+cu113"
+    }
+}

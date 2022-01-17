@@ -11233,7 +11233,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 5101bec4667357941856aaa8175b5798,
+      objectReference: {fileID: 5022602860645237092, guid: 2be1e9b5956a26b49aac966485a3f906,
         type: 3}
     - target: {fileID: 3368409491242112978, guid: 7ca30efbd0f851b4a9ed49e8ea322e10,
         type: 3}
@@ -11309,7 +11309,7 @@ PrefabInstance:
     - target: {fileID: 3368409491242112987, guid: 7ca30efbd0f851b4a9ed49e8ea322e10,
         type: 3}
       propertyPath: NumStepsToRecord
-      value: 15000
+      value: 8000
       objectReference: {fileID: 0}
     - target: {fileID: 7393896699704175776, guid: 7ca30efbd0f851b4a9ed49e8ea322e10,
         type: 3}

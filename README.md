@@ -8,7 +8,26 @@ PAIAKart GameObject uses **Kart** model; PAIAKart_New can use both **Kart_New** 
 
 *With a few differences you need to change
 
-## GameAIKart
+## How to Install ML-Agents
+1. Open the env folder in terminal. `> (cd env)`
+2. Activate the virtual environment. `~\env>Scripts\activate`
+3. Update pip. `(env) ~\env>python -m pip install --upgrade pip`
+4. Install ML-Agent. `(env) ~\env>pip install mlagents`
+
+## How to Train ML-Agents
+1. Open the env folder in terminal. `~> (cd env)`
+2. Activate the virtual environment. `~\env> Scripts\activate`
+3. Run Ml-Agent: `(env) ~\env> mlagents-learn config/Complex.yaml --run-id=Complex --resume`
+- Config files are in `env\config\`. Refer to above for the 3 versions.
+- Trained models are in `env\results\`. You need to drag them into `Assets` for them to show up in Unity. (I put them in `Assets\PAIA\`.
+- Few recorded Demo files are in `env\Demo\`, and are used by the config for imitational learning.
+- Remember to remove the applied NN Model and set **Behavior Type** to **Default** on the Kart gameobjects before you start training.
+
+## Additional Resources:
+- ML-Agent Tutorial: https://youtu.be/zPFU30tbyKs
+- Ml-Agent to Gym: https://github.com/Unity-Technologies/ml-agents/blob/main/gym-unity/README.md
+
+# GameAIKart
 This is a Full project folder, you can click Add on the Unity Hub to open the project after downloading.
 
 ## Table of contents
@@ -54,25 +73,5 @@ GameAIKart is a 3D racing game made in Unity. We designed it to let everyone can
 * "Turtle" : Decrease speed
 * "Banana" : Influence the value of steer
 
-## Additional Track
-We only provide the basic track of the game, and there are still other tracks in MainScene/AdditionalTrack can be built for the training process with ML-Agents. 
-
 ## Technologies
 * Unity 2020.3.14f1
-
-## Usage
-
-This game can be played [here]()!  
-This repository contains everything needed to get the project up and running on Unity. Just clone the repository and open the project in Unity to edit the game yourself.
-
-驕頑梓蝣ｴ譎ｯ蝨ｨ Assets/Karting/Scenes/MainScene
-
-## ML-Agents
-讖溷勣蟄ｸ鄙堤噪驛ｨ蛻・叛蝨ｨ `ML` 雉・侭螟ｾ荳ｭ・悟福蜍墓婿蠑擾ｼ・
-```
-cd ML
-python ml.py
-```
-謇馴幕荵句ｾ悟・蜴ｻ Unity 逡ｫ髱｢鮟樊眺謾ｾ骰ｵ・亥ｦよ棡譏ｯ蝨ｨ髢狗匸譎ゑｼ・
-
-豕ｨ諢擾ｼ啀ython Unity 逧・ML-Agents 逧・沿譛ｬ隕∝ｰ榊･ｽ・梧悽蟆域｡育畑逧・弍 Release 17

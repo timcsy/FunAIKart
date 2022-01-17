@@ -74,9 +74,6 @@ crashlytics-build.properties
 InitCodeMarker
 .vscode
 __pycache__
-PAIA/cameras
-PAIA/Demo
-Records
 Assets/ML-Agents/Timers
-env/
-env
+env/Lib
+env/Lib/

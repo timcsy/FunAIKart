@@ -1,0 +1,23 @@
+behaviors:
+    PAIAKart:
+        trainer_type: ppo
+        hyperparameters:
+            batch_size: 512
+            buffer_size: 20000
+            learning_rate: 2.5e-4
+        network_settings:
+            normalize: false
+            hidden_units: 64
+            num_layers: 1
+        reward_signals:
+            extrinsic:
+                strength: 0.6
+            gail:
+                strength: 0.6
+                demo_path: ../PAIA/Demo/Demo.demo
+        behavioral_cloning:
+            strength: 0.6
+            demo_path: ../PAIA/Demo/Demo.demo
+        max_steps: 600000
+        time_horizon: 64
+        summary_freq: 20000
