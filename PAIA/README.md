@@ -25,13 +25,18 @@ class MLPlay:
         self.step += 1
         debug_print('Step:', self.step)
         debug_print(PAIA.state_info(state, self.step))
-        action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
-        if state.event == PAIA.Event.EVENT_FINISH:
+
+        if state.event == PAIA.Event.EVENT_NONE:
+            # You can decide your own action
+            action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+        elif state.event == PAIA.Event.EVENT_RESTART:
+            # You can do something when the game restarts by someone
+            pass
+        elif state.event != PAIA.Event.EVENT_NONE:
+            # You can do something when the game (episode) ends
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
             # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
-        elif state.event == PAIA.Event.EVENT_RESTART:
-            # You can do something when the game restarts
-            pass
+        
         debug_print(PAIA.action_info(action))
         return action
 ```
@@ -51,6 +56,14 @@ python client.py 使用者id ml_play_檔名.py
 離線（Offline）模式，目前只支援 Unity Editor：
 ```
 python ml.py offline 使用者id ml_play_檔名.py
+```
+Demo 錄製檔案的位置（Unity Editor）：
+```
+根目錄/PAIA/Demo
+```
+Demo 錄製檔案的位置（Build 好的執行檔）：
+```
+執行檔所在目錄/PAIA/Demo
 ```
 
 #### 線上（Online）模式
@@ -176,8 +189,9 @@ actions = demo.get_actions(episode)
 ```C++
 enum Event { // 事件
 	EVENT_NONE; // 一般狀態
+	EVENT_FINISH; // 結束（其他狀況）
 	EVENT_RESTART; // 重新開始回合
-	EVENT_FINISH; // 結束
+	EVENT_WIN; // 結束（有在時限內完成）
 	EVENT_TIMEOUT; // 超時
 	EVENT_UNDRIVABLE; // 不能動了（用完油料或輪胎）
 }
@@ -231,6 +245,7 @@ struct State { // 狀態資訊
 		RayList rays; // 雷達資料們
 		ImageList images; // 影像資料們
 		float progress; // 進度（把全部完成當作 1）
+		float usedtime; // 經過的時間（秒）
 		float velocity; // 速度
 		RefillList refills; // 補充類道具們
 		EffectList effects; // 效果類道具們

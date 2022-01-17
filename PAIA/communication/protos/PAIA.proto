@@ -4,10 +4,11 @@ syntax = "proto3";
 
 enum Event {
 	EVENT_NONE = 0;
-	EVENT_RESTART = 1;
-	EVENT_FINISH = 2;
-	EVENT_TIMEOUT = 3;
-	EVENT_UNDRIVABLE = 4;
+	EVENT_FINISH = 1;
+	EVENT_RESTART = 2;
+	EVENT_WIN = 3;
+	EVENT_TIMEOUT = 4;
+	EVENT_UNDRIVABLE = 5;
 }
 
 message State {
@@ -56,9 +57,10 @@ message State {
 		optional RayList rays = 1;
 		optional ImageList images = 2;
 		optional float progress = 3;
-		optional float velocity = 4;
-		optional RefillList refills = 5;
-		optional EffectList effects = 6;
+		optional float usedtime = 4;
+		optional float velocity = 5;
+		optional RefillList refills = 6;
+		optional EffectList effects = 7;
 	}
 	optional string api_version = 1;
 	optional string id = 2;

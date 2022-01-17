@@ -52,6 +52,12 @@ public class GameFlowManager : MonoBehaviour
     [HideInInspector]
     public bool Undrivable;
 
+    [HideInInspector]
+    public EndGameReason Event;
+
+    [HideInInspector]
+    public float UsedTime;
+
     void Start()
     {
         if (autoFindKarts)
@@ -64,6 +70,8 @@ public class GameFlowManager : MonoBehaviour
             DebugUtility.HandleErrorIfNullFindObject<ArcadeKart, GameFlowManager>(playerKart, this);
         }
         Undrivable = false;
+        Event = EndGameReason.None;
+        UsedTime = 0.0f;
         m_ObjectiveManager = FindObjectOfType<ObjectiveManager>();
         DebugUtility.HandleErrorIfNullFindObject<ObjectiveManager, GameFlowManager>(m_ObjectiveManager, this);
 
@@ -123,7 +131,6 @@ public class GameFlowManager : MonoBehaviour
 
     void Update()
     {
-
         if (gameState != GameState.Play)
         {
             elapsedTimeBeforeEndScene += Time.deltaTime;
@@ -140,24 +147,31 @@ public class GameFlowManager : MonoBehaviour
                 // See if it's time to load the end scene (after the delay)
                 if (Time.time >= m_TimeLoadEndGameScene)
                 {
-                    SceneManager.LoadScene(m_SceneToLoad);
-                    gameState = GameState.Play;
+                    // TODO: Uncomment this two lines for multiple users
+                    // SceneManager.LoadScene(m_SceneToLoad);
+                    // gameState = GameState.Play;
                 }
             }
         }
         else
         {
             if (m_ObjectiveManager.AreAllObjectivesCompleted())
-                EndGame(EndGameReason.Win);
+                Event = EndGameReason.Win;
 
             if (m_TimeManager.IsFinite && m_TimeManager.IsOver)
-                EndGame(EndGameReason.TimeOut);
+                Event = EndGameReason.TimeOut;
 
             if (Undrivable)
-                EndGame(EndGameReason.Undrivable);
+                Event = EndGameReason.Undrivable;
+            
+            // TODO: Uncomment this line for multiple users
+            // EndGame(Event);
+            if (Event != EndGameReason.None)
+                EndGameForSinglePlayer(Event);
         }
+        UsedTime = m_TimeManager.TotalTime - m_TimeManager.TimeRemaining;
     }
-    private enum EndGameReason { Win, TimeOut, Undrivable };
+    public enum EndGameReason { None, Win, TimeOut, Undrivable };
     void EndGame(EndGameReason reason)
     {
         // unlocks the cursor before leaving the scene, to be able to click buttons
@@ -205,6 +219,40 @@ public class GameFlowManager : MonoBehaviour
                 loseDisplayMessage.delayBeforeShowing = delayBeforeWinMessage;
                 loseDisplayMessage.gameObject.SetActive(true);
                 loseDisplayMessage.GetComponent<DisplayMessage>().message = "Ran Out of Fuel or Wheel Durability";
+                break;
+        }
+    }
+
+    void EndGameForSinglePlayer(EndGameReason reason)
+    {
+        // Just for temporary single user scenario
+        m_TimeManager.StopRace();
+
+        // Remember that we need to load the appropriate end scene after a delay
+        gameState = reason == EndGameReason.Win ? GameState.Won : GameState.Lost;
+        endGameFadeCanvasGroup.gameObject.SetActive(true);
+        switch (reason)
+        {
+            case EndGameReason.Win:
+                m_SceneToLoad = winSceneName;
+                m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
+
+                // play a sound on win
+                var audioSource = gameObject.AddComponent<AudioSource>();
+                audioSource.clip = victorySound;
+                audioSource.playOnAwake = false;
+                audioSource.outputAudioMixerGroup = AudioUtility.GetAudioGroup(AudioUtility.AudioGroups.HUDVictory);
+                audioSource.PlayScheduled(AudioSettings.dspTime + delayBeforeWinMessage);
+                break;
+
+            case EndGameReason.TimeOut:
+                m_SceneToLoad = loseSceneName;
+                m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
+                break;
+
+            case EndGameReason.Undrivable:
+                m_SceneToLoad = loseSceneName;
+                m_TimeLoadEndGameScene = Time.time + endSceneLoadDelay + delayBeforeFadeToBlack;
                 break;
         }
     }

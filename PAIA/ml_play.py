@@ -18,12 +18,17 @@ class MLPlay:
         self.step += 1
         debug_print('Step:', self.step)
         debug_print(PAIA.state_info(state, self.step))
-        action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
-        if state.event == PAIA.Event.EVENT_FINISH:
+
+        if state.event == PAIA.Event.EVENT_NONE:
+            # You can decide your own action
+            action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+        elif state.event == PAIA.Event.EVENT_RESTART:
+            # You can do something when the game restarts by someone
+            pass
+        elif state.event != PAIA.Event.EVENT_NONE:
+            # You can do something when the game (episode) ends
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
             # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
-        elif state.event == PAIA.Event.EVENT_RESTART:
-            # You can do something when the game restarts
-            pass
+        
         debug_print(PAIA.action_info(action))
         return action

@@ -131,6 +131,7 @@ public class PickUpManager : MonoBehaviour
         }
 
         flowManager.Undrivable = Undrivable();
+        UpdateEvent();
     }
 
     private bool Undrivable()
@@ -146,6 +147,25 @@ public class PickUpManager : MonoBehaviour
             }
         }
         return undrivable;
+    }
+
+    private void UpdateEvent()
+    {
+        GameFlowManager.EndGameReason Event = flowManager.Event;
+        for (int i = 0; i < karts.Count; i++)
+        {
+            switch (Event)
+            {
+                case GameFlowManager.EndGameReason.Win:
+                    karts[i].win = true;
+                    break;
+                case GameFlowManager.EndGameReason.TimeOut:
+                    karts[i].timeout = true;
+                    break;
+            }
+            
+            karts[i].usedtime = flowManager.UsedTime;
+        }
     }
 }
 

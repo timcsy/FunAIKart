@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Policies;
 using UnityEngine;
 using KartGame.KartSystems;
 using Unity.MLAgents.Sensors.Reflection;
@@ -19,6 +20,8 @@ public class PAIAKartAgent : Agent, IInput
     // Observations
     [Observable(name: "progress"), HideInInspector]
     public float progress; // [0, 1]
+    [Observable(name: "usedtime"), HideInInspector]
+    public float usedtime; // [0, 60]
     [Observable(name: "velocity"), HideInInspector]
     public float velocity
     {   // [0, oo)
@@ -37,6 +40,11 @@ public class PAIAKartAgent : Agent, IInput
     public int turtle; // number of turtles
     [Observable(name: "banana"), HideInInspector]
     public int banana; // number of bananas
+    // events
+    [Observable(name: "win"), HideInInspector]
+    public bool win;
+    [Observable(name: "timeout"), HideInInspector]
+    public bool timeout;
     [Observable(name: "undrivable"), HideInInspector]
     public bool undrivable;
 
@@ -63,9 +71,11 @@ public class PAIAKartAgent : Agent, IInput
     
     void Start()
     {
+        string name = GetComponent<BehaviorParameters>().BehaviorName + "?team=" + GetComponent<BehaviorParameters>().TeamId;
+        Debug.Log(name);
+        InitDemo(true, "PAIA/Demo", "test", 10000);
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
-        InitDemo(false, "PAIA/Demo", "tet", 10000);
         m_UI = GetComponent<SingleUI>();
     }
 
@@ -90,6 +100,8 @@ public class PAIAKartAgent : Agent, IInput
         nitro = 0;
         turtle = 0;
         banana = 0;
+        win = false;
+        timeout = false;
         undrivable = false;
         m_Acceleration = false;
         m_Brake = false;
@@ -132,7 +144,7 @@ public class PAIAKartAgent : Agent, IInput
 
     private void OnCollisionEnter(Collision other) {
         if (!other.gameObject.GetComponent<PickUpClass>()) { 
-            EndEpisode();
+            // EndEpisode();
             // Reload();
         }
     }
@@ -158,7 +170,7 @@ public class PAIAKartAgent : Agent, IInput
 
     void Update()
     {
-        effects.RemoveAll(EffectTimeout);
+        effects.RemoveAll(EffectTimeout); // Remove by the condition
         // Debug.Log("Progress: " + progress + "%");
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
     }

@@ -80,6 +80,8 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
             state.observation.images.back.channels = obs_spec.shape[2]
         elif obs_spec.name == 'progress':
             state.observation.progress = obs_list[index][0, 0]
+        elif obs_spec.name == 'usedtime':
+            state.observation.usedtime = obs_list[index][0, 0]
         elif obs_spec.name == 'velocity':
             state.observation.velocity = obs_list[index][0, 0]
         elif obs_spec.name == 'wheel':
@@ -93,6 +95,15 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
         elif obs_spec.name == 'banana':
             state.observation.effects.banana.number = int(obs_list[index][0, 0])
         # TODO: Add the information from the event fields(like undrivable)
+        elif obs_spec.name == 'win':
+            if bool(obs_list[index][0, 0]):
+                event = Event.EVENT_WIN
+        elif obs_spec.name == 'timeout':
+            if bool(obs_list[index][0, 0]):
+                event = Event.EVENT_TIMEOUT
+        elif obs_spec.name == 'undrivable':
+            if bool(obs_list[index][0, 0]):
+                event = Event.EVENT_UNDRIVABLE
     state.event = event
     state.reward = reward
     return state
