@@ -9,13 +9,13 @@ PAIAKart GameObject uses **Kart** model; PAIAKart_New can use both **Kart_New** 
 *With a few differences you need to change
 
 ## How to Install ML-Agents
-1. Open the env folder in terminal. `> (cd env)`
+1. Open the env folder in terminal. `>cd env`
 2. Activate the virtual environment. `~\env>Scripts\activate`
 3. Update pip. `(env) ~\env>python -m pip install --upgrade pip`
 4. Install ML-Agent. `(env) ~\env>pip install mlagents`
 
 ## How to Train ML-Agents
-1. Open the env folder in terminal. `~> (cd env)`
+1. Open the env folder in terminal. `~>cd env`
 2. Activate the virtual environment. `~\env> Scripts\activate`
 3. Run Ml-Agent: `(env) ~\env> mlagents-learn config/Complex.yaml --run-id=Complex --resume`
 - Config files are in `env\config\`. Refer to above for the 3 versions.
