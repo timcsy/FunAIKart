@@ -73,7 +73,7 @@ public class PAIAKartAgent : Agent, IInput
     {
         string name = GetComponent<BehaviorParameters>().BehaviorName + "?team=" + GetComponent<BehaviorParameters>().TeamId;
         Debug.Log(name);
-        InitDemo(true, "PAIA/Demo", "test", 10000);
+        InitDemo(true, "PAIA/Demo", "kart", 10000);
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
         m_UI = GetComponent<SingleUI>();
@@ -112,7 +112,7 @@ public class PAIAKartAgent : Agent, IInput
 
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
-        SetReward(0.1f);
+        // SetReward(0.1f);
         InterpretDiscreteActions(actionBuffers);
     }
 
@@ -142,10 +142,14 @@ public class PAIAKartAgent : Agent, IInput
         };
     }
 
-    private void OnCollisionEnter(Collision other) {
-        if (!other.gameObject.GetComponent<PickUpClass>()) { 
-            // EndEpisode();
-            // Reload();
+    private void OnCollisionEnter(Collision collision) {
+        if (!collision.gameObject.GetComponent<PickUpClass>())
+        { 
+            // EndGame();
+        }
+        if (collision.gameObject.tag == "Outside")
+        {
+            EndGame();
         }
     }
 
@@ -170,9 +174,13 @@ public class PAIAKartAgent : Agent, IInput
 
     void Update()
     {
-        effects.RemoveAll(EffectTimeout); // Remove by the condition
         // Debug.Log("Progress: " + progress + "%");
+        effects.RemoveAll(EffectTimeout); // Remove by the condition
         // Debug.Log("Effects: " + effects.Count + ", Nitro:" + nitro + ", Turtle:" + turtle + ", Banana:" + banana);
+        if (win || timeout || undrivable)
+        {
+            EndGame();
+        }
     }
     private bool EffectTimeout(KartEffect effect)
     {
@@ -189,8 +197,24 @@ public class PAIAKartAgent : Agent, IInput
         return timeout;
     }
 
+    public void EndGame()
+    {
+        EndEpisode();
+        if (GetComponent<BehaviorParameters>().IsInHeuristicMode())
+        {
+            #if UNITY_EDITOR
+            // Application.Quit() does not work in the editor so
+            // UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+            UnityEditor.EditorApplication.isPlaying = false;
+            #else
+            Application.Quit();
+            #endif
+        }
+    }
+
     public void Reload()
     {
+        // Deprecated
         if(!isReloading)
         {
             // Ensure that the scene does not get loaded multiple times in the same frame.

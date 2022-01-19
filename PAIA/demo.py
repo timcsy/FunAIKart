@@ -68,7 +68,7 @@ class Demo:
 
             # Command
             command = PAIA.Command.COMMAND_GENERAL
-            if buffer[BufferKey.DONE][index]:
+            if buffer[BufferKey.DONE][index] or state.event != PAIA.Event.EVENT_NONE:
                 command = PAIA.Command.COMMAND_FINISH
             
             # Actions
@@ -79,7 +79,7 @@ class Demo:
             steps.append(PAIA.Step(state=state, action=action))
 
             # To check whether episode is done
-            if buffer[BufferKey.DONE][index]:
+            if command == PAIA.Command.COMMAND_FINISH:
                 episode = PAIA.Episode(steps=steps)
                 episodes.append(episode)
                 steps = []
