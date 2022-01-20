@@ -1,4 +1,5 @@
 import importlib
+import logging
 import os
 import sys
 
@@ -6,6 +7,7 @@ import grpc
 import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 
 import PAIA
+import config
 
 def run(id: str='', filepath: str='ml_play') -> None:
     channel = grpc.insecure_channel('localhost:50051')
@@ -46,4 +48,5 @@ def run(id: str='', filepath: str='ml_play') -> None:
 if __name__ == '__main__':
     id = str(sys.argv[1]) if len(sys.argv) > 1 else ''
     filepath = str(sys.argv[2]) if len(sys.argv) > 2 else None
+    logging.basicConfig(level=config.LOG_LEVEL, format='%(message)s')
     run(id, filepath)

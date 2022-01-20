@@ -1,5 +1,5 @@
+import logging # you can use functions in logging: debug, info, warning, error, critical, log
 import PAIA
-from utils import debug_print
 
 class MLPlay:
     def __init__(self):
@@ -16,8 +16,8 @@ class MLPlay:
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
         self.step += 1
-        debug_print('Step:', self.step)
-        debug_print(PAIA.state_info(state, self.step))
+        logging.info('Step: ' + str(self.step))
+        logging.debug(PAIA.state_info(state, self.step))
 
         if state.event == PAIA.Event.EVENT_NONE:
             # You can decide your own action
@@ -30,5 +30,5 @@ class MLPlay:
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
             # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
         
-        debug_print(PAIA.action_info(action))
+        logging.debug(PAIA.action_info(action))
         return action

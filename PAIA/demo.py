@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional, Union
 from pathlib import Path
 import zlib
@@ -9,7 +10,6 @@ from mlagents_envs.base_env import ActionTuple, BehaviorSpec
 import numpy as np
 
 import PAIA
-from utils import debug_print
 
 class Demo:
     def __init__(self, paths: Union[List[str], str, None], id: str=None):
@@ -123,10 +123,10 @@ class Demo:
     def show(self):
         for i in range(len(self.demo.episodes)):
             for j in range(len(self.demo.episodes[i].steps)):
-                debug_print('Episode: ' + str(i) + ', Step: ' + str(j))
-                debug_print('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j)))
-                debug_print('Action:\n' + PAIA.action_info(self.demo.episodes[i].steps[j].action))
-            debug_print('Done, Episode: ' + str(i) + ', Total Steps: ' + str(len(self.demo.episodes[i].steps)) + '\n')
+                logging.debug('Episode: ' + str(i) + ', Step: ' + str(j))
+                logging.debug('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j)))
+                logging.debug('Action:\n' + PAIA.action_info(self.demo.episodes[i].steps[j].action))
+            logging.debug('Done, Episode: ' + str(i) + ', Total Steps: ' + str(len(self.demo.episodes[i].steps)) + '\n')
     
     def get_demo(self) -> PAIA.Demo:
         return self.demo

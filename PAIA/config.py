@@ -1,5 +1,6 @@
 from enum import Enum
 from datetime import datetime
+import logging
 
 # Type definitions ###############################################
 
@@ -15,15 +16,20 @@ class RunningMode(Enum):
 # RUNNING_MODE: RunningMode = RunningMode.SERVER
 RUNNING_MODE: RunningMode = RunningMode.OFFLINE
 
-# The depth of the log (< 0 if log all)
-LOG: int = 2
+# Logging Level
+# LOG_LEVEL = logging.CRITICAL
+# LOG_LEVEL = logging.ERROR
+# LOG_LEVEL = logging.WARNING
+LOG_LEVEL = logging.INFO
+# LOG_LEVEL = logging.DEBUG
+# LOG_LEVEL = logging.NOTSET
 
 # Place to store the images (without the last / )
 IMAGE_DIR: str = 'cameras/' + datetime.now().strftime('%Y%m%d_%H%M%S')
 
 # Path to the Demo files (without the last / )
 DEMO_DIR: str = 'Demo'
-DEMO_FILE: str = 'demo.demo'
+DEMO_FILE: str = 'kart.demo'
 DEMO_PATH: str = DEMO_DIR + '/' + DEMO_FILE
 
 # Max Episodes for online

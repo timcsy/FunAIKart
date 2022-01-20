@@ -5,8 +5,8 @@
 ### 主要的部分
 將你所寫的 `MLPlay` 類別放在 `ml_play.py` （可以改檔名）中，如下：
 ```python
+import logging # you can use functions in logging: debug, info, warning, error, critical, log
 import PAIA
-from utils import debug_print
 
 class MLPlay:
     def __init__(self):
@@ -23,8 +23,8 @@ class MLPlay:
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
         self.step += 1
-        debug_print('Step:', self.step)
-        debug_print(PAIA.state_info(state, self.step))
+        logging.info('Step: ' + str(self.step))
+        logging.debug(PAIA.state_info(state, self.step))
 
         if state.event == PAIA.Event.EVENT_NONE:
             # You can decide your own action
@@ -37,7 +37,7 @@ class MLPlay:
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
             # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
         
-        debug_print(PAIA.action_info(action))
+        logging.debug(PAIA.action_info(action))
         return action
 ```
 修改 `decision` function，由 State 產生 Action。
@@ -65,6 +65,8 @@ Demo 錄製檔案的位置（Build 好的執行檔）：
 ```
 執行檔所在目錄/PAIA/Demo
 ```
+
+附註：如果使用 Unity Editor，在 Restart 指令之後要自己重開遊戲，Build 版的就不用，會自動開啟。
 
 #### 線上（Online）模式（未完成）
 伺服器端（與 Unity 在同一台機器上）：

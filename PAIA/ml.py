@@ -1,3 +1,4 @@
+import logging
 import sys
 import threading
 
@@ -5,7 +6,6 @@ import config
 from config import RunningMode
 import client
 import server
-from utils import debug_print
 
 def main(id: str=None):
     if config.RUNNING_MODE == RunningMode.CLIENT:
@@ -35,4 +35,5 @@ if __name__ == '__main__':
             config.RUNNING_MODE = RunningMode.SERVER
         elif sys.argv[1] == 'offline':
             config.RUNNING_MODE = RunningMode.OFFLINE
+    logging.basicConfig(level=config.LOG_LEVEL, format='%(message)s')
     main(id)

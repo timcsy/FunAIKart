@@ -1,6 +1,7 @@
 # api_version: PAIAKart_1.0
 
 import io
+import logging
 import os
 from typing import List
 
@@ -10,7 +11,6 @@ from PIL import Image
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 
 from communication.generated import PAIA_pb2
-from utils import debug_print
 import config
 
 Event = PAIA_pb2.Event
@@ -111,7 +111,7 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
 def state_info(state: State, img_id: str) -> str:
     s = State()
     s.CopyFrom(state)
-    if config.LOG > 1:
+    if config.LOG_LEVEL <= logging.DEBUG:
         # Save the image to the disk
         if not os.path.exists(config.IMAGE_DIR):
             os.makedirs(config.IMAGE_DIR)

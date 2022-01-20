@@ -1,4 +1,5 @@
 from concurrent import futures
+import logging
 import queue
 import sys
 import threading
@@ -9,7 +10,7 @@ import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 from mlagents_envs.environment import UnityEnvironment
 
 import PAIA
-from utils import debug_print
+import config
 
 class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     """Provides methods that implement functionality of PAIA server."""
@@ -45,21 +46,21 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.get_states()
     
     def open_env(self) -> UnityEnvironment:
-        debug_print('Waiting for Unity side ...', depth=1)
+        logging.info('Waiting for Unity side ...')
         self.env = UnityEnvironment(file_name=self.env_filepath)
         self.env.reset()
-        debug_print('--------------------------------')
+        logging.info('--------------------------------')
 
         # Behavior names
-        debug_print('Behavior names:')
-        debug_print(list(self.env.behavior_specs.keys()))
+        logging.info('Behavior names:')
+        logging.info(list(self.env.behavior_specs.keys()))
 
         # Behavior infomation
-        debug_print('--------------------------------', depth=3)
-        debug_print('Behavior informations:\n', depth=3)
-        debug_print(dict(self.env.behavior_specs), depth=3)
+        logging.debug(0, '--------------------------------')
+        logging.debug(0, 'Behavior informations:\n')
+        logging.debug(0, dict(self.env.behavior_specs))
 
-        debug_print('--------------------------------')
+        logging.info('--------------------------------')
 
         # Matching
         for behavior_name in self.env.behavior_specs.keys():
@@ -158,12 +159,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         del self.ids[behavior_name]
         del self.states[behavior_name]
         del self.actions[behavior_name]
-        debug_print('Removed client:', id)
+        logging.info('Removed client: ' + str(id))
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
-            debug_print('New client:', action.id)
+            logging.info('New client: ' + str(action.id))
             self.matching()
         else:
             self.actions[self.behavior_names[action.id]] = action
@@ -186,4 +187,5 @@ if __name__ == '__main__':
     env_filepath = None
     if len(sys.argv) > 1:
         env_filepath = sys.argv[1]
+    logging.basicConfig(level=config.LOG_LEVEL, format='%(message)s')
     serve(env_filepath)
