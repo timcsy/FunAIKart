@@ -6,11 +6,15 @@
 將你所寫的 `MLPlay` 類別放在 `ml_play.py` （可以改檔名）中，如下：
 ```python
 import logging # you can use functions in logging: debug, info, warning, error, critical, log
+import config
 import PAIA
+from demo import Demo
 
 class MLPlay:
     def __init__(self):
-        self.step = 0 # Count the step, not necessarily
+        self.demo = Demo.create_demo() # create a replay buffer
+        self.step_number = 0 # Count the step, not necessarily
+        self.episode_number = 1 # Count the episode, not necessarily
 
     def decision(self, state: PAIA.State) -> PAIA.Action:
         '''
@@ -22,22 +26,47 @@ class MLPlay:
         #       state.observation.images.front.data and 
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
-        self.step += 1
-        logging.info('Step: ' + str(self.step))
-        logging.debug(PAIA.state_info(state, self.step))
+        
+        self.step_number += 1
+        logging.info('Epispde: ' + str(self.episode_number) + ', Step: ' + str(self.step_number))
+
+        img_suffix = str(self.episode_number) + '_' + str(self.step_number)
+        logging.debug(PAIA.state_info(state, img_suffix))
 
         if state.event == PAIA.Event.EVENT_NONE:
-            # You can decide your own action
+            # Continue the game
+            # You can decide your own action (change the following action to yours)
             action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+            # You can save the step to the replay buffer (self.demo)
+            self.demo.create_step(state=state, action=action)
         elif state.event == PAIA.Event.EVENT_RESTART:
             # You can do something when the game restarts by someone
-            pass
+            # You can decide your own action (change the following action to yours)
+            action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
+            # You can start a new episode and save the step to the replay buffer (self.demo)
+            self.demo.create_episode()
+            self.demo.create_step(state=state, action=action)
         elif state.event != PAIA.Event.EVENT_NONE:
             # You can do something when the game (episode) ends
-            action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
-            # action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
+            want_to_restart = True # Uncomment if you want to restart
+            # want_to_restart = False # Uncomment if you want to finish
+            if self.episode_number < config.MAX_EPISODES and want_to_restart:
+                # Do something when restart
+                action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
+                self.episode_number += 1
+                self.step_number = 0
+                # You can save the step to the replay buffer (self.demo)
+                self.demo.create_step(state=state, action=action)
+            else:
+                # Do something when finish
+                action = PAIA.create_action_object(command=PAIA.Command.COMMAND_FINISH)
+                # You can save the step to the replay buffer (self.demo)
+                self.demo.create_step(state=state, action=action)
+                # You can export your replay buffer
+                self.demo.export('kart.paia')
         
         logging.debug(PAIA.action_info(action))
+
         return action
 ```
 修改 `decision` function，由 State 產生 Action。
@@ -187,7 +216,7 @@ actions = demo.get_actions(episode)
 參考 `communication/protos/PAIA.proto` 檔案
 
 ### 狀態資訊
-事件（`PAIA.Event`）定義：
+事件（`PAIA.Event`）定義，用法可以參考上面主要的部分的範例：
 ```C++
 enum Event { // 事件
 	EVENT_NONE; // 一般狀態
@@ -261,7 +290,7 @@ struct State { // 狀態資訊
 ```
 
 ### 動作資訊
-動作指令（`PAIA.Command`）定義：
+動作指令（`PAIA.Command`）定義，用法可以參考上面主要的部分的範例：
 ```C++
 enum Command { // 想要做的指令
 	COMMAND_GENERAL; // 一般動作
@@ -284,6 +313,8 @@ struct Action { // 動作資訊
 ```
 
 ### 錄製資訊
+錄製資訊除了記錄手動玩的結果，用來進行 Imitation Learning（模仿學習）以外，也可以用來當作 Replay Buffer 使用，以下的格式均是使用 [Protocol Buffer](https://developers.google.com/protocol-buffers)，可以參考官方說明裡面的使用方法來使用，如果是陣列（Array）/列表（List）的畫也可以善用 Python 的 `append(元素)` 新增單筆資料或是`extend(列表)` 新增多筆資料。
+
 「步（Step）」的資訊（`PAIA.Step`）定義：
 ```C++
 struct Step { // 一步的資訊

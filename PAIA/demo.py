@@ -1,3 +1,4 @@
+from __future__ import annotations
 import logging
 from typing import List, Optional, Union
 from pathlib import Path
@@ -12,9 +13,13 @@ import numpy as np
 import PAIA
 
 class Demo:
-    def __init__(self, paths: Union[List[str], str, None], id: str=None):
-        self.load(paths)
-        self.show()
+    def __init__(self, paths: Union[List[str], str, None]=None, id: str=None):
+        if paths is not None:
+            self.load(paths)
+            self.show()
+        else:
+            self.demo = PAIA.Demo()
+        self.index = -1
 
     def get_observations_from_buffer(buffer: AgentBuffer, behavior_spec: BehaviorSpec, index: int) -> List[np.ndarray]:
         obs_list: List[np.ndarray] = []
@@ -93,19 +98,18 @@ class Demo:
         demo = PAIA.Demo(episodes=episodes)
         return demo
     
-    def load_paia(self, path: str):
+    def load_paia(self, path: str) -> PAIA.Demo:
         with open(path, "rb") as fin:
             decompressed = zlib.decompress(fin.read())
             demo = PAIA.Demo()
             demo.ParseFromString(decompressed)
             return demo
     
-    def load(self, paths: Union[List[str], str, None], id: str=None):
+    def load(self, paths: Union[List[str], str, None], id: str=None) -> PAIA.Demo:
         if paths is None:
             paths = []
         elif type(paths) is str:
             paths = [paths]
-        
         
         self.demo = PAIA.Demo()
         for path in paths:
@@ -120,7 +124,12 @@ class Demo:
         
         return self.demo
     
-    def show(self):
+    def export(self, path: str='kart.paia') -> None:
+        with open(path, "wb") as fout:
+            compressed = zlib.compress(self.demo.SerializeToString())
+            fout.write(compressed)
+    
+    def show(self) -> None:
         for i in range(len(self.demo.episodes)):
             for j in range(len(self.demo.episodes[i].steps)):
                 logging.debug('Episode: ' + str(i) + ', Step: ' + str(j))
@@ -171,3 +180,33 @@ class Demo:
         if episode < len(self.demo.episodes):
             return [step.action for step in self.demo.episodes[episode].steps]
         return None
+    
+    def create_demo() -> Demo:
+        demo = Demo()
+        demo.create_episode()
+        return demo
+
+    def create_episode(self) -> None:
+        self.demo.episodes.add()
+        self.index += 1
+    
+    def create_step(self, state: PAIA.State, action: PAIA.Action) -> None:
+        self.add_step(PAIA.Step(state=state, action=action))
+    
+    def add_step(self, step: PAIA.Step, episode: int=-1) -> None:
+        if episode != -1:
+            self.demo.episodes[episode].steps.append(step)
+        else:
+            self.demo.episodes[self.index].steps.append(step)
+    
+    def add_steps(self, steps: List[PAIA.Step], episode: int=-1) -> None:
+        if episode != -1:
+            self.demo.episodes[episode].steps.extend(steps)
+        else:
+            self.demo.episodes[self.index].steps.extend(steps)
+    
+    def add_episode(self, episode: PAIA.Episode) -> None:
+        self.demo.episodes.append(episode)
+    
+    def add_episodes(self, episodes: List[PAIA.Episode]) -> None:
+        self.demo.episodes.extend(episodes)

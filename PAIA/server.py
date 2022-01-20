@@ -162,6 +162,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         logging.info('Removed client: ' + str(id))
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
+        logging.info(PAIA.action_info(action))
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
             logging.info('New client: ' + str(action.id))
@@ -170,7 +171,8 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.actions[self.behavior_names[action.id]] = action
             self.check_status()
         while not self.states_ready or not self.env_ready:
-            pass
+            if self.states_ready and not self.env_ready and len(self.actions) == 0: # Leave infinite loop if finished
+                break
         if action.id in self.behavior_names:
             return self.states[self.behavior_names[action.id]]
         else:

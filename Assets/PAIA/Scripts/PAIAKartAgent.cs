@@ -73,7 +73,7 @@ public class PAIAKartAgent : Agent, IInput
     {
         string name = GetComponent<BehaviorParameters>().BehaviorName + "?team=" + GetComponent<BehaviorParameters>().TeamId;
         Debug.Log(name);
-        InitDemo(true, "PAIA/Demo", "kart", 10000);
+        InitDemo(false, "PAIA/Demo", "kart", 10000);
         m_Kart = GetComponent<ArcadeKart>();
         m_Rigidbody = GetComponent<Rigidbody>();
         m_UI = GetComponent<SingleUI>();

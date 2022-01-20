@@ -108,7 +108,7 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
     state.reward = reward
     return state
 
-def state_info(state: State, img_id: str) -> str:
+def state_info(state: State, img_suffix: str) -> str:
     s = State()
     s.CopyFrom(state)
     if config.LOG_LEVEL <= logging.DEBUG:
@@ -116,8 +116,8 @@ def state_info(state: State, img_id: str) -> str:
         if not os.path.exists(config.IMAGE_DIR):
             os.makedirs(config.IMAGE_DIR)
         
-        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_id) + '.png'
-        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_id) + '.png'
+        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_suffix) + '.png'
+        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_suffix) + '.png'
 
         with open(filepath_front, 'wb') as fout:
             fout.write(s.observation.images.front.data)

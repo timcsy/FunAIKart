@@ -34,7 +34,8 @@ def run(id: str='', filepath: str='ml_play') -> None:
         if state.event != PAIA.Event.EVENT_NONE:
             if action.command == PAIA.Command.COMMAND_FINISH:
                 # Terminate the process if want to finish
-                stub.hook(action)
+                state = stub.hook(action)
+                action = brain.decision(state)
                 break
             elif action.command == PAIA.Command.COMMAND_RESTART or state.event == PAIA.Event.EVENT_RESTART:
                 # If the user want to restart, then don't do extra things
@@ -42,7 +43,8 @@ def run(id: str='', filepath: str='ml_play') -> None:
             else:
                 # Force to finish when the user doesn't want to restart
                 action.command = PAIA.Command.COMMAND_FINISH
-                stub.hook(action)
+                state = stub.hook(action)
+                action = brain.decision(state)
                 break
 
 if __name__ == '__main__':
