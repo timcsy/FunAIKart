@@ -27,9 +27,9 @@ def image_to_array(data: bytes) -> np.ndarray:
     :param data: bytes (with PNG, ... format).
     :return: Numpy array (range from 0 to 1).
     """
-    image = Image.open(io.BytesIO(data))
-    array = np.array(image).astype(np.float32) / 255.0
-    return array
+    with Image.open(io.BytesIO(data)) as image:
+        array = np.array(image).astype(np.float32) / 255.0
+        return array
 
 def array_to_image(array: np.ndarray) -> bytes:
     """
