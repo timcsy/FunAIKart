@@ -162,7 +162,6 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         logging.info('Removed client: ' + str(id))
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
-        logging.info(PAIA.action_info(action))
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
             logging.info('New client: ' + str(action.id))

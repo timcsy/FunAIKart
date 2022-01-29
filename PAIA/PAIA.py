@@ -31,16 +31,29 @@ def image_to_array(data: bytes) -> np.ndarray:
         array = np.array(image).astype(np.float32) / 255.0
         return array
 
-def array_to_image(array: np.ndarray) -> bytes:
+def array_to_image(array: np.ndarray, format: str='JPEG') -> bytes:
     """
     Convert numpy array to bytes data (can be used by the field of protocol buffer).
     :param array: Numpy array (range from 0 to 1).
+    :param format: string (which format to convert to).
     :return: bytes (PNG format).
     """
     image = Image.fromarray((255 * array).astype(np.uint8)) # Convert to PIL format
     imgByteArr = io.BytesIO()
-    image.save(imgByteArr, format='PNG')
+    image.save(imgByteArr, format=format)
     return imgByteArr.getvalue()
+
+def image_to_image(data: bytes, format: str='JPEG') -> bytes:
+    """
+    Convert image to given format.
+    :param data: bytes (with PNG, ... format).
+    :param format: string (which format to convert to).
+    :return: bytes (image with given format).
+    """
+    with Image.open(io.BytesIO(data)) as image:
+        imgByteArr = io.BytesIO()
+        image.save(imgByteArr, format=format)
+        return imgByteArr.getvalue()
 
 def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], event: Event, reward: float=0.0) -> State:
     state = State(api_version='PAIAKart_1.0')
@@ -111,18 +124,18 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
 def state_info(state: State, img_suffix: str) -> str:
     s = State()
     s.CopyFrom(state)
-    if config.LOG_LEVEL <= logging.DEBUG:
+    if logging.getLogger().getEffectiveLevel() <= logging.DEBUG:
         # Save the image to the disk
         if not os.path.exists(config.IMAGE_DIR):
             os.makedirs(config.IMAGE_DIR)
         
-        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_suffix) + '.png'
-        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_suffix) + '.png'
+        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_suffix) + '.jpg'
+        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_suffix) + '.jpg'
 
         with open(filepath_front, 'wb') as fout:
-            fout.write(s.observation.images.front.data)
+            fout.write(image_to_image(s.observation.images.front.data, format='JPEG'))
         with open(filepath_back, 'wb') as fout:
-            fout.write(s.observation.images.back.data)
+            fout.write(image_to_image(s.observation.images.back.data, format='JPEG'))
         
         s.observation.images.front.data = bytes(filepath_front, encoding='utf8')
         s.observation.images.back.data = bytes(filepath_back, encoding='utf8')
