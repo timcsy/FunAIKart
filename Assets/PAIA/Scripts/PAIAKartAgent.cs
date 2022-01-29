@@ -76,7 +76,7 @@ public class PAIAKartAgent : Agent, IInput
         m_UI = GetComponent<SingleUI>();
         string name = GetComponent<BehaviorParameters>().BehaviorName + "?team=" + GetComponent<BehaviorParameters>().TeamId;
         Debug.Log(name);
-        InitDemo(true, "PAIA/Demo", "kart", 10000);
+        InitDemo(false, "PAIA/Demo", "kart", 10000);
     }
 
     void InitDemo(bool Record=true, string DemonstrationDirectory = "PAIA/Demo", string DemonstrationName="demo", int NumStepsToRecord=10000)
