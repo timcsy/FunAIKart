@@ -33,4 +33,4 @@ DEMO_FILE: str = 'kart.demo'
 DEMO_PATH: str = DEMO_DIR + '/' + DEMO_FILE
 
 # Max Episodes for online
-MAX_EPISODES: int = 10000
+MAX_EPISODES: int = 500
