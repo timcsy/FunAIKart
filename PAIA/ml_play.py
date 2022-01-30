@@ -10,7 +10,6 @@ import torch.nn as nn
 import torch.optim as optim
 import collections
 from getkey import getkey, keys
-import os
 
 GAMMA = 0.99
 BATCH_SIZE = 32
@@ -62,13 +61,6 @@ class MLPlay:
         self.progress = 0
         self.total_rewards = []
         self.best_mean = 0
-        
-        if os.path.isfile('best_model.dat'):
-            print("LOAD MODEL")
-            self.net.load_state_dict(torch.load("best_model.dat", map_location=lambda storage, loc: storage))
-            self.best_mean = -1
-            EPSILON_START = -1
-            self.epsilon = 0.02
 
 
 
@@ -82,6 +74,7 @@ class MLPlay:
         #       state.observation.images.front.data and 
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
+
         img_array = PAIA.image_to_array(state.observation.images.front.data)
         img_array = cv2.cvtColor(img_array, cv2.COLOR_BGR2GRAY)
         img_array = cv2.resize(img_array, (63, 28))
@@ -107,7 +100,7 @@ class MLPlay:
             if state.observation.progress > self.progress:
                 reward = (state.observation.progress - self.progress)*1000
                 self.progress = state.observation.progress
-            print(reward)
+            #print(reward)
             if reward < 0.1:
                 self.cnt += 1
             else:
@@ -138,19 +131,17 @@ class MLPlay:
         #elif key == keys.D:
         #    self.action = 2
 
-        logging.info('Epispde: ' + str(self.episode_number) + ', Step: ' + str(self.step_number) + ', Epsilon: ' + str(self.epsilon))
+        #logging.info('Epispde: ' + str(self.episode_number) + ', Step: ' + str(self.step_number) + ', Epsilon: ' + str(self.epsilon))
 
         action = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0)
         if self.episode_number < config.MAX_EPISODES and self.cnt>10:
             self.cnt = 0
             self.total_rewards.append(self.progress)
-            mean_reward = np.mean(self.total_rewards[-100:])
+            logging.info('Epispde: ' + str(self.episode_number)+ ', Epsilon: ' + str(self.epsilon) + ', Progress: %.3f' %self.progress )
+            mean_reward = np.mean(self.total_rewards[-30:])
             if self.best_mean < mean_reward:
-                if self.best_mean != -1:
-                    print("Best mean reward updated %.3f -> %.3f, model saved" % (self.best_mean, mean_reward))
-                    torch.save(self.net.state_dict(), "best_model.dat")
-                else:
-                    print("BEST:", mean_reward)
+                print("Best mean reward updated %.3f -> %.3f, model saved" % (self.best_mean, mean_reward))
+                torch.save(self.net.state_dict(), "best_model.dat")
                 self.best_mean = mean_reward
 
             action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
@@ -197,13 +188,11 @@ class MLPlay:
                 # You can export your replay buffer
                 #self.demo.export('kart.paia')
             self.total_rewards.append(self.progress)
-            mean_reward = np.mean(self.total_rewards[-100:])
+            logging.info('Epispde: ' + str(self.episode_number)+ ', Epsilon: ' + str(self.epsilon) + ', Progress: %.3f' %self.progress )
+            mean_reward = np.mean(self.total_rewards[-30:])
             if self.best_mean < mean_reward:
-                if self.best_mean != -1:
-                    print("Best mean reward updated %.3f -> %.3f, model saved" % (self.best_mean, mean_reward))
-                    torch.save(self.net.state_dict(), "best_model.dat")
-                else:
-                    print("BEST:", mean_reward)
+                print("Best mean reward updated %.3f -> %.3f, model saved" % (self.best_mean, mean_reward))
+                torch.save(self.net.state_dict(), "best_model.dat")
                 self.best_mean = mean_reward
         
         ##logging.debug(PAIA.action_info(action))
