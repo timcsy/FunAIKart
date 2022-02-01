@@ -103,7 +103,11 @@ paramiko
 
 Windows 設定：
 ```
-SET PAIA_ID=小組的識別號碼 PAIA_HOST=小組的SSH主機IP PAIA_PORT=小組的SSH主機port PAIA_USERNAME=小組的SSH帳號 PAIA_PASSWORD=小組的SSH密碼
+SET PAIA_ID=小組的識別號碼
+SET PAIA_HOST=小組的SSH主機IP
+SET PAIA_PORT=小組的SSH主機port
+SET PAIA_USERNAME=小組的SSH帳號
+SET PAIA_PASSWORD=小組的SSH密碼
 ```
 
 其他作業系統（Linux、macOS）設定：

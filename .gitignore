@@ -83,3 +83,4 @@ PAIA/autosave
 PAIA/ml/*
 !PAIA/ml/__init__.py
 *.app
+kart

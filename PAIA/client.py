@@ -87,7 +87,7 @@ def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
 
 def load(script_path: str=None, pickle_path: str=None, is_continue: bool=False):
     if is_continue:
-        if pickle_path is None:
+        if pickle_path is None and os.path.exists('autosave'):
             # Find the newest autosaved kart_timestamp.pickle
             newest_time = 0
             for entry in os.scandir('autosave'):

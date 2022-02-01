@@ -98,7 +98,7 @@ def team_config():
     ssh_port = int(input('SSH port of your team (e.g. 9487): ') or os.getenv('PAIA_PORT'))
     ssh_user = input('SSH username: ') or os.getenv('PAIA_USERNAME')
     ssh_pass = getpass('SSH password: ') or os.getenv('PAIA_PASSWORD')
-    return (remote_bind_port, forward_host, forward_port, ssh_host, ssh_port, ssh_user, ssh_pass)
+    return [remote_bind_port, forward_host, forward_port, ssh_host, ssh_port, ssh_user, ssh_pass]
 
 if __name__ == "__main__":
     args = team_config()
@@ -109,7 +109,11 @@ if __name__ == "__main__":
 
 Windows:
 
-SET PAIA_ID=<your team ID> PAIA_HOST=<your ssh host IP> PAIA_PORT=<your ssh port> PAIA_USERNAME=<your ssh username> PAIA_PASSWORD=<your ssh password>
+SET PAIA_ID=<your team ID>
+SET PAIA_HOST=<your ssh host IP>
+SET PAIA_PORT=<your ssh port>
+SET PAIA_USERNAME=<your ssh username>
+SET PAIA_PASSWORD=<your ssh password>
 
 Unix-like:
 
