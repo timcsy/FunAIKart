@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
+using System.IO;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Actuators;
@@ -76,10 +78,24 @@ public class PAIAKartAgent : Agent, IInput
         m_UI = GetComponent<SingleUI>();
         string name = GetComponent<BehaviorParameters>().BehaviorName + "?team=" + GetComponent<BehaviorParameters>().TeamId;
         Debug.Log(name);
-        InitDemo(false, "PAIA/Demo", "kart", 10000);
+        CreateDemoOrNot();
     }
 
-    void InitDemo(bool Record=true, string DemonstrationDirectory = "PAIA/Demo", string DemonstrationName="demo", int NumStepsToRecord=10000)
+    void CreateDemoOrNot()
+    {
+        string config_file = "Demo.config";
+        if (File.Exists(config_file))
+        {
+            string purename = File.ReadAllText(config_file).Trim();
+            if (purename == "")
+            {
+                purename = System.DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            InitDemo(true, "Demo", purename, Int32.MaxValue);
+        }
+    }
+
+    void InitDemo(bool Record=true, string DemonstrationDirectory = "PAIA/Demo", string DemonstrationName="kart", int NumStepsToRecord=10000)
     {
         m_Demo = gameObject.AddComponent(typeof(DemonstrationRecorder)) as DemonstrationRecorder;
         m_Demo.NumStepsToRecord = NumStepsToRecord;

@@ -101,24 +101,25 @@ public class VideoRecorder : MonoBehaviour
         videoFrames = new List<VideoFrame>();
         audioFrames = new List<AudioFrame>();
         sampleRate = AudioSettings.outputSampleRate;
-        // instance.Begin();
+        string config_file = "Records/config.txt";
+        if (File.Exists(config_file)) instance.Begin();
     }
 
     // Update is called once per frame
     void Update()
     {
         // TODO: Switch to a different place
-        if (videoFrames.Count == 200)
-        {
-            End();
-            SaveImages("Records", "img");
-            SaveAudio("Records", "audio");
-            #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-            #else
-            Application.Quit();
-            #endif
-        }
+        // if (videoFrames.Count == 200)
+        // {
+        //     End();
+        //     SaveImages("Records", "img");
+        //     SaveAudio("Records", "audio");
+        //     #if UNITY_EDITOR
+        //     UnityEditor.EditorApplication.isPlaying = false;
+        //     #else
+        //     Application.Quit();
+        //     #endif
+        // }
     }
 
     private IEnumerator CaptureUI()
@@ -243,5 +244,49 @@ public class VideoRecorder : MonoBehaviour
         // Make sure directory exists if user is saving to sub dir.
         Directory.CreateDirectory(path);
         SavWav.Save(path + "/" + filename + ".wav", clip);
+    }
+
+    public void CleanMemory()
+    {
+        int identificador = GC.GetGeneration(videoFrames);
+        videoFrames.Clear();
+        GC.Collect(identificador, GCCollectionMode.Forced);
+        identificador = GC.GetGeneration(audioFrames);
+        videoFrames.Clear();
+        GC.Collect(identificador, GCCollectionMode.Forced);
+    }
+
+    public void SaveAll()
+    {
+        string config_file = "Records.config";
+        if (File.Exists(config_file))
+        {
+            // Dealing with path to save images and audio
+            string path = File.ReadAllText(config_file).Trim();
+            if (path == "")
+            {
+                path = "Records/" + System.DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            path = Path.GetFullPath(path);
+            Directory.CreateDirectory(path);
+
+            // output video size
+            var output_width = (videoWidth < 0)? (int)Mathf.Floor(-Screen.width * videoWidth): videoWidth;
+            var output_height = (videoHeight < 0)? (int)Mathf.Floor(-Screen.height * videoHeight): videoHeight;
+            string size = "" + output_width + "x" + output_height;
+            using (StreamWriter outputFile = new StreamWriter(Path.Combine(path, "size.txt"), true))
+            {
+                outputFile.WriteLine(size);
+            }
+
+            SaveImages(path, "img");
+            SaveAudio(path, "audio"); // The Audio can indicate the length of the video
+            CleanMemory();
+        }
+    }
+
+    void OnDestroy()
+    {
+        SaveAll();
     }
 }

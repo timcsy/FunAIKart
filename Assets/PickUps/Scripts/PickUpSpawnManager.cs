@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 
 public class PickUpSpawnManager : MonoBehaviour
@@ -12,6 +13,27 @@ public class PickUpSpawnManager : MonoBehaviour
 
     void Start()
     {
+        // Using ramdom seed or not
+        string config_file = "PickUps.config";
+        if (File.Exists(config_file))
+        {
+            string seed = File.ReadAllText(config_file).Trim();
+            if (seed != "")
+            {
+                // Use random seed if the config file is not empty
+                Random.InitState(int.Parse(seed));
+            }
+        }
+        else
+        {
+            // Disable PickUps if the config file doesn't exist
+            var PickUpLocations = GameObject.FindGameObjectsWithTag("PickUps");
+            foreach (GameObject p in PickUpLocations)
+            {
+                p.SetActive(false);
+            }
+        }
+
         Refill.ListOfLocations = new Transform[Refill.SpawnPointCount];
         Consuamble.ListOfLocations = new Transform[Consuamble.SpawnPointCount];
 
