@@ -3,7 +3,7 @@
 ## 使用方法
 
 ### 主要的部分
-將你所寫的 `MLPlay` 類別放在 `ml_play.py` （可以改檔名）中，如下：
+將你所寫的 `MLPlay` 類別放在 `ml/ml_play.py` （可以改檔名）中，如下：
 ```python
 import logging # you can use functions in logging: debug, info, warning, error, critical, log
 import config
@@ -68,8 +68,56 @@ class MLPlay:
         logging.debug(PAIA.action_info(action))
 
         return action
+
+		def autosave(self):
+        '''
+        self.autosave() will be called when the game restarts,
+        You can save some important information in case that accidents happen.
+        '''
+				pass
 ```
+
 修改 `decision` function，由 State 產生 Action。
+
+注意路徑的問題，如果要取得相對於 `ml_play.py` 的資料夾位置，
+
+可以使用 `os.path.dirname(os.path.abspath(__file__))`，
+
+如果是一般相對的路徑，會以終端機所在的位置為準，兩者可能不同（`ml_play.py` 是放在 `ml` 資料夾下）。
+
+### 環境建置
+
+#### 環境需求
+Python 3
+mlagents==0.26.0
+numpy
+Pillow
+opencv-python
+paramiko
+
+建議使用 Anaconda，
+
+執行 `pip install -r requirements.txt` 來安裝這些套件。
+
+#### 環境變數（Environment Variables）
+
+Windows 設定：
+```
+SET PAIA_ID=小組的識別號碼 PAIA_HOST=小組的SSH主機IP PAIA_PORT=小組的SSH主機port PAIA_USERNAME=小組的SSH帳號 PAIA_PASSWORD=小組的SSH密碼
+```
+
+其他作業系統（Linux、macOS）設定：
+```
+export \
+PAIA_ID=小組的識別號碼 \
+PAIA_HOST=小組的SSH主機IP \
+PAIA_PORT=小組的SSH主機port \
+PAIA_USERNAME=小組的SSH帳號 \
+PAIA_PASSWORD=小組的SSH密碼
+```
+
+如果沒有特別設定，在關閉終端機之後環境變數的設定會失效。
+
 
 ### 執行方式（修改中）
 

@@ -1,4 +1,5 @@
-mlagents
+mlagents==0.26.0
 numpy
-PIL
-websockets
+Pillow
+opencv-python
+paramiko

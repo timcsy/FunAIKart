@@ -73,11 +73,13 @@ crashlytics-build.properties
 .DS_Store
 InitCodeMarker
 .vscode
+.env
 __pycache__
 PAIA/cameras
 PAIA/Demo
 Records
 Assets/ML-Agents/Timers
-PAIA/best_model.dat
-Complex.app
-PAIA.app
+PAIA/autosave
+PAIA/ml/*
+!PAIA/ml/__init__.py
+*.app

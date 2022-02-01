@@ -6,6 +6,7 @@ import config
 from config import RunningMode
 import client
 import server
+import rforward
 
 def main(id: str=None):
     if config.RUNNING_MODE == RunningMode.CLIENT:
@@ -13,12 +14,20 @@ def main(id: str=None):
         client.run(id)
     elif config.RUNNING_MODE == RunningMode.SERVER:
         # Online server
-        server.serve()
+        threads = []
+        # Remote port forwarding with SSH
+        threads.append(threading.Thread(target=rforward.rforward, args=rforward.team_config()))
+        # Run server
+        threads.append(threading.Thread(target=server.serve))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
     elif config.RUNNING_MODE == RunningMode.OFFLINE:
         # Offline server and clients
         threads = []
         threads.append(threading.Thread(target=server.serve))
-        threads.append(threading.Thread(target=client.run, args = (id)))
+        threads.append(threading.Thread(target=client.run, args=(id)))
         for thread in threads:
             thread.start()
         for thread in threads:

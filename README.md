@@ -54,4 +54,4 @@ This repository contains everything needed to get the project up and running on 
 ## PAIA 機器學習平台
 機器學習的部分放在 `PAIA` 資料夾中，使用方法請參考：[PAIA 賽車機器學習平台](PAIA)
 
-注意：Python Unity 的 ML-Agents 的版本要對好，本專案用的是 Release 17
+注意：Python Unity 的 ML-Agents 的版本要對好，本專案用的是 Release 17，Python 端版本要裝 mlagents 0.26.0
