@@ -285,6 +285,7 @@ public class VideoRecorder : MonoBehaviour
                 outputFile.WriteLine(size);
             }
 
+            End();
             SaveImages(path, "img");
             SaveAudio(path, "audio"); // The Audio can indicate the length of the video
             CleanMemory();
@@ -293,15 +294,6 @@ public class VideoRecorder : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        #if !UNITY_EDITOR
         SaveAll();
-        #endif
-    }
-
-    void OnDestroy()
-    {
-        #if UNITY_EDITOR
-        SaveAll();
-        #endif
     }
 }
