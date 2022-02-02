@@ -95,7 +95,7 @@ public class PAIAKartAgent : Agent, IInput
         }
     }
 
-    void InitDemo(bool Record=true, string DemonstrationDirectory = "PAIA/Demo", string DemonstrationName="kart", int NumStepsToRecord=10000)
+    void InitDemo(bool Record=true, string DemonstrationDirectory = "Demo", string DemonstrationName="kart", int NumStepsToRecord=10000)
     {
         m_Demo = gameObject.AddComponent(typeof(DemonstrationRecorder)) as DemonstrationRecorder;
         m_Demo.NumStepsToRecord = NumStepsToRecord;

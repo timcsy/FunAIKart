@@ -51,6 +51,7 @@ public class VideoRecorder : MonoBehaviour
     // Awake is called before Start(), whether or not the script is enabled
     private void Awake()
     {
+        Resize(false);
         // Assign the static instance
         if (!instance) { 
             instance = this;
@@ -105,21 +106,26 @@ public class VideoRecorder : MonoBehaviour
         if (File.Exists(config_file)) instance.Begin();
     }
 
-    // Update is called once per frame
-    void Update()
+    public void Resize(bool fullscreen=false)
     {
-        // TODO: Switch to a different place
-        // if (videoFrames.Count == 200)
-        // {
-        //     End();
-        //     SaveImages("Records", "img");
-        //     SaveAudio("Records", "audio");
-        //     #if UNITY_EDITOR
-        //     UnityEditor.EditorApplication.isPlaying = false;
-        //     #else
-        //     Application.Quit();
-        //     #endif
-        // }
+        string config_file = "Screen.config";
+        if (File.Exists(config_file))
+        {
+            // Dealing with path to save images and audio
+            string size = File.ReadAllText(config_file).Trim();
+            var sizes = size.Split('x');
+            if (sizes.Length == 2)
+            {
+                int width = -1;
+                bool has_width = int.TryParse(sizes[0], out width);
+                int height = -1;
+                bool has_height = int.TryParse(sizes[1], out height);
+                if (has_width && has_height && width >= 0 && height >= 0)
+                {
+                    Screen.SetResolution(width, height, fullscreen);
+                }
+            }
+        }
     }
 
     private IEnumerator CaptureUI()
