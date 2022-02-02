@@ -291,8 +291,17 @@ public class VideoRecorder : MonoBehaviour
         }
     }
 
+    void OnApplicationQuit()
+    {
+        #if !UNITY_EDITOR
+        SaveAll();
+        #endif
+    }
+
     void OnDestroy()
     {
+        #if UNITY_EDITOR
         SaveAll();
+        #endif
     }
 }
