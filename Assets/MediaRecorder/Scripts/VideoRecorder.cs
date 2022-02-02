@@ -102,7 +102,7 @@ public class VideoRecorder : MonoBehaviour
         videoFrames = new List<VideoFrame>();
         audioFrames = new List<AudioFrame>();
         sampleRate = AudioSettings.outputSampleRate;
-        string config_file = "Records/config.txt";
+        string config_file = "Records.config";
         if (File.Exists(config_file)) instance.Begin();
     }
 
