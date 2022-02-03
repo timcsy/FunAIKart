@@ -7,11 +7,11 @@ using UnityEngine.Rendering;
 
 public struct VideoFrame
 {
-    public Texture2D texture;
+    public byte[] image;
     public TimeSpan timestamp;
-    public VideoFrame(Texture2D texture, TimeSpan timestamp)
+    public VideoFrame(byte[] image, TimeSpan timestamp)
     {
-        this.texture = texture;
+        this.image = image;
         this.timestamp = timestamp;
     }
 }
@@ -51,7 +51,7 @@ public class VideoRecorder : MonoBehaviour
     // Awake is called before Start(), whether or not the script is enabled
     private void Awake()
     {
-        Resize(false);
+        ResizeScreen(false);
         // Assign the static instance
         if (!instance) { 
             instance = this;
@@ -106,7 +106,7 @@ public class VideoRecorder : MonoBehaviour
         if (File.Exists(config_file)) instance.Begin();
     }
 
-    public void Resize(bool fullscreen=false)
+    public void ResizeScreen(bool fullscreen=false)
     {
         string config_file = "Screen.config";
         if (File.Exists(config_file))
@@ -151,9 +151,14 @@ public class VideoRecorder : MonoBehaviour
                     var m_outputTexture = new RenderTexture(output_width, output_height, depth);
                     Graphics.Blit(m_screenTexture, m_outputTexture);
                     tex = toTexture2D(m_outputTexture);
+                    DestroyImmediate(m_outputTexture, true);
                 }
-                var videoFrame = new VideoFrame(tex, DateTime.Now - startTime);
+                byte[] image = toImage(tex);
+                var videoFrame = new VideoFrame(image, DateTime.Now - startTime);
                 videoFrames.Add(videoFrame);
+
+                DestroyImmediate(m_screenTexture, true);
+                DestroyImmediate(tex, true);
             }
         }
     }
@@ -168,6 +173,8 @@ public class VideoRecorder : MonoBehaviour
         tex.Apply();
 
         RenderTexture.active = oldRT;
+
+        DestroyImmediate(rt, true);
 
         return tex;
     }
@@ -185,17 +192,48 @@ public class VideoRecorder : MonoBehaviour
 
         snap.SetPixels(pixelsFlipped);
         snap.Apply();
+
+        DestroyImmediate(tex, true);
+        int identificador = GC.GetGeneration(pixels);
+        pixels = null;
+        GC.Collect(identificador, GCCollectionMode.Forced);
+        identificador = GC.GetGeneration(pixelsFlipped);
+        pixelsFlipped = null;
+        GC.Collect(identificador, GCCollectionMode.Forced);
+
         return snap;
     }
-    private void SaveImages(String path, String filename)
+    private byte[] toImage(Texture2D texture, string format="JPG")
     {
-        int numFrames = videoFrames.Count;
         // Check if the environment need to flip upside-down
         var flipY = SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore ||
                     SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2 ||
                     SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3 ||
                     SystemInfo.graphicsDeviceType == GraphicsDeviceType.Vulkan ?
                     false: true;
+        Texture2D tex;
+        if (flipY) tex = FlipTexture(texture);
+        else tex = texture;
+
+        byte[] buffer;
+        if (format == "PNG")
+        {
+            buffer = tex.EncodeToPNG();
+        }
+        else
+        {
+            buffer = tex.EncodeToJPG();
+        }
+        
+        DestroyImmediate(texture, true);
+        DestroyImmediate(tex, true);
+
+        return buffer;
+    }
+
+    private void SaveImages(String path, String filename)
+    {
+        int numFrames = videoFrames.Count;
         // Make sure directory exists if user is saving to sub dir.
         Directory.CreateDirectory(path);
         using (var fileStream = new FileStream(path + "/" + filename + ".txt", FileMode.Create))
@@ -204,17 +242,13 @@ public class VideoRecorder : MonoBehaviour
             String fullName = null;
             for (int i = 0; i < numFrames; i++)
             {
-                Texture2D tex;
-                if (flipY) tex = FlipTexture(videoFrames[i].texture);
-                else tex = videoFrames[i].texture;
-                byte[] buffer = tex.EncodeToPNG();
                 if (fullName != null)
                 {
                     TimeSpan diff = videoFrames[i].timestamp - videoFrames[i-1].timestamp;
                     writer.WriteLine("duration {0}", diff.TotalSeconds);
                 }
-                fullName = filename + "_" + i + ".png";
-                File.WriteAllBytes(path + "/" + fullName, buffer);
+                fullName = filename + "_" + i + ".jpg";
+                File.WriteAllBytes(path + "/" + fullName, videoFrames[i].image);
                 writer.WriteLine("file '{0}'", fullName);
             }
         }
