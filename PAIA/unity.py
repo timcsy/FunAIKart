@@ -22,16 +22,16 @@ def get_unity_app(basedir: str='kart', windows: str='Windows/kart.exe', linux: s
         filepath = os.path.abspath(os.path.join(basedir, file_relpath))
     return filepath
 
-def get_unity_dir(basedir: str='kart') -> str:
+def get_unity_dir(company: str='PAIA', product: str='kart', basedir: str='kart') -> str:
     persistentDataPath = '.'
 
     operating_system = platform.system()
     if operating_system == 'Windows':
-        persistentDataPath = os.path.join(os.path.expanduser("~"), 'AppData\LocalLow\PAIA\kart')
+        persistentDataPath = os.path.join(os.path.expanduser("~"), 'AppData\LocalLow', company, product)
     elif operating_system == 'Linux':
-        persistentDataPath = os.path.join(os.path.expanduser("~"), '.config/unity3d')
+        persistentDataPath = os.path.join(os.path.expanduser("~"), '/home/timcsy/.config/unity3d', company, product)
     elif operating_system == 'Darwin':
-        persistentDataPath = os.path.join(os.path.expanduser("~"), 'Library/Application Support/PAIA/kart')
+        persistentDataPath = os.path.join(os.path.expanduser("~"), 'Library/Application Support', company, product)
 
     dirpath = os.path.join(persistentDataPath, basedir)
     if not os.path.exists(dirpath):
