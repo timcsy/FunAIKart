@@ -27,13 +27,16 @@ def get_unity_dir(basedir: str='kart') -> str:
 
     operating_system = platform.system()
     if operating_system == 'Windows':
-        persistentDataPath = '%userprofile%\AppData\LocalLow\PAIA\kart'
+        persistentDataPath = os.path.join(os.path.expanduser("~"), 'AppData\LocalLow\PAIA\kart')
     elif operating_system == 'Linux':
-        persistentDataPath = '$HOME/.config/unity3d'
+        persistentDataPath = os.path.join(os.path.expanduser("~"), '.config/unity3d')
     elif operating_system == 'Darwin':
-        persistentDataPath = '~/Library/Application Support/PAIA/kart'
+        persistentDataPath = os.path.join(os.path.expanduser("~"), 'Library/Application Support/PAIA/kart')
 
-    return os.path.abspath(os.path.join(persistentDataPath, basedir))
+    dirpath = os.path.join(persistentDataPath, basedir)
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+    return dirpath
 
 def set_config(name: str, config=True, dirname: str=None) -> None:
     '''
