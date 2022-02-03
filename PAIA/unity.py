@@ -1,10 +1,10 @@
 import os
 import platform
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 
-def get_unity(basedir: str='kart', windows: str='Windows/kart.exe', linux: str='Linux/kart.x86_64', macos: str='macOS/kart.app', other: str=None, editor=False) -> Tuple[str, str]:
+def get_unity_app(basedir: str='kart', windows: str='Windows/kart.exe', linux: str='Linux/kart.x86_64', macos: str='macOS/kart.app', other: str=None, editor=False) -> Union[str, None]:
     if editor:
-        return None, os.path.abspath('..')
+        return None
     
     operating_system = platform.system()
     if operating_system == 'Windows':
@@ -20,17 +20,27 @@ def get_unity(basedir: str='kart', windows: str='Windows/kart.exe', linux: str='
         filepath = file_relpath
     else:
         filepath = os.path.abspath(os.path.join(basedir, file_relpath))
-    dirname = os.path.dirname(filepath)
-    if not os.path.exists(dirname):
-        os.makedirs(dirname)
-    return filepath, dirname
+    return filepath
+
+def get_unity_dir(basedir: str='kart') -> str:
+    persistentDataPath = '.'
+
+    operating_system = platform.system()
+    if operating_system == 'Windows':
+        persistentDataPath = '%userprofile%\AppData\LocalLow\PAIA\kart'
+    elif operating_system == 'Linux':
+        persistentDataPath = '$HOME/.config/unity3d'
+    elif operating_system == 'Darwin':
+        persistentDataPath = '~/Library/Application Support/PAIA/kart'
+
+    return os.path.abspath(os.path.join(persistentDataPath, basedir))
 
 def set_config(name: str, config=True, dirname: str=None) -> None:
     '''
     Call this function before running Unity
     '''
     if dirname is None:
-        _, dirname = get_unity()
+        dirname = get_unity_dir()
 
     remove_config(name, dirname)
 
@@ -73,7 +83,7 @@ def set_config(name: str, config=True, dirname: str=None) -> None:
 
 def write_config(name: str, config: str, dirname: str=None) -> None:
     if dirname is None:
-        _, dirname = get_unity()
+        dirname = get_unity_dir()
     
     config_file = os.path.join(dirname, name + '.config')
     with open(config_file, 'w') as fout:
@@ -81,7 +91,7 @@ def write_config(name: str, config: str, dirname: str=None) -> None:
 
 def remove_config(name: str, dirname: str=None) -> None:
     if dirname is None:
-        _, dirname = get_unity()
+        dirname = get_unity_dir()
     
     try:
         os.remove(os.path.join(dirname, name + '.config'))

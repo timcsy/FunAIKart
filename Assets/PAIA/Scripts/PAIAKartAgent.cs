@@ -83,7 +83,7 @@ public class PAIAKartAgent : Agent, IInput
 
     void CreateDemoOrNot()
     {
-        string config_file = "Demo.config";
+        string config_file = Application.persistentDataPath + "/kart/Demo.config";
         if (File.Exists(config_file))
         {
             string purename = File.ReadAllText(config_file).Trim();
@@ -91,7 +91,7 @@ public class PAIAKartAgent : Agent, IInput
             {
                 purename = System.DateTime.Now.ToString("yyyyMMddHHmmss");
             }
-            InitDemo(true, "Demo", purename, Int32.MaxValue);
+            InitDemo(true, Application.persistentDataPath + "/kart/Demo", purename, Int32.MaxValue);
         }
     }
 

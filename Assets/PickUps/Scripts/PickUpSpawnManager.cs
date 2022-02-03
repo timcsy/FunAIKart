@@ -14,7 +14,7 @@ public class PickUpSpawnManager : MonoBehaviour
     void Start()
     {
         // Using ramdom seed or not
-        string config_file = "PickUps.config";
+        string config_file = Application.persistentDataPath + "/kart/PickUps.config";
         if (File.Exists(config_file))
         {
             string seed = File.ReadAllText(config_file).Trim();

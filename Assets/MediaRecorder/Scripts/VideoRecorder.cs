@@ -102,13 +102,13 @@ public class VideoRecorder : MonoBehaviour
         videoFrames = new List<VideoFrame>();
         audioFrames = new List<AudioFrame>();
         sampleRate = AudioSettings.outputSampleRate;
-        string config_file = "Records.config";
+        string config_file = Application.persistentDataPath + "/kart/Records.config";
         if (File.Exists(config_file)) instance.Begin();
     }
 
     public void ResizeScreen(bool fullscreen=false)
     {
-        string config_file = "Screen.config";
+        string config_file = Application.persistentDataPath + "/kart/Screen.config";
         if (File.Exists(config_file))
         {
             // Dealing with path to save images and audio
@@ -298,14 +298,14 @@ public class VideoRecorder : MonoBehaviour
 
     public void SaveAll()
     {
-        string config_file = "Records.config";
+        string config_file = Application.persistentDataPath + "/kart/Records.config";
         if (File.Exists(config_file))
         {
             // Dealing with path to save images and audio
             string path = File.ReadAllText(config_file).Trim();
             if (path == "")
             {
-                path = "Records/" + System.DateTime.Now.ToString("yyyyMMddHHmmss");
+                path = Application.persistentDataPath + "/kart/Records/" + System.DateTime.Now.ToString("yyyyMMddHHmmss");
             }
             path = Path.GetFullPath(path);
             Directory.CreateDirectory(path);
