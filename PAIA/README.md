@@ -10,8 +10,6 @@ from config import ENV
 import PAIA
 from demo import Demo
 
-MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
-
 class MLPlay:
     def __init__(self):
         self.demo = Demo.create_demo() # create a replay buffer
@@ -28,7 +26,8 @@ class MLPlay:
         #       state.observation.images.front.data and 
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
-        
+        MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
+
         self.step_number += 1
         logging.info('Epispde: ' + str(self.episode_number) + ', Step: ' + str(self.step_number))
 
@@ -52,7 +51,7 @@ class MLPlay:
             # You can do something when the game (episode) ends
             want_to_restart = True # Uncomment if you want to restart
             # want_to_restart = False # Uncomment if you want to finish
-            if MAX_EPISODES > 0 and self.episode_number < MAX_EPISODES and want_to_restart:
+            if (MAX_EPISODES < 0 or self.episode_number < MAX_EPISODES) and want_to_restart:
                 # Do something when restart
                 action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
                 self.episode_number += 1
@@ -155,12 +154,12 @@ Demo 錄製檔案的位置（Build 好的執行檔）：
 #### 線上（Online）模式（未完成）
 伺服器端（與 Unity 在同一台機器上）：
 ```
-python ml.py server -p 50051
+python ml.py online -p 50051
 ```
 
 用戶端（用來作 training 或 inferencing 的）：
 ```
-python ml.py client 使用者id ml_play_檔名.py 使用者id2 ml_play_檔名2.py ...
+python ml.py play 使用者id ml_play_檔名.py 使用者id2 ml_play_檔名2.py ...
 ```
 
 開啟順序：
@@ -187,13 +186,13 @@ python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名
   - -p, --port
   - players
   	- id code ...
-- server
+- online
   - -r, --record
   	- demo path
   - -e, --env
   - -p, --port
   - -n, --player-number
-- client
+- play
   - -a, --server-address
   - -r, --record
   	- demo path

@@ -1,26 +1,30 @@
 import logging
 import sys
 import threading
+import time
 
 from config import ENV
 import client
 import server
 import rforward
+from utils import team_config, server_config
 
-def main(id: str=None):
-
-    if ENV.get('RUNNING_MODE') == 'CLIENT':
+def main():
+    if ENV.get('RUNNING_MODE') == 'PLAY':
         # Online client
-        client.run(id)
-    elif ENV.get('RUNNING_MODE') == 'SERVER':
+        team_config()
+        client.run()
+    elif ENV.get('RUNNING_MODE') == 'ONLINE':
+        params = server_config()
         # Online server
         threads = []
-        # Remote port forwarding with SSH
-        threads.append(threading.Thread(target=rforward.rforward, args=rforward.team_config()))
         # Run server
         threads.append(threading.Thread(target=server.serve))
+        # Remote port forwarding with SSH
+        threads.append(threading.Thread(target=rforward.rforward, args=params))
         for thread in threads:
             thread.start()
+            time.sleep(1)
         for thread in threads:
             thread.join()
     else:
@@ -28,21 +32,22 @@ def main(id: str=None):
         # Offline server and clients
         threads = []
         threads.append(threading.Thread(target=server.serve))
-        threads.append(threading.Thread(target=client.run, args=[id]))
+        threads.append(threading.Thread(target=client.run))
         for thread in threads:
             thread.start()
         for thread in threads:
             thread.join()
 
 if __name__ == '__main__':
-    id = ''
+    if 'PLAYER_ID' not in ENV:
+        ENV['PLAYER_ID'] = ''
     if len(sys.argv) > 1:
-        if sys.argv[1] == 'client':
-            ENV.setdefault('RUNNING_MODE', 'CLIENT')
-            if len(sys.argv) > 2 and sys.argv[2] == '-n' and len(sys.argv) > 3:
-                id = sys.argv[3]
-        elif sys.argv[1] == 'server':
-            ENV.setdefault('RUNNING_MODE', 'SERVER')
+        if sys.argv[1] == 'play':
+            ENV['RUNNING_MODE'] = 'PLAY'
+            if len(sys.argv) > 2:
+                ENV['PLAYER_ID'] = sys.argv[2]
+        elif sys.argv[1] == 'online':
+            ENV['RUNNING_MODE'] = 'ONLINE'
         elif sys.argv[1] == 'offline':
-            ENV.setdefault('RUNNING_MODE', 'OFFLINE')
-    main(id)
+            ENV['RUNNING_MODE'] = 'OFFLINE'
+    main()

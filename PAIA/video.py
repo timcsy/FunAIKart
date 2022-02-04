@@ -7,6 +7,8 @@ import subprocess
 import ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
+import unity
+
 def insert_player_id(id: str, input_path, output_path):
     in1 = ffmpeg.input(input_path)
     v1 = in1.video.drawtext(
@@ -95,7 +97,7 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
 
     return image
 
-def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration=10, width=None, height=None, remove_original=False):
+def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration=10, width=None, height=None, remove_original=True):
     try:
         with open(os.path.join(video_dir, 'size.txt'), 'r') as fin:
             sizes = fin.read().split('x')

@@ -18,7 +18,7 @@ server = None
 class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     """Provides methods that implement functionality of PAIA server."""
 
-    def __init__(self, env_filepath=None):
+    def __init__(self):
         self.behavior_names = {} # Indexed by id, We let a behavior correspond to an unique agent
         self.ids = {} # Indexed by behavior_name
         self.agent_ids = {} # Indexed by id, an unique agent of a behavior
@@ -27,7 +27,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.behavior_name_queue = queue.Queue()
         self.id_queue = queue.Queue()
         self.episode = 0
-        self.env_filepath = env_filepath
+        self.env_filepath = unity.get_unity_app()
         self.env = False
         self.env_ready = False
         self.states_ready = False
@@ -52,6 +52,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     def open_env(self) -> UnityEnvironment:
         self.episode += 1
         logging.info('Waiting for Unity side ...')
+        print(self.env_filepath)
         self.env = UnityEnvironment(file_name=self.env_filepath)
         self.env.reset()
         logging.info('--------------------------------')
@@ -164,7 +165,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     
     def finish(self):
         global server
-        print("Server Finished")
+        print("Game Finished")
         self.states_ready = True
         server.stop(grace=None)
     
@@ -174,12 +175,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         del self.ids[behavior_name]
         del self.states[behavior_name]
         del self.actions[behavior_name]
-        logging.info('Removed client: ' + str(id))
+        logging.info('Removed player: ' + str(id))
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
-            logging.info('New client: ' + str(action.id))
+            logging.info('New player: ' + str(action.id))
             self.matching()
         else:
             self.actions[self.behavior_names[action.id]] = action
@@ -192,19 +193,21 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         else:
             return PAIA.State(event=PAIA.Event.EVENT_FINISH)
 
-def serve(env_filepath=None):
+def serve():
     global server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
-    PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(env_filepath), server)
-    server.add_insecure_port('[::]:50051')
+    PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(), server)
+    port = int(ENV.get('PAIA_ID') or 50051)
+    server.add_insecure_port(f'[::]:{port}')
     server.start()
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    env_filepath = unity.get_unity_app(basedir='kart', windows='Windows/kart.exe', linux='Linux/kart.x86_64', macos='macOS/kart.app')
     if len(sys.argv) > 1:
         if sys.argv[1] == '--editor':
-            env_filepath = None
+            ENV['UNITY_USE_EDITOR'] = 'true'
         else:
-            env_filepath = sys.argv[1]
-    serve(env_filepath)
+            ENV['UNITY_USE_EDITOR'] = 'false'
+            ENV['UNITY_APP_AUTO'] = 'false'
+            ENV['UNITY_APP_OTHER'] = sys.argv[1]
+    serve()

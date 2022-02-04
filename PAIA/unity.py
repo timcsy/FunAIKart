@@ -2,12 +2,33 @@ import os
 import platform
 from typing import Dict, Union
 
-def get_unity_app(basedir: str='kart', windows: str='Windows/kart.exe', linux: str='Linux/kart.x86_64', macos: str='macOS/kart.app', other: str=None, editor=False) -> Union[str, None]:
+from config import ENV, to_bool
+
+def get_unity_app(auto=None, basedir: str=None, windows: str=None, linux: str=None, macos: str=None, other: str=None, editor=False) -> Union[str, None]:
+    if auto is None:
+        auto = to_bool(ENV.get('UNITY_APP_AUTO'))
+        if auto is None:
+            auto = True
+    if basedir is None:
+        basedir = ENV.get('UNITY_APP_BASE_DIR') or 'kart'
+    if windows is None:
+        windows = ENV.get('UNITY_APP_WINDOWS') or 'Windows/kart.exe'
+    if linux is None:
+        linux = ENV.get('UNITY_APP_LINUX') or 'Linux/kart.x86_64'
+    if macos is None:
+        macos = ENV.get('UNITY_APP_MACOS') or 'macOS/kart.app'
+    if other is None:
+        other = ENV.get('UNITY_APP_OTHER') or ''
+    if editor is None:
+        editor = to_bool(ENV.get('UNITY_USE_EDITOR')) or False
+    
     if editor:
         return None
     
     operating_system = platform.system()
-    if operating_system == 'Windows':
+    if not auto:
+        file_relpath = other
+    elif operating_system == 'Windows':
         file_relpath = windows
     elif operating_system == 'Linux':
         file_relpath = linux
@@ -22,14 +43,21 @@ def get_unity_app(basedir: str='kart', windows: str='Windows/kart.exe', linux: s
         filepath = os.path.abspath(os.path.join(basedir, file_relpath))
     return filepath
 
-def get_unity_dir(company: str='PAIA', product: str='kart', basedir: str='kart') -> str:
+def get_unity_dir(company: str=None, product: str=None, basedir: str=None) -> str:
+    if company is None:
+        company = ENV.get('UNITY_CONFIG_COMPANY') or 'PAIA'
+    if product is None:
+        product = ENV.get('UNITY_CONFIG_PRODUCT') or 'kart'
+    if basedir is None:
+        basedir = ENV.get('UNITY_CONFIG_BASE_DIR') or 'kart'
+    
     persistentDataPath = '.'
 
     operating_system = platform.system()
     if operating_system == 'Windows':
         persistentDataPath = os.path.join(os.path.expanduser("~"), 'AppData\LocalLow', company, product)
     elif operating_system == 'Linux':
-        persistentDataPath = os.path.join(os.path.expanduser("~"), '/home/timcsy/.config/unity3d', company, product)
+        persistentDataPath = os.path.join(os.path.expanduser("~"), '.config/unity3d', company, product)
     elif operating_system == 'Darwin':
         persistentDataPath = os.path.join(os.path.expanduser("~"), 'Library/Application Support', company, product)
 
