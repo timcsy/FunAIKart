@@ -1,5 +1,9 @@
 from __future__ import annotations
+import datetime
+import glob
 import logging
+import os
+import time
 from typing import List, Optional, Union
 from pathlib import Path
 import zlib
@@ -13,10 +17,10 @@ import numpy as np
 import PAIA
 
 class Demo:
-    def __init__(self, paths: Union[List[str], str, None]=None, id: str=None):
+    def __init__(self, paths: Union[List[str], str, None]=None, id: str=None, img_dir: str=None):
         if paths is not None:
-            self.load(paths)
-            self.show()
+            self.load(paths, id)
+            self.show(img_dir)
         else:
             self.demo = PAIA.Demo()
         self.index = -1
@@ -129,11 +133,13 @@ class Demo:
             compressed = zlib.compress(self.demo.SerializeToString())
             fout.write(compressed)
     
-    def show(self) -> None:
+    def show(self, img_dir: str=None) -> None:
+        if img_dir is None:
+            img_dir = os.path.join('cameras', datetime.now().strftime('%Y%m%d_%H%M%S'))
         for i in range(len(self.demo.episodes)):
             for j in range(len(self.demo.episodes[i].steps)):
                 logging.debug('Episode: ' + str(i) + ', Step: ' + str(j))
-                logging.debug('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j)))
+                logging.debug('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j), img_dir))
                 logging.debug('Action:\n' + PAIA.action_info(self.demo.episodes[i].steps[j].action))
             logging.debug('Done, Episode: ' + str(i) + ', Total Steps: ' + str(len(self.demo.episodes[i].steps)) + '\n')
     
@@ -210,3 +216,32 @@ class Demo:
     
     def add_episodes(self, episodes: List[PAIA.Episode]) -> None:
         self.demo.episodes.extend(episodes)
+
+def demo_to_paia(demo_dir, demo_basename, paia_dir, paia_basename=None, all_in_one=True):
+    if not os.path.exists(paia_dir):
+        os.makedirs(paia_dir)
+    
+    if paia_basename is None:
+        paia_basename = demo_basename
+    
+    if all_in_one:
+        demo_all = Demo()
+    paths = glob.glob(os.path.join(demo_dir, demo_basename) + '*.demo')
+    paths.sort(key=lambda p: time.ctime(os.path.getmtime(p)))
+
+    for path in paths:
+        demo = Demo()
+        demo.load(path)
+        if all_in_one:
+            demo_all.add_episode(demo.get_episode(0))
+        else:
+            demo_filename = os.path.basename(path)
+            demo_filename = demo_filename[demo_filename.startswith(demo_basename) and len(demo_basename):-5]
+            demo_filename = paia_basename + demo_filename + '.paia'
+            demo_once = Demo()
+            demo_once.add_episode(demo.get_episode(0))
+            os.path.join(paia_dir, demo_filename)
+            demo_once.export(os.path.join(paia_dir, demo_filename))
+
+    if all_in_one:
+        demo_all.export(os.path.join(paia_dir, paia_basename) + '.paia')

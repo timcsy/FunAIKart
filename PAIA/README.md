@@ -6,9 +6,11 @@
 將你所寫的 `MLPlay` 類別放在 `ml/ml_play.py` （可以改檔名）中，如下：
 ```python
 import logging # you can use functions in logging: debug, info, warning, error, critical, log
-import config
+from config import ENV
 import PAIA
 from demo import Demo
+
+MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
 
 class MLPlay:
     def __init__(self):
@@ -50,7 +52,7 @@ class MLPlay:
             # You can do something when the game (episode) ends
             want_to_restart = True # Uncomment if you want to restart
             # want_to_restart = False # Uncomment if you want to finish
-            if self.episode_number < config.MAX_EPISODES and want_to_restart:
+            if MAX_EPISODES > 0 and self.episode_number < MAX_EPISODES and want_to_restart:
                 # Do something when restart
                 action = PAIA.create_action_object(command=PAIA.Command.COMMAND_RESTART)
                 self.episode_number += 1

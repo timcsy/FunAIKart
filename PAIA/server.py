@@ -10,7 +10,10 @@ import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 from mlagents_envs.environment import UnityEnvironment
 
 import PAIA
-import config
+import unity
+from config import ENV
+
+server = None
 
 class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     """Provides methods that implement functionality of PAIA server."""
@@ -23,6 +26,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.actions = {} # Indexed by behavior_name
         self.behavior_name_queue = queue.Queue()
         self.id_queue = queue.Queue()
+        self.episode = 0
         self.env_filepath = env_filepath
         self.env = False
         self.env_ready = False
@@ -46,6 +50,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.get_states()
     
     def open_env(self) -> UnityEnvironment:
+        self.episode += 1
         logging.info('Waiting for Unity side ...')
         self.env = UnityEnvironment(file_name=self.env_filepath)
         self.env.reset()
@@ -120,9 +125,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     def check_status(self):
         # Check if we can do the following actions: restart, finish and resume
         if len(self.actions) == len(self.behavior_names) and self.env_ready:
+            # end is the server side checking that if reach the max episode
+            MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
+            end = MAX_EPISODES >= 0 and self.episode > MAX_EPISODES
             restart = False
             for action in list(self.actions.values()):
-                if action.command == PAIA.Command.COMMAND_FINISH:
+                if action.command == PAIA.Command.COMMAND_FINISH or end:
                     self.remove(action.id)
                 elif action.command == PAIA.Command.COMMAND_RESTART:
                     restart = True
@@ -135,6 +143,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 # Finish when everyone want to finish
                 self.env_ready = False # Using spin lock
                 self.env.close()
+                self.finish()
             elif not self.settting_actions:
                 self.settting_actions = True # Using spin lock
                 self.resume()
@@ -152,6 +161,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.states_ready = False # Using spin lock
         self.set_actions()
         self.get_states()
+    
+    def finish(self):
+        global server
+        print("Server Finished")
+        self.states_ready = True
+        server.stop(grace=None)
     
     def remove(self, id):
         behavior_name = self.behavior_names[id]
@@ -178,6 +193,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             return PAIA.State(event=PAIA.Event.EVENT_FINISH)
 
 def serve(env_filepath=None):
+    global server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(env_filepath), server)
     server.add_insecure_port('[::]:50051')
@@ -185,8 +201,10 @@ def serve(env_filepath=None):
     server.wait_for_termination()
 
 if __name__ == '__main__':
-    env_filepath = None
+    env_filepath = unity.get_unity_app(basedir='kart', windows='Windows/kart.exe', linux='Linux/kart.x86_64', macos='macOS/kart.app')
     if len(sys.argv) > 1:
-        env_filepath = sys.argv[1]
-    logging.basicConfig(level=config.LOG_LEVEL, format='%(message)s')
+        if sys.argv[1] == '--editor':
+            env_filepath = None
+        else:
+            env_filepath = sys.argv[1]
     serve(env_filepath)

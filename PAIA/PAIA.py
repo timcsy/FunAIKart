@@ -1,5 +1,6 @@
 # api_version: PAIAKart_1.0
 
+import datetime
 import io
 import logging
 import os
@@ -11,7 +12,7 @@ from PIL import Image
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 
 from communication.generated import PAIA_pb2
-import config
+from config import ENV
 
 Event = PAIA_pb2.Event
 State = PAIA_pb2.State
@@ -121,16 +122,18 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
     state.reward = reward
     return state
 
-def state_info(state: State, img_suffix: str) -> str:
+def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
     s = State()
     s.CopyFrom(state)
     if logging.getLogger().getEffectiveLevel() <= logging.DEBUG:
         # Save the image to the disk
-        if not os.path.exists(config.IMAGE_DIR):
-            os.makedirs(config.IMAGE_DIR)
+        if img_dir is None:
+            img_dir = os.path.join('cameras', datetime.now().strftime('%Y%m%d_%H%M%S'))
+        if not os.path.exists(img_dir):
+            os.makedirs(img_dir)
         
-        filepath_front = config.IMAGE_DIR + '/img_front_' + str(img_suffix) + '.jpg'
-        filepath_back = config.IMAGE_DIR + '/img_back_' + str(img_suffix) + '.jpg'
+        filepath_front = os.path.join(img_dir, 'img_front_' + str(img_suffix) + '.jpg')
+        filepath_back = os.path.join(img_dir, '/img_back_' + str(img_suffix) + '.jpg')
 
         with open(filepath_front, 'wb') as fout:
             fout.write(image_to_image(s.observation.images.front.data, format='JPEG'))

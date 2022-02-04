@@ -3,4 +3,5 @@ numpy
 Pillow
 opencv-python
 paramiko
-python-ffmpeg
+ffmpeg-python
+python-dotenv

@@ -1,6 +1,6 @@
 import os
 import platform
-from typing import Dict, Tuple, Union
+from typing import Dict, Union
 
 def get_unity_app(basedir: str='kart', windows: str='Windows/kart.exe', linux: str='Linux/kart.x86_64', macos: str='macOS/kart.app', other: str=None, editor=False) -> Union[str, None]:
     if editor:

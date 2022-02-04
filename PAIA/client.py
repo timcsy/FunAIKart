@@ -9,7 +9,7 @@ import grpc
 import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 
 import PAIA
-import config
+from config import ENV
 
 def run(id: str='', script_path: str=None, pickle_path: str=None, is_continue: bool=False) -> None:
     channel = grpc.insecure_channel('localhost:50051')
@@ -18,9 +18,15 @@ def run(id: str='', script_path: str=None, pickle_path: str=None, is_continue: b
     ml_play, pickle_path = load(script_path, pickle_path, is_continue)
     brain = ml_play[0]
     is_restart = ml_play[1]
+    end = False
     action = PAIA.init_action_object(id)
     while True:
-        state = stub.hook(action)
+        try:
+            state = stub.hook(action)
+        except:
+            end = True
+            state = PAIA.State(event=PAIA.Event.EVENT_FINISH)
+            logging.info('Finishing ...')
 
         if is_restart:
             state.event = PAIA.Event.EVENT_RESTART
@@ -29,10 +35,17 @@ def run(id: str='', script_path: str=None, pickle_path: str=None, is_continue: b
         action = brain.decision(state)
         action.id = id
 
+        if end:
+            autosave(brain, pickle_path)
+
         if state.event != PAIA.Event.EVENT_NONE:
             if action.command == PAIA.Command.COMMAND_FINISH:
                 # Terminate the process if want to finish
-                state = stub.hook(action)
+                try:
+                    state = stub.hook(action)
+                except:
+                    state = PAIA.State(event=PAIA.Event.EVENT_FINISH)
+                    logging.info('Finishing ...')
                 action = brain.decision(state)
                 autosave(brain, pickle_path)
                 break
@@ -42,7 +55,11 @@ def run(id: str='', script_path: str=None, pickle_path: str=None, is_continue: b
             else:
                 # Force to finish when the user doesn't want to restart
                 action.command = PAIA.Command.COMMAND_FINISH
-                state = stub.hook(action)
+                try:
+                    state = stub.hook(action)
+                except:
+                    state = PAIA.State(event=PAIA.Event.EVENT_FINISH)
+                    logging.info('Finishing ...')
                 action = brain.decision(state)
                 autosave(brain, pickle_path)
                 break
@@ -112,5 +129,4 @@ def load(script_path: str=None, pickle_path: str=None, is_continue: bool=False):
 if __name__ == '__main__':
     id = str(sys.argv[1]) if len(sys.argv) > 1 else ''
     script_path = str(sys.argv[2]) if len(sys.argv) > 2 else None
-    logging.basicConfig(level=config.LOG_LEVEL, format='%(message)s')
     run(id, script_path)
