@@ -77,12 +77,13 @@ InitCodeMarker
 __pycache__
 PAIA/cameras
 PAIA/Demo
-Demo
-Records
+[Dd]emo
+[Rr]ecords
 *.config
 Assets/ML-Agents/Timers
 PAIA/autosave
 PAIA/ml/*
 !PAIA/ml/__init__.py
 *.app
-kart
+[Kk]art
+[Vv]ideo

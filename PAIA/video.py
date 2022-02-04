@@ -1,0 +1,272 @@
+import glob
+import json
+import math
+import os
+import subprocess
+
+import ffmpeg
+from PIL import Image, ImageDraw, ImageFont
+
+def insert_player_id(id: str, input_path, output_path):
+    in1 = ffmpeg.input(input_path)
+    v1 = in1.video.drawtext(
+        text='Player',
+        fontsize='round(sqrt(w*h/50))',
+        x='(w-tw)/2',
+        y='((h-text_h)/2)-(text_h-(th/4))',
+        fontfile='assets/fonts/NotoSansTC-Bold.otf',
+        fontcolor='white',
+        borderw=4,
+        enable='between(t,0,3)'
+    ).drawtext(
+        text=id,
+        fontsize='round(sqrt(w*h/50))',
+        x='(w-tw)/2',
+        y='((h-text_h)/2)+(text_h-(th/4))',
+        fontfile='assets/fonts/NotoSansTC-Bold.otf',
+        fontcolor='white',
+        borderw=4,
+        enable='between(t,0,3)'
+    )
+    a1 = in1.audio
+    out = ffmpeg.output(v1, a1, output_path)
+    out.run(overwrite_output=True)
+
+def background_image(width=1920, height=1080):
+    image = Image.new('RGB', (width, height)) # Create the image
+
+    innerColor = [64, 64, 64] # Color at the center
+    outerColor = [32, 32, 32] # Color at the corners
+
+
+    for y in range(height):
+        for x in range(width):
+            # Find the distance to the center
+            distanceToCenter = math.sqrt((x - width / 2) ** 2 + (y - height / 2) ** 2)
+            # Make it on a scale from 0 to 1
+            distanceToCenter = float(distanceToCenter) / (math.sqrt(2) * width / 2)
+            # Calculate r, g, and b values
+            r = outerColor[0] * distanceToCenter + innerColor[0] * (1 - distanceToCenter)
+            g = outerColor[1] * distanceToCenter + innerColor[1] * (1 - distanceToCenter)
+            b = outerColor[2] * distanceToCenter + innerColor[2] * (1 - distanceToCenter)
+            # Place the pixel        
+            image.putpixel((x, y), (int(r), int(g), int(b)))
+    
+    return image
+
+def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
+    if width < 0:
+        width = 1920
+    if height < 0:
+        height = 1080
+    
+    image = background_image(width, height)
+
+    fontsize = int(math.sqrt(width * height / 100))
+    font = ImageFont.truetype('assets/fonts/NotoSansTC-Bold.otf', fontsize)
+    draw = ImageDraw.Draw(image)
+
+    usedtime = round(usedtime, 2)
+    progress = int(round(progress * 100, 0))
+
+    id_w, th = draw.textsize(id, font)
+    time_w, _ = draw.textsize(f'Used Time: {usedtime} (s)', font)
+    pg_w, _ = draw.textsize(f'Progress: {progress} %', font)
+
+    draw.text(((width - id_w) / 2, (height - 1.5 * th) / 2 - 1.5 * th + th / 4), id, '#FFFFFF', font)
+    draw.text(((width - time_w) / 2, (height - 1.5 * th) / 2), f'Used Time: {usedtime} (s)', '#FFFFFF', font)
+    draw.text(((width - pg_w) / 2, (height - 1.5 * th) / 2 + 1.5 * th - th / 4), f'Progress: {progress} %', '#FFFFFF', font)
+
+    image.save(os.path.join(video_dir, 'result.jpg'))
+
+    with open(os.path.join(video_dir, 'img.txt'), 'r') as fin:
+        lines = fin.read().splitlines()
+        last_index = 0
+        while -last_index < len(lines):
+            last_index -= 1
+            last_line = lines[last_index]
+            if last_line.startswith("file 'img_"):
+                break
+        with open(os.path.join(video_dir, 'img.txt'), 'w') as fout:
+            for i in range(len(lines) + last_index + 1):
+                fout.write(lines[i] + '\n')
+            fout.write(f"duration 0\nfile 'result.jpg'\nduration {duration}\n")
+            fout.write(f"file 'result.jpg'\nduration 0\n")
+
+    return image
+
+def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration=10, width=None, height=None, remove_original=False):
+    try:
+        with open(os.path.join(video_dir, 'size.txt'), 'r') as fin:
+            sizes = fin.read().split('x')
+            width = width or int(sizes[0])
+            height = height or int(sizes[1])
+    except:
+        width = width or -1
+        height = height or -1
+
+    result_image(width, height, id, usedtime, progress, video_dir, result_duration)
+
+    cwd = os.getcwd()
+    os.chdir(video_dir)
+
+    try:
+        result = subprocess.run([
+            'ffmpeg',
+            '-y',
+            '-f', 'concat',
+            '-i', 'img.txt',
+            '-i', 'audio.wav',
+            '-pix_fmt', 'yuv420p',
+            '-vf', f'scale={width}:{height},setsar=1:1',
+            'tmp.mp4'
+        ], check=True)
+    except:
+        result = -1
+    
+    os.chdir(cwd)
+    
+    insert_player_id(id, os.path.join(video_dir, 'tmp.mp4'), output_path)
+    os.remove(os.path.join(video_dir, 'tmp.mp4'))
+
+    if remove_original:
+        if os.path.abspath(os.path.dirname(output_path)) == os.path.abspath(video_dir):
+            path_all = glob.glob(os.path.abspath(video_dir) + '/**/*', recursive=True)
+            path_remove=[filename for filename in path_all if not filename == output_path]
+            [os.remove(filePath) for filePath in path_remove]
+        else:
+            for root, dirs, files in os.walk(os.path.abspath(video_dir), topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.rmdir(os.path.abspath(video_dir))
+    return result
+
+def rank_image(ids, width=1920, height=1080):
+    if width < 0:
+        width = 1920
+    if height < 0:
+        height = 1080
+    
+    image = background_image(width, height)
+
+    fontsize = int(math.sqrt(width * height / 100))
+    font = ImageFont.truetype('assets/fonts/NotoSansTC-Bold.otf', fontsize)
+    draw = ImageDraw.Draw(image)
+
+    ranks = ['1st', '2nd', '3rd', '4th']
+
+    th = draw.textsize('Test', font)[1] if len(ids) > 0 else 0
+    tw = [draw.textsize(f'{ranks[i]}: {ids[i]}', font)[0] for i in range(len(ids))]
+    pos = [((width - tw[i]) / 2, (height / (len(ids) + 1) / 2) * (2 * i + 2) - th / 1.5) for i in range(len(ids))]
+
+    for i in range(len(ids)):
+        draw.text(pos[i], f'{ranks[i]}: {ids[i]}', '#FFFFFF', font)
+
+    return image
+
+def video_duration(filepath):
+    result = subprocess.run(
+        f'ffprobe -v quiet -show_streams -select_streams v:0 -of json "{filepath}"',
+        capture_output=True, shell=True
+    ).stdout.decode()
+
+    fields = json.loads(result)['streams'][0]
+
+    return float(fields['duration'])
+
+def rank_video(output_path, players, preserve_time=75, result_time=10, rank_time=5, width=1920, height=1080):
+    # players: [{'rank', 'video_path'}]
+    durations = [video_duration(player['video_path']) for player in players]
+    duration = max(durations)
+    trim_time = duration - (preserve_time - result_time)
+    total_time = trim_time + rank_time
+
+    w = []
+    h = []
+    pos = []
+    if len(players) == 1:
+        # Player 0
+        w.append(width)
+        h.append(height)
+        pos.append((0, 0))
+    if len(players) == 2:
+        # Player 0
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((0, height / 4))
+        # Player 1
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((width / 2, height / 4))
+    if len(players) == 3:
+        # Player 0
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((width / 4, 0))
+        # Player 1
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((0, height / 2))
+        # Player 2
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((width / 2, height / 2))
+    if len(players) == 4:
+        # Player 0
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((0, 0))
+        # Player 1
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((width / 2, 0))
+        # Player 2
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((0, height / 2))
+        # Player 3
+        w.append(width / 2)
+        h.append(height / 2)
+        pos.append((width / 2, height / 2))
+
+    image = Image.new('RGB', (width, height)) # Create the image (with background black)
+    image.save('tmp_bg.jpg')
+    ranked_player = [p['id'] for p in sorted(players, key=lambda p:p['rank'])]
+    rank_img = rank_image(ranked_player, width, height)
+    rank_img.save('tmp_rank.jpg')
+
+    bg = ffmpeg.input('tmp_bg.jpg')
+    bgm = ffmpeg.input('assets/audio/BGM.mp3').filter('atrim', end=total_time).filter('volume', 0.5)
+    v = bg
+    a = []
+    for i in range(len(players)):
+        input = ffmpeg.input(players[i]['video_path'])
+        video = input.video.trim(end=total_time).filter('scale', size=f'{int(w[i])}x{int(h[i])}', force_original_aspect_ratio='increase')
+        v = v.overlay(video, x=pos[i][0], y=pos[i][1])
+        a.append(input.audio)
+    vr = ffmpeg.input('tmp_rank.jpg')
+    v = v.overlay(vr, enable=f'between(t,{trim_time},{total_time})')
+    a = ffmpeg.filter(a, 'amix', inputs=len(a)).filter('atrim', end=total_time).filter('volume', 2)
+    a = ffmpeg.filter((bgm, a), 'amix', inputs=2)
+    out = ffmpeg.output(v, a, output_path, pix_fmt='yuv420p')
+    out.run(overwrite_output=True)
+
+    os.remove('tmp_bg.jpg')
+    os.remove('tmp_rank.jpg')
+    
+    return rank_img
+
+if __name__ == '__main__':
+    # Example input
+    video_dir = 'Records'
+    output_path = os.path.abspath('result.mp4')
+    generate_video(video_dir, output_path, 'Alice', 31.28, 0.999, 75, remove_original=False)
+
+    rank_video('output.mp4', [
+        {'rank': 4, 'id': 'Debby', 'video_path': 'result_4.mp4'},
+        {'rank': 2, 'id': 'Alice', 'video_path': 'result_1.mp4'},
+        {'rank': 3, 'id': 'Bob', 'video_path': 'result_2.mp4'},
+        {'rank': 1, 'id': 'Chris', 'video_path': 'result_3.mp4'}
+    ], 75, 10, 5, 1920, 1080)
