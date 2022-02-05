@@ -14,7 +14,7 @@ import demo
 import PAIA
 import video
 import unity
-from config import ENV
+from config import ENV, to_bool
 
 server = None
 
@@ -68,6 +68,13 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.tmp_dir, _, self.output_video_path = unity.prepare_recording(episode=self.episode, recording_dir=self.recording_dir)
         if not unity.prepare_demo(episode=self.episode, purename=self.demo_purename) is None:
             self.has_demo = True
+        pickups = to_bool(ENV.get('PLAY_PICKUPS'))
+        if pickups is None:
+            is_zero = pickups == '0'
+            pickups = int(ENV.get('PLAY_PICKUPS') or 0)
+            if pickups == 0 and not is_zero:
+                pickups = True
+        unity.set_config('PickUps', pickups)
         
         logging.info('Waiting for Unity side ...')
         print(self.env_filepath)
@@ -192,6 +199,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         unity.set_config('Records', False)
         unity.set_config('Screen', False)
         unity.set_config('Demo', False)
+        unity.set_config('PickUps', False)
     
     def restart(self):
         if self.env_ready:

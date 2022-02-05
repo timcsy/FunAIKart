@@ -8,7 +8,6 @@ import ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
 from config import ENV, to_bool
-import unity
 
 def insert_player_id(id: str, input_path, output_path, info_time: int=None):
     if info_time is None:
