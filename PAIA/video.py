@@ -7,9 +7,16 @@ import subprocess
 import ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
+from config import ENV
 import unity
 
-def insert_player_id(id: str, input_path, output_path):
+def insert_player_id(id: str, input_path, output_path, info_time: int=None):
+    if info_time is None:
+        info_time = int(ENV.get('RECORDING_INFO_SECONDS') or 3)
+    
+    if not os.path.exists(os.path.dirname(output_path)):
+        os.makedirs(os.path.dirname(output_path))
+    
     in1 = ffmpeg.input(input_path)
     v1 = in1.video.drawtext(
         text='Player',
@@ -19,7 +26,7 @@ def insert_player_id(id: str, input_path, output_path):
         fontfile='assets/fonts/NotoSansTC-Bold.otf',
         fontcolor='white',
         borderw=4,
-        enable='between(t,0,3)'
+        enable=f'between(t,0,{info_time})'
     ).drawtext(
         text=id,
         fontsize='round(sqrt(w*h/50))',
@@ -28,7 +35,7 @@ def insert_player_id(id: str, input_path, output_path):
         fontfile='assets/fonts/NotoSansTC-Bold.otf',
         fontcolor='white',
         borderw=4,
-        enable='between(t,0,3)'
+        enable=f'between(t,0,{info_time})'
     )
     a1 = in1.audio
     out = ffmpeg.output(v1, a1, output_path)
@@ -97,7 +104,10 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
 
     return image
 
-def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration=10, width=None, height=None, remove_original=True):
+def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration: int=None, width: int=None, height: int=None, remove_original: bool=True):
+    if result_duration is None:
+        result_duration = int(ENV.get('RECORDING_RESULT_SECONDS') or 10)
+    
     try:
         with open(os.path.join(video_dir, 'size.txt'), 'r') as fin:
             sizes = fin.read().split('x')
@@ -133,7 +143,7 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
 
     if remove_original:
         if os.path.abspath(os.path.dirname(output_path)) == os.path.abspath(video_dir):
-            path_all = glob.glob(os.path.abspath(video_dir) + '/**/*', recursive=True)
+            path_all = glob.glob(f'{os.path.abspath(video_dir)}/**/*', recursive=True)
             path_remove=[filename for filename in path_all if not filename == output_path]
             [os.remove(filePath) for filePath in path_remove]
         else:
@@ -178,8 +188,20 @@ def video_duration(filepath):
 
     return float(fields['duration'])
 
-def rank_video(output_path, players, preserve_time=75, result_time=10, rank_time=5, width=1920, height=1080):
+def rank_video(players, output_path, preserve_time: int=None, result_time: int=None, rank_time: int=None, width: int=None, height: int=None):
     # players: [{'rank', 'video_path'}]
+
+    if preserve_time is None:
+        preserve_time = int(ENV.get('VIDEO_PRESERVE_SECONDS') or 75)
+    if result_time is None:
+        result_time = int(ENV.get('RECORDING_RESULT_SECONDS') or 10)
+    if rank_time is None:
+        rank_time = int(ENV.get('VIDEO_RANK_SECONDS') or 5)
+    if width is None:
+        width = int(ENV.get('VIDEO_WIDTH') or 1920)
+    if height is None:
+        height = int(ENV.get('VIDEO_HEIGHT') or 1080)
+
     durations = [video_duration(player['video_path']) for player in players]
     duration = max(durations)
     trim_time = duration - (preserve_time - result_time)
@@ -263,12 +285,20 @@ def rank_video(output_path, players, preserve_time=75, result_time=10, rank_time
 if __name__ == '__main__':
     # Example input
     video_dir = 'Records'
-    output_path = os.path.abspath('result.mp4')
-    generate_video(video_dir, output_path, 'Alice', 31.28, 0.999, 75, remove_original=False)
+    output_path = os.path.abspath('records/kart.mp4')
+    # generate_video(video_dir, output_path, 'Alice', 31.28, 0.999, 75, remove_original=True)
+    # generate_video(video_dir, output_path, 'Alice', 31.28, 0.999)
 
-    rank_video('output.mp4', [
-        {'rank': 4, 'id': 'Debby', 'video_path': 'result_4.mp4'},
-        {'rank': 2, 'id': 'Alice', 'video_path': 'result_1.mp4'},
-        {'rank': 3, 'id': 'Bob', 'video_path': 'result_2.mp4'},
-        {'rank': 1, 'id': 'Chris', 'video_path': 'result_3.mp4'}
-    ], 75, 10, 5, 1920, 1080)
+    # rank_video([
+    #     {'rank': 4, 'id': 'Debby', 'video_path': 'video/result_4.mp4'},
+    #     {'rank': 2, 'id': 'Alice', 'video_path': 'video/result_1.mp4'},
+    #     {'rank': 3, 'id': 'Bob', 'video_path': 'video/result_2.mp4'},
+    #     {'rank': 1, 'id': 'Chris', 'video_path': 'video/result_3.mp4'}
+    # ], 'output.mp4', 75, 10, 5, 1920, 1080)
+
+    rank_video([
+        {'rank': 4, 'id': 'Debby', 'video_path': 'video/result_4.mp4'},
+        {'rank': 2, 'id': 'Alice', 'video_path': 'video/result_1.mp4'},
+        {'rank': 3, 'id': 'Bob', 'video_path': 'video/result_2.mp4'},
+        {'rank': 1, 'id': 'Chris', 'video_path': 'video/result_3.mp4'}
+    ], 'output.mp4')

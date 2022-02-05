@@ -29,9 +29,9 @@ class MLPlay:
         MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
 
         self.step_number += 1
-        logging.info('Epispde: ' + str(self.episode_number) + ', Step: ' + str(self.step_number))
+        logging.info(f'Epispde: {self.episode_number}, Step: {self.step_number}')
 
-        img_suffix = str(self.episode_number) + '_' + str(self.step_number)
+        img_suffix = f'{self.episode_number}_{self.step_number}'
         logging.debug(PAIA.state_info(state, img_suffix))
 
         if state.event == PAIA.Event.EVENT_NONE:

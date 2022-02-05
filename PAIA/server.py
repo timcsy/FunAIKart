@@ -175,12 +175,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         del self.ids[behavior_name]
         del self.states[behavior_name]
         del self.actions[behavior_name]
-        logging.info('Removed player: ' + str(id))
+        logging.info(f'Removed player: {id}')
 
     def hook(self, action: PAIA.Action, context) -> PAIA.State:
         if action.command == PAIA.Command.COMMAND_START:
             self.id_queue.put(action.id)
-            logging.info('New player: ' + str(action.id))
+            logging.info(f'New player: {action.id}')
             self.matching()
         else:
             self.actions[self.behavior_names[action.id]] = action

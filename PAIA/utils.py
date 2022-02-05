@@ -1,6 +1,51 @@
+from datetime import datetime
 from getpass import getpass
+import os
 
-from config import ENV
+from config import ENV, to_bool
+
+def get_dir_fileprefix(name, base_dir=None, use_dir=None, dir_prefix=None, dir_timestamp=None, file_prefix=None, file_timestamp=None, base_dir_default='.', use_dir_default=True):
+    if base_dir is None:
+        base_dir = ENV.get(name + '_BASE_DIR') or base_dir_default
+    if use_dir is None:
+        use_dir = to_bool(ENV.get(name + '_USE_DIR'), use_dir_default)
+    if dir_prefix is None:
+        dir_prefix = ENV.get(name + '_DIR_PREFIX') or ''
+    if dir_timestamp is None:
+        dir_timestamp = to_bool(ENV.get(name + '_DIR_TIMESTAMP'))
+        if dir_timestamp is None:
+            dir_timestamp = ENV.get(name + '_DIR_TIMESTAMP')
+        elif dir_timestamp is True:
+            dir_timestamp = '%Y%m%d%H%M%S'
+    if file_prefix is None:
+        file_prefix = ENV.get(name + '_FILE_PREFIX') or ''
+    if file_timestamp is None:
+        file_timestamp = to_bool(ENV.get(name + '_FILE_TIMESTAMP'))
+        if file_timestamp is None:
+            file_timestamp = ENV.get(name + '_FILE_TIMESTAMP')
+        elif file_timestamp is True:
+            file_timestamp = '%Y%m%d%H%M%S'
+
+    dirpath = base_dir
+    if use_dir:
+        if dir_timestamp:
+            if dir_prefix:
+                dirpath = os.path.join(dirpath, dir_prefix + '_' + datetime.now().strftime(dir_timestamp))
+            else:
+                dirpath = os.path.join(dirpath, datetime.now().strftime(dir_timestamp))
+        else:
+            dirpath = os.path.join(dirpath, dir_prefix)
+    
+    fileprefix = ''
+    if file_timestamp:
+        if file_prefix:
+            fileprefix = file_prefix + '_' + datetime.now().strftime(file_timestamp)
+        else:
+            fileprefix = datetime.now().strftime(file_timestamp)
+    else:
+        fileprefix = file_prefix
+
+    return dirpath, fileprefix
 
 def team_config():
     print('If you are using the environment variable, then just press ENTER in the following field!')

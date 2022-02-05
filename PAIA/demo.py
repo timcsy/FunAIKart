@@ -14,7 +14,10 @@ from mlagents_envs.base_env import ActionTuple, BehaviorSpec
 
 import numpy as np
 
+from config import ENV, to_bool
 import PAIA
+from utils import get_dir_fileprefix
+import unity
 
 class Demo:
     def __init__(self, paths: Union[List[str], str, None]=None, id: str=None, img_dir: str=None):
@@ -134,14 +137,12 @@ class Demo:
             fout.write(compressed)
     
     def show(self, img_dir: str=None) -> None:
-        if img_dir is None:
-            img_dir = os.path.join('cameras', datetime.now().strftime('%Y%m%d_%H%M%S'))
         for i in range(len(self.demo.episodes)):
             for j in range(len(self.demo.episodes[i].steps)):
-                logging.debug('Episode: ' + str(i) + ', Step: ' + str(j))
-                logging.debug('State:\n' + PAIA.state_info(self.demo.episodes[i].steps[j].state, str(i) + '_' + str(j), img_dir))
-                logging.debug('Action:\n' + PAIA.action_info(self.demo.episodes[i].steps[j].action))
-            logging.debug('Done, Episode: ' + str(i) + ', Total Steps: ' + str(len(self.demo.episodes[i].steps)) + '\n')
+                logging.debug(f'Episode: {i}, Step: {j}')
+                logging.debug(f'State:\n{PAIA.state_info(self.demo.episodes[i].steps[j].state)}', f'{i}_{j}', img_dir)
+                logging.debug(f'Action:\n{PAIA.action_info(self.demo.episodes[i].steps[j].action)}')
+            logging.debug(f'Done, Episode: {i}, Total Steps: {len(self.demo.episodes[i].steps)}\n')
     
     def get_demo(self) -> PAIA.Demo:
         return self.demo
@@ -217,16 +218,27 @@ class Demo:
     def add_episodes(self, episodes: List[PAIA.Episode]) -> None:
         self.demo.episodes.extend(episodes)
 
-def demo_to_paia(demo_dir, demo_basename, paia_dir, paia_basename=None, all_in_one=True):
+def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=None):
+    if all_in_one is None:
+        all_in_one = to_bool(ENV.get('DEMO_ALL_IN_ONE'), True)
+    
+    dirname, file_prefix = get_dir_fileprefix('DEMO', base_dir_default='demo', use_dir_default=not all_in_one)
+    if paia_dir is None:
+        paia_dir = dirname
+    if not os.path.isabs(paia_dir):
+        paia_dir = os.path.join(os.getcwd(), paia_dir)
+    
     if not os.path.exists(paia_dir):
         os.makedirs(paia_dir)
     
-    if paia_basename is None:
-        paia_basename = demo_basename
+    if paia_prefix is None:
+        paia_prefix = file_prefix
     
     if all_in_one:
         demo_all = Demo()
-    paths = glob.glob(os.path.join(demo_dir, demo_basename) + '*.demo')
+    
+    tmp_dir = os.path.join(unity.get_unity_dir(), 'Demo')
+    paths = glob.glob(f'{os.path.join(tmp_dir, purename)}*.demo')
     paths.sort(key=lambda p: time.ctime(os.path.getmtime(p)))
 
     for path in paths:
@@ -236,12 +248,12 @@ def demo_to_paia(demo_dir, demo_basename, paia_dir, paia_basename=None, all_in_o
             demo_all.add_episode(demo.get_episode(0))
         else:
             demo_filename = os.path.basename(path)
-            demo_filename = demo_filename[demo_filename.startswith(demo_basename) and len(demo_basename):-5]
-            demo_filename = paia_basename + demo_filename + '.paia'
+            demo_filename = demo_filename[demo_filename.startswith(purename) and len(purename):-5]
+            demo_filename = paia_prefix + demo_filename + '.paia'
             demo_once = Demo()
             demo_once.add_episode(demo.get_episode(0))
             os.path.join(paia_dir, demo_filename)
             demo_once.export(os.path.join(paia_dir, demo_filename))
 
     if all_in_one:
-        demo_all.export(os.path.join(paia_dir, paia_basename) + '.paia')
+        demo_all.export(os.path.join(paia_dir, paia_prefix) + '.paia')

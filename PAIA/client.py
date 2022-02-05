@@ -83,8 +83,10 @@ def import_brain():
 
 def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
     if pickle_path is None:
-        prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play_'
-        filename = prefix + datetime.now().strftime('%Y%m%d%H%M%S') + '.pickle'
+        prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play'
+        if prefix:
+            prefix = prefix + '_'
+        filename = f'{prefix}{datetime.now().strftime("%Y%m%d%H%M%S")}.pickle'
         autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR') or 'autosave'
         pickle_path = os.path.join(autosave_dir, filename)
     if not os.path.exists(os.path.dirname(pickle_path)):
@@ -100,21 +102,21 @@ def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
     return pickle_path
 
 def load():
-    is_continue = to_bool(ENV.get('PLAY_CONTINUE')) or False
+    is_continue = to_bool(ENV.get('PLAY_CONTINUE'), False)
     autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR') or 'autosave'
     pickle_path = None
     if is_continue:
-        use_newest = to_bool(ENV.get('PLAY_AUTOSAVE_USE_NEWEST'))
-        if use_newest is None:
-            use_newest = True
+        use_newest = to_bool(ENV.get('PLAY_AUTOSAVE_USE_NEWEST'), True)
         if not use_newest:
             pickle_path = ENV.get('PLAY_AUTOSAVE_PATH')
         if pickle_path is None and os.path.exists(autosave_dir):
             # Find the newest autosaved kart_timestamp.pickle
-            prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play_'
+            prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play'
             newest_time = 0
             for entry in os.scandir(autosave_dir):
                 if entry.is_file():
+                    if prefix:
+                        prefix = prefix + '_'
                     if entry.name.startswith(prefix) and entry.name.endswith('.pickle'):
                         try:
                             time = int(entry.name[len(prefix):-7])

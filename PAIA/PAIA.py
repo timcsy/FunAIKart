@@ -12,7 +12,8 @@ from PIL import Image
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 
 from communication.generated import PAIA_pb2
-from config import ENV
+from config import ENV, to_bool
+from utils import get_dir_fileprefix
 
 Event = PAIA_pb2.Event
 State = PAIA_pb2.State
@@ -125,15 +126,19 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
 def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
     s = State()
     s.CopyFrom(state)
-    if logging.getLogger().getEffectiveLevel() <= logging.DEBUG:
+    image_enable = to_bool(ENV.get('IMAGE_ENABLE'), False)
+    if image_enable:
         # Save the image to the disk
+        dirpath, fileprefix = get_dir_fileprefix('IMAGE', base_dir_default='cameras')
         if img_dir is None:
-            img_dir = os.path.join('cameras', datetime.now().strftime('%Y%m%d_%H%M%S'))
+            img_dir = dirpath
         if not os.path.exists(img_dir):
             os.makedirs(img_dir)
         
-        filepath_front = os.path.join(img_dir, 'img_front_' + str(img_suffix) + '.jpg')
-        filepath_back = os.path.join(img_dir, '/img_back_' + str(img_suffix) + '.jpg')
+        if fileprefix:
+            fileprefix = fileprefix + '_'
+        filepath_front = os.path.join(img_dir, f'{fileprefix}front_{img_suffix}.jpg')
+        filepath_back = os.path.join(img_dir, f'{fileprefix}back_{img_suffix}.jpg')
 
         with open(filepath_front, 'wb') as fout:
             fout.write(image_to_image(s.observation.images.front.data, format='JPEG'))

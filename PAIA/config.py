@@ -39,13 +39,13 @@ ENV[key] = value can set the value
 You can use REQUIRE key to include .env files (in string or list format)
 '''
 
-def to_bool(value):
+def to_bool(value, default=None):
     if isinstance(value, str):
         if value == '0': return False
         elif value.upper() == 'FALSE': return False
         elif value == '1': return True
         elif value.upper() == 'TRUE': return True
-    return None
+    return default
 
 # Logging Level
 if ENV.get('LOG_LEVEL') == 'CRITICAL': log_level = logging.CRITICAL
