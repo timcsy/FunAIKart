@@ -7,7 +7,7 @@ import subprocess
 import ffmpeg
 from PIL import Image, ImageDraw, ImageFont
 
-from config import ENV
+from config import ENV, to_bool
 import unity
 
 def insert_player_id(id: str, input_path, output_path, info_time: int=None):
@@ -104,9 +104,11 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
 
     return image
 
-def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration: int=None, width: int=None, height: int=None, remove_original: bool=True):
+def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration: int=None, width: int=None, height: int=None, save_rec=None, remove_original: bool=True):
     if result_duration is None:
         result_duration = int(ENV.get('RECORDING_RESULT_SECONDS') or 10)
+    if save_rec is None:
+        save_rec = to_bool(ENV.get('RECORDING_SAVE_REC'), False)
     
     try:
         with open(os.path.join(video_dir, 'size.txt'), 'r') as fin:
@@ -153,6 +155,12 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
                 for name in dirs:
                     os.rmdir(os.path.join(root, name))
             os.rmdir(os.path.abspath(video_dir))
+    
+    if save_rec:
+        rec_path = os.path.join(os.path.dirname(output_path), os.path.splitext(os.path.basename(output_path))[0] + '.rec')
+        with open(rec_path, 'w') as fout:
+            fout.write(f'{id}\n{usedtime}\n{progress}')
+
     return result
 
 def rank_image(ids, width=1920, height=1080):

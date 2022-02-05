@@ -1,5 +1,4 @@
 from __future__ import annotations
-import datetime
 import glob
 import logging
 import os
@@ -218,7 +217,7 @@ class Demo:
     def add_episodes(self, episodes: List[PAIA.Episode]) -> None:
         self.demo.episodes.extend(episodes)
 
-def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=None):
+def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=None, remove_original: bool=True):
     if all_in_one is None:
         all_in_one = to_bool(ENV.get('DEMO_ALL_IN_ONE'), True)
     
@@ -254,6 +253,8 @@ def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=Non
             demo_once.add_episode(demo.get_episode(0))
             os.path.join(paia_dir, demo_filename)
             demo_once.export(os.path.join(paia_dir, demo_filename))
+        if remove_original:
+            os.remove(path)
 
     if all_in_one:
         demo_all.export(os.path.join(paia_dir, paia_prefix) + '.paia')

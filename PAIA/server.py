@@ -1,4 +1,5 @@
 from concurrent import futures
+from datetime import datetime
 import logging
 import queue
 import sys
@@ -9,7 +10,9 @@ import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 
 from mlagents_envs.environment import UnityEnvironment
 
+import demo
 import PAIA
+import video
 import unity
 from config import ENV
 
@@ -26,7 +29,15 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         self.actions = {} # Indexed by behavior_name
         self.behavior_name_queue = queue.Queue()
         self.id_queue = queue.Queue()
-        self.episode = 0
+        self.episode = -1
+        self.tmp_dir = None
+        self.recording_dir = None
+        self.output_video_path = None
+        self.current_id = ''
+        self.current_usedtime = 0
+        self.current_progress = 0
+        self.has_demo = False
+        self.demo_purename = datetime.now().strftime("%Y%m%d%H%M%S")
         self.env_filepath = unity.get_unity_app()
         self.env = False
         self.env_ready = False
@@ -51,6 +62,13 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     
     def open_env(self) -> UnityEnvironment:
         self.episode += 1
+        if self.recording_dir is None:
+            self.tmp_dir, self.recording_dir, self.output_video_path = unity.prepare_recording(episode=self.episode)
+        else:
+            self.tmp_dir, _, self.output_video_path = unity.prepare_recording(episode=self.episode, recording_dir=self.recording_dir)
+        if not unity.prepare_demo(episode=self.episode, purename=self.demo_purename) is None:
+            self.has_demo = True
+        
         logging.info('Waiting for Unity side ...')
         print(self.env_filepath)
         self.env = UnityEnvironment(file_name=self.env_filepath)
@@ -126,10 +144,12 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
     def check_status(self):
         # Check if we can do the following actions: restart, finish and resume
         if len(self.actions) == len(self.behavior_names) and self.env_ready:
+            self.set_current()
             # end is the server side checking that if reach the max episode
             MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
-            end = MAX_EPISODES >= 0 and self.episode > MAX_EPISODES
+            end = MAX_EPISODES >= 0 and self.episode >= MAX_EPISODES
             restart = False
+
             for action in list(self.actions.values()):
                 if action.command == PAIA.Command.COMMAND_FINISH or end:
                     self.remove(action.id)
@@ -149,6 +169,30 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
                 self.settting_actions = True # Using spin lock
                 self.resume()
     
+    def set_current(self):
+        try:
+            behavior_name = next(iter(self.ids))
+            self.current_id = self.ids[behavior_name]
+            self.current_usedtime = self.states[behavior_name].observation.usedtime
+            self.current_progress = self.states[behavior_name].observation.progress
+        except:
+            pass
+    
+    def post_processing(self, is_last=False):
+        if not self.tmp_dir is None and not self.output_video_path is None:
+            video.generate_video(
+                video_dir=self.tmp_dir,
+                output_path=self.output_video_path,
+                id=self.current_id,
+                usedtime=self.current_usedtime,
+                progress=self.current_progress
+            )
+        if is_last and self.has_demo:
+            demo.demo_to_paia(purename=self.demo_purename)
+        unity.set_config('Records', False)
+        unity.set_config('Screen', False)
+        unity.set_config('Demo', False)
+    
     def restart(self):
         if self.env_ready:
             self.env_ready = False # Using spin lock
@@ -156,6 +200,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             for id in self.ids.values():
                 self.id_queue.put(id)
             self.ids = {}
+            self.post_processing(is_last=False)
             self.open_env()
 
     def resume(self):
@@ -168,6 +213,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         print("Game Finished")
         self.states_ready = True
         server.stop(grace=None)
+        self.post_processing(is_last=True)
     
     def remove(self, id):
         behavior_name = self.behavior_names[id]

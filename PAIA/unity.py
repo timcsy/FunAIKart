@@ -103,10 +103,10 @@ def prepare_recording(episode: int=None, enable: bool=None, recording_dir=None, 
             height = int(ENV.get('RECORDING_HEIGHT') or 540)
         set_config('Screen', f'{width}x{height}')
 
-        return tmp_dir, output_video_path
+        return tmp_dir, recording_dir, output_video_path
     else:
         set_config('Records', False)
-        return None, None
+        return None, None, None
 
 def prepare_demo(episode: int=None, purename=None, enable: bool=None):
     # Assume episode starts from 0
