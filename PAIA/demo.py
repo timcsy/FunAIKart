@@ -258,3 +258,18 @@ def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=Non
 
     if all_in_one:
         demo_all.export(os.path.join(paia_dir, paia_prefix) + '.paia')
+
+def get_info(demo_name):
+    path = None
+    if not demo_name is None:
+        tmp_dir = os.path.join(unity.get_unity_dir(), 'Demo')
+        path = os.path.join(tmp_dir, demo_name + '.demo')
+    usedtime = -1
+    progress = -1
+    if path and os.path.exists(path):
+        demo = Demo()
+        demo.load(path)
+        step = demo.get_state(0, -1)
+        usedtime = step.state.observation.usedtime
+        progress = step.state.observation.progress
+    return usedtime, progress

@@ -74,8 +74,8 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
     font = ImageFont.truetype('assets/fonts/NotoSansTC-Bold.otf', fontsize)
     draw = ImageDraw.Draw(image)
 
-    usedtime = round(usedtime, 2)
-    progress = int(round(progress * 100, 0))
+    usedtime = '' if usedtime == -1  else round(usedtime, 2)
+    progress = '' if progress == -1  else int(round(progress * 100, 0))
 
     id_w, th = draw.textsize(id, font)
     time_w, _ = draw.textsize(f'Used Time: {usedtime} (s)', font)

@@ -7,6 +7,7 @@ from config import ENV
 import client
 import server
 import rforward
+import manual
 from utils import team_config, server_config
 
 def main():
@@ -27,6 +28,9 @@ def main():
             time.sleep(1)
         for thread in threads:
             thread.join()
+    if ENV.get('RUNNING_MODE') == 'MANUAL':
+        # Play manually
+        manual.manual()
     else:
         # RUNNING_MODE has default value: OFFLINE
         # Offline server and clients
@@ -50,4 +54,13 @@ if __name__ == '__main__':
             ENV['RUNNING_MODE'] = 'ONLINE'
         elif sys.argv[1] == 'offline':
             ENV['RUNNING_MODE'] = 'OFFLINE'
+        elif sys.argv[1] == 'manual':
+            ENV['RUNNING_MODE'] = 'MANUAL'
+            if len(sys.argv) > 2:
+                if sys.argv[2].isnumeric():
+                    ENV['MAX_EPISODES'] = sys.argv[2]
+                    if len(sys.argv) > 3 and sys.argv[3] == '--pickups' or sys.argv[3] == '-P':
+                        ENV['PLAY_PICKUPS'] = sys.argv[4] if len(sys.argv) > 4 else 'true'
+                elif sys.argv[2] == '--pickups' or sys.argv[2] == '-P':
+                    ENV['PLAY_PICKUPS'] = sys.argv[3] if len(sys.argv) > 3 else 'true'
     main()

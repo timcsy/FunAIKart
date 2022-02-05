@@ -8,6 +8,7 @@ from utils import get_dir_fileprefix
 
 def get_unity_app(auto=None, basedir: str=None, windows: str=None, linux: str=None, macos: str=None, other: str=None, editor=False) -> Union[str, None]:
     if auto is None:
+        # Choose the OS automatically, if is false, then use other path (with basedir)
         auto = to_bool(ENV.get('UNITY_APP_AUTO'), True)
     if basedir is None:
         basedir = ENV.get('UNITY_APP_BASE_DIR') or 'kart'
