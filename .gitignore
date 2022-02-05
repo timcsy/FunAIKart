@@ -73,12 +73,11 @@ crashlytics-build.properties
 .DS_Store
 InitCodeMarker
 .vscode
-*.env
 __pycache__
 Assets/ML-Agents/Timers
-PAIA/autosave
+*.env
 PAIA/ml/*
-!PAIA/ml/__init__.py
+[Aa]utosave
 [Cc]ameras
 [Dd]emo
 [Rr]ecords

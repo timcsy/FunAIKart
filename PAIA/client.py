@@ -64,14 +64,13 @@ def run() -> None:
 
 def import_brain():
     # Get the module (the definition of the MLPlay class) name
-    script_path = ENV.get('PLAY_SCRIPT') or 'ml/ml_play'
-    if os.path.isabs(script_path):
-        module = os.path.relpath(script_path, start=os.path.dirname(__file__))
-    else:
-        script_path = os.path.join(os.getcwd(), script_path)
-        module = os.path.relpath(script_path, start=os.path.dirname(__file__))
-    module = module.replace('../', '.')
-    module = module.replace('/', '.')
+    script_path = ENV.get('PLAY_SCRIPT') or 'ml/ml_play.py'
+    if not os.path.isabs(script_path):
+        script_path = os.path.abspath(script_path)
+    
+    sys.path.insert(0, os.path.dirname(script_path))
+    
+    module = os.path.basename(script_path)
     if module.endswith('.py'):
         module = module[:-3]
 
