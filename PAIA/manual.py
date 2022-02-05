@@ -39,12 +39,10 @@ def manual():
                 pickups = True
         unity.set_config('PickUps', pickups)
 
-
         # Main part: Excecute the App
         env_utils.launch_executable(unity_app, args=[]).wait()
         episode += 1
         print(f'Episode {episode} finished')
-
 
         # Post-processing
         id = ENV.get('PLAYER_ID') or ''
@@ -58,13 +56,11 @@ def manual():
                 progress=progress
             )
 
-
         # If MAX_EPISODES is unlimited, ask if want to stop
         if MAX_EPISODES < 0:
             is_continue = input('Continue? (y/n): ')
             if is_continue.lower() != 'y':
                 break
-        
     
     # Finish all
     if has_demo:

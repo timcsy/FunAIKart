@@ -81,7 +81,7 @@ def prepare_recording(episode: int=None, enable: bool=None, recording_dir=None, 
         if episode is None:
             is_recording = True
         else:
-            period = int(ENV.get('RECORDING_PEROID') or 0)
+            period = int(ENV.get('RECORDING_PERIOD') or 0)
             if period > 0:
                 is_recording = episode % period == 0
             elif period == 0:
@@ -118,7 +118,7 @@ def prepare_demo(episode: int=None, purename=None, enable: bool=None):
         if episode is None:
             is_demo = True
         else:
-            period = int(ENV.get('DEMO_PEROID') or 0)
+            period = int(ENV.get('DEMO_PERIOD') or 0)
             if period > 0:
                 is_demo = episode % period == 0
             elif period == 0:
@@ -128,7 +128,7 @@ def prepare_demo(episode: int=None, purename=None, enable: bool=None):
         if purename is None:
             purename = datetime.now().strftime("%Y%m%d%H%M%S")
         if not episode is None:
-            purename = f'{purename}_{episode}'
+            purename = f'{purename}{episode}'
         
         set_config('Demo', purename)
         return purename

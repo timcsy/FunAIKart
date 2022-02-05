@@ -151,7 +151,7 @@ def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
         # Not to save the image to the disk, just leave it in memory
         s.observation.images.front.data = b'PNG image data'
         s.observation.images.back.data = b'PNG image data'
-    return str(s)
+    return s
 
 def init_action_object(id: str=None) -> Action:
     action = Action(
@@ -194,4 +194,4 @@ def convert_action_to_object(data: ActionTuple, command: Command, id: str=None) 
 def action_info(action: Action) -> str:
     a = Action()
     a.CopyFrom(action)
-    return str(a)
+    return a
