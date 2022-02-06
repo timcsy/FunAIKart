@@ -5,6 +5,7 @@ import time
 
 from config import ENV
 import client
+import game
 import server
 import rforward
 import manual
@@ -31,6 +32,9 @@ def main():
     elif ENV.get('RUNNING_MODE') == 'MANUAL':
         # Play manually
         manual.manual()
+    elif ENV.get('RUNNING_MODE') == 'GAME':
+        # Competition
+        game.competition()
     else:
         # RUNNING_MODE has default value: OFFLINE
         # Offline server and clients
@@ -63,4 +67,6 @@ if __name__ == '__main__':
                         ENV['PLAY_PICKUPS'] = sys.argv[4] if len(sys.argv) > 4 else 'true'
                 elif sys.argv[2] == '--pickups' or sys.argv[2] == '-P':
                     ENV['PLAY_PICKUPS'] = sys.argv[3] if len(sys.argv) > 3 else 'true'
+        elif sys.argv[1] == 'game':
+            ENV['RUNNING_MODE'] = 'GAME'
     main()
