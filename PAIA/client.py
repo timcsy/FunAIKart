@@ -62,7 +62,7 @@ def run() -> None:
             autosave(brain, pickle_path, True)
     logging.info('Finishing ...')
 
-def import_brain():
+def import_brain(import_only=False):
     # Get the module (the definition of the MLPlay class) name
     script_path = ENV.get('PLAY_SCRIPT') or 'ml/ml_play.py'
     if not os.path.isabs(script_path):
@@ -75,10 +75,12 @@ def import_brain():
         module = module[:-3]
 
     ml_play = importlib.import_module(module)
-    brain = ml_play.MLPlay()
+    if not import_only:
+        brain = ml_play.MLPlay()
 
-    pickle_path = autosave(brain)
-    return brain, pickle_path
+        pickle_path = autosave(brain)
+        return brain, pickle_path
+    return None
 
 def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
     if pickle_path is None:
@@ -126,6 +128,7 @@ def load():
                             pass
         if pickle_path is not None:
             with open(pickle_path, 'rb') as fin:
+                import_brain(import_only=True)
                 ml_play = pickle.load(fin)
                 return ml_play, pickle_path
     
