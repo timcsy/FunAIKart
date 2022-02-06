@@ -77,6 +77,8 @@ __pycache__
 Assets/ML-Agents/Timers
 *.env
 PAIA/ml/*
+PAIA/test.ipynb
+PAIA/test.py
 [Aa]utosave
 [Cc]ameras
 [Dd]emo
