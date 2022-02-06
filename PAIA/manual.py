@@ -31,16 +31,16 @@ def manual():
         demo_name = unity.prepare_demo(episode=episode, purename=demo_purename)
         if not demo_name is None:
             has_demo = True
-        pickups = bool_ENV('PLAY_PICKUPS')
+        pickups = int_ENV('PLAY_PICKUPS', 0)
         if pickups is None:
-            is_zero = pickups == '0'
-            pickups = int_ENV('PLAY_PICKUPS', 0)
-            if pickups == 0 and not is_zero:
-                pickups = True
+            pickups = bool_ENV('PLAY_PICKUPS', True)
         unity.set_config('PickUps', pickups)
 
         # Main part: Excecute the App
-        env_utils.launch_executable(unity_app, args=[]).wait()
+        if not unity_app is None:
+            env_utils.launch_executable(unity_app, args=[]).wait()
+        else:
+            input('Press any key to continue after stop the Unity game ...')
         episode += 1
         print(f'Episode {episode} finished')
 

@@ -84,6 +84,8 @@ class MLPlay:
 
 可以使用 `os.path.dirname(os.path.abspath(__file__))`，
 
+可以參考 [Get Path of the Current File in Python](https://www.delftstack.com/howto/python/python-get-path/)，用 `__file__` 來獲取目前 Python script 所在的位置，
+
 如果是一般相對的路徑，會以終端機所在的位置為準，兩者可能不同（`ml_play.py` 要假設可以放在任意資料夾下）。
 
 ### 環境建置

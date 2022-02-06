@@ -68,12 +68,9 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.tmp_dir, _, self.output_video_path = unity.prepare_recording(episode=self.episode, recording_dir=self.recording_dir)
         if not unity.prepare_demo(episode=self.episode, purename=self.demo_purename) is None:
             self.has_demo = True
-        pickups = bool_ENV('PLAY_PICKUPS')
+        pickups = int_ENV('PLAY_PICKUPS', 0)
         if pickups is None:
-            is_zero = pickups == '0'
-            pickups = int_ENV('PLAY_PICKUPS', 0)
-            if pickups == 0 and not is_zero:
-                pickups = True
+            pickups = bool_ENV('PLAY_PICKUPS', True)
         unity.set_config('PickUps', pickups)
         
         logging.info('Waiting for Unity side ...')
