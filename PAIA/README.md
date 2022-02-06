@@ -84,7 +84,7 @@ class MLPlay:
 
 可以使用 `os.path.dirname(os.path.abspath(__file__))`，
 
-如果是一般相對的路徑，會以終端機所在的位置為準，兩者可能不同（`ml_play.py` 是放在 `ml` 資料夾下）。
+如果是一般相對的路徑，會以終端機所在的位置為準，兩者可能不同（`ml_play.py` 要假設可以放在任意資料夾下）。
 
 ### 環境建置
 
@@ -95,13 +95,14 @@ numpy
 Pillow
 opencv-python
 paramiko
+ffmpeg-python
+python-dotenv
 
 建議使用 Anaconda，
 
 執行 `pip install -r requirements.txt` 來安裝這些套件。
 
 #### 環境變數（Environment Variables）
-
 Windows 設定：
 ```
 SET PAIA_ID=小組的識別號碼
@@ -123,81 +124,51 @@ PAIA_PASSWORD=小組的SSH密碼
 
 如果沒有特別設定，在關閉終端機之後環境變數的設定會失效。
 
+如果覺得每次都要設定環境變數很麻煩，或者覺得太複雜，「建議」使用 `.env` 設定檔進行設置，
+Python 執行之前都會先匯入`.env` 設定檔中的環境變數。
+
+請修改 `.env.template` 中的內容，並且存成 `.env`，可以參考 [dotenv](https://github.com/theskumar/python-dotenv) 的格式來做設定。
+
+另外加上了一個 REQUIRE 變數，可以匯入其它 .env 檔。
+
+在 Python 中獲取環境變數的方法：
+```python
+from config import ENV
+ENV['環境變數名稱'] # 取得環境變數
+ENV['環境變數名稱'] = "值" # 設定環境變數
+```
+ENV 用法和一般的 Python dict ㄧ樣，而且 ENV 的值「必須」為「字串」型態！
+
 有時候程式執行不起來是因為安全性設定，請先檢查一下下載下來的執行檔是否可以執行。
 
-### 執行方式（修改中）
+### 執行方式
 
-#### 目前測試版本
-伺服器端（與 Unity 在同一台機器上）：
+#### 線上（Online）模式
+遊戲端（與 Unity 在同一台機器上）：
 ```
-python server.py 執行檔位置(如果沒有加這項就是使用 Unity Editor)
+python ml.py online
 ```
-用戶端（用來作 training 或 inferencing 的）：
+
+玩家端（用來作 training 或 inferencing 的）：
 ```
-python client.py 使用者id ml_play_檔名.py
+python ml.py play
 ```
-離線（Offline）模式，目前只支援 Unity Editor：
+
+開啟順序：
+開啟伺服器端 -> 執行玩家端（可以開始連進來）
+
+#### 離線（Offline）模式
+自動（training 或 inferencing）：
 ```
-python ml.py offline 使用者id ml_play_檔名.py
+python ml.py offline
 ```
-Demo 錄製檔案的位置（Unity Editor）：
+
+手動（可以用來收集資料）：
 ```
-根目錄/PAIA/Demo
-```
-Demo 錄製檔案的位置（Build 好的執行檔）：
-```
-執行檔所在目錄/PAIA/Demo
+python ml.py offline
 ```
 
 附註：如果使用 Unity Editor，在 Restart 指令之後要自己重開遊戲，Build 版的就不用，會自動開啟。
-
-#### 線上（Online）模式（未完成）
-伺服器端（與 Unity 在同一台機器上）：
-```
-python ml.py online -p 50051
-```
-
-用戶端（用來作 training 或 inferencing 的）：
-```
-python ml.py play 使用者id ml_play_檔名.py 使用者id2 ml_play_檔名2.py ...
-```
-
-開啟順序：
-開啟伺服器端 -> 執行 Unity 遊戲、用戶端（可以開始連進來）
-
-#### 離線（Offline）模式（未完成）
-```
-python ml.py offline 使用者id1 ml_play_檔名1.py 使用者id2 ml_play_檔名2.py ...
-```
-
-開啟順序：
-執行離線版 -> 執行 Unity 遊戲
-
-#### 參數說明（未完成）
-- -h, --help
-- -v, --verbose
-- -V, --version
-- -m, --manual
-  - restart times
-- offline
-  - -r, --record
-  	- demo path
-  - -e, --env
-  - -p, --port
-  - players
-  	- id code ...
-- online
-  - -r, --record
-  	- demo path
-  - -e, --env
-  - -p, --port
-  - -n, --player-number
-- play
-  - -a, --server-address
-  - -r, --record
-  	- demo path
-  - players
-  	- id code ...
 
 ### 影像資料轉換
 `PAIA.State` 所提供的影像格式為 bytes 形式的 PNG，存放於影像類別觀察資料的 `data` 欄位中。
@@ -213,15 +184,10 @@ img_back = PAIA.image_to_array(state.observation.images.back.data)
 注意轉換後的影像為三維度的 Numpy array，值的範圍在 0 到 1 之間。
 
 ### Demo 檔案處理
-在手動玩 Unity 時，可以使用 Demonstration Recorder 收集資料。
+運行 Unity 時，可以使用 Demonstration Recorder 收集資料。
 
-在 Unity 當中可以設定 Agent 的 Demonstration Recorder
-是否運作以及放置 `.demo` 檔的路徑（預設值為：根目錄/PAIA/Demo）。
-
-使用 `demo.Demo` 中的初始化可以讀入 `.demo` 或是 `.paia` 檔。
-使用 `demo.Demo` 中的 `export()` function 可以將 `.demo` 匯出成 `.paia` 檔，方便日後更快速讀入資料。
-
-注意：`PAIA.Demo` 和 `demo.Demo` 不一樣，前者是 Protocol Buffers 的定義，後者是用來讀取錄製資料的類別。
+使用 `demo.Demo` 中的初始化可以讀入 `.paia` 檔。
+使用 `demo.Demo` 中的 `export()` function 可以匯出成 `.paia` 檔，方便日後更快速讀入資料。
 
 使用 `Demo` 類別讀取/匯出錄製的資料：
 ```python
@@ -236,34 +202,22 @@ demo = Demo(['.demo 或 .paia 檔的路徑1', '.demo 或 .paia 檔的路徑2', .
 # 匯出成 .paia 檔
 demo.export('.paia 檔的路徑')
 
-# 存取全部資料
-data = demo.demo
-# 或是
-data = demo.get_demo()
+# 可以像 list 一樣存取資料（list 有的功能都可以），
+# 例如下面取出 index 為 0 的回合，為一個 list
+episode = demo[0]
+# 例如下面取出 index 為 0 的回合的第 3 步，為一個 PAIA.Step 物件
+step = demo[0][3]
+print(step) # 印出 step 資訊，不省略圖片
 
-# 單個 Episode
-episode = demo.get_episode(episode)
-
-# 所有 Episode
-episodes = demo.get_episodes()
-
-# 單個 Step
-step = demo.get_step(episode, step)
-
-# Episode 中的所有 Step
-steps = demo.get_steps(episode)
-
-# 單個 State
-state = demo.get_state(episode, step)
-
-# Episode 中的所有 State
-states = demo.get_states(episode)
-
-# 單個 Action
-action = demo.get_action(episode, step)
-
-# Episode 中的所有 Action
-actions = demo.get_actions(episode)
+# 除了用中括號 []，也可以用小括號 ()，依據環境變數 IMAGE_ENABLE 決定是否要儲存照片，
+# 並且修改成方便轉換成字串顯示的形式（但圖片資料會被省略），
+# 第一個參數為回合的 index，第二個參數為 Step 的 index
+# 如果 index 是整數就是一般的 index，是 list 則是很多 index，是 None 代表全部
+# 例如下面取出 index 為 0 的回合的第 3 步
+step = demo(0, 3)
+print(step) # 印出 step 資訊，且省略圖片
+# 例如下面取出 index 為 0, 1 的回合的各自的第 3、7 步
+steps = demo([0, 1], [3, 7])
 ```
 
 ## 資料格式 Spec
@@ -367,7 +321,7 @@ struct Action { // 動作資訊
 ```
 
 ### 錄製資訊
-錄製資訊除了記錄手動玩的結果，用來進行 Imitation Learning（模仿學習）以外，也可以用來當作 Replay Buffer 使用，以下的格式均是使用 [Protocol Buffer](https://developers.google.com/protocol-buffers)，可以參考官方說明裡面的使用方法來使用，如果是陣列（Array）/列表（List）的畫也可以善用 Python 的 `append(元素)` 新增單筆資料或是`extend(列表)` 新增多筆資料。
+錄製資訊除了記錄手動玩的結果，用來進行 Imitation Learning（模仿學習）以外，也可以用來當作 Replay Buffer 使用。
 
 「步（Step）」的資訊（`PAIA.Step`）定義：
 ```C++
@@ -376,19 +330,3 @@ struct Step { // 一步的資訊
 	Action action; // 動作資訊
 }
 ```
-
-回合資訊（`PAIA.Episode`）定義：
-```C++
-struct Episode { // 回合資訊
-	Step[] steps; // 所有步的資訊（是一個陣列/List）
-}
-```
-一回合裡面有多個「步」。
-
-錄製資訊（`PAIA.Demo`）定義：
-```C++
-struct Demo { // 錄製資訊
-	Episode[] episodes; // 所有回合的資訊（是一個陣列/List）
-}
-```
-一個錄製資訊裡面有多個回合。
