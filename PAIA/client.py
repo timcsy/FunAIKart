@@ -83,6 +83,9 @@ def import_brain(import_only=False):
     return None
 
 def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
+    autosave_enable = to_bool(ENV.get('PLAY_AUTOSAVE'), True)
+    if not autosave_enable:
+        return None
     if pickle_path is None:
         prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play'
         if prefix:
