@@ -56,10 +56,10 @@ def play(player: Dict[str, Any], index: int, video_basepath: str):
             thread.join()
     
     dirname, file_prefix = get_dir_fileprefix('RECORDING', base_dir_default='records')
-    base_path = os.path.join(dirname, file_prefix + '_0') # path without extension
+    recording_base_path = os.path.join(dirname, file_prefix + '_0') # path without extension
 
     with open(video_basepath + '.rec', 'a') as fout:
-        fout.write(f'{ENV["PLAYER_ID"]}\n{base_path}\n')
+        fout.write(f'{ENV["PLAYER_ID"]}\n{recording_base_path}\n')
     
     time.sleep(60)
 
@@ -81,7 +81,7 @@ def read_rec(video_basepath):
                 elif i % 2 == 0:
                     player['id'] = line
                 elif i % 2 == 1:
-                    player['video_path'] = line
+                    player['recording_base_path'] = line
                     players.append(player)
                     player = {}
                 i += 1
@@ -157,9 +157,27 @@ def competition(is_continue: bool=None):
         player_index += 1
 
     ENV['RECORDING_RESULT_SECONDS'] = str(result_time)
-    _, _, rank_players, _ = read_rec(video_basepath)
+    _, _, players, _ = read_rec(video_basepath)
+    rank_players = []
+    for i in range(len(players)):
+        with open(players[i]['recording_base_path'] + '.rec', 'r') as fin:
+            lines = fin.readlines()
+            p = {
+                'id': lines[0].strip('\n'),
+                'usedtime': float(lines[1].strip('\n')),
+                'progress': round(float(lines[2].strip('\n')), 2),
+                'video_path': players[i]['recording_base_path'] + '.mp4',
+                'index': i
+            }
+            rank_players.append(p)
+
     # sort the players
+    rank_players.sort(key=lambda p: (-p['progress'], p['usedtime']))
+    for i in range(len(rank_players)):
+        rank_players[i]['rank'] = i + 1
+    rank_players.sort(key=lambda p: p['index'])
     rank_video(rank_players, video_basepath + '.mp4')
+    os.remove(video_basepath + '.rec')
 
 if __name__ == '__main__':
     competition(is_continue=True)
