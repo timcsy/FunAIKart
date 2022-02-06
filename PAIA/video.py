@@ -120,9 +120,6 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
 
     result_image(width, height, id, usedtime, progress, video_dir, result_duration)
 
-    cwd = os.getcwd()
-    os.chdir(video_dir)
-
     try:
         result = subprocess.run([
             'ffmpeg',
@@ -133,11 +130,9 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
             '-pix_fmt', 'yuv420p',
             '-vf', f'scale={width}:{height},setsar=1:1',
             'tmp.mp4'
-        ], check=True)
+        ], check=True, cwd=video_dir)
     except:
         result = -1
-    
-    os.chdir(cwd)
     
     insert_player_id(id, os.path.join(video_dir, 'tmp.mp4'), output_path)
     os.remove(os.path.join(video_dir, 'tmp.mp4'))

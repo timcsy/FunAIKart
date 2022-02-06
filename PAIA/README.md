@@ -93,6 +93,7 @@ class MLPlay:
 #### 環境需求
 Python 3
 mlagents==0.26.0
+pytorch
 numpy
 Pillow
 opencv-python

@@ -54,7 +54,10 @@ def to_int(value, default: int=None):
     if default is None:
         return None
     else:
-        return int(value or 0)
+        try:
+            return int(value or 0)
+        except ValueError:
+            return None
 
 def int_ENV(key, default: int=None):
     return to_int(ENV.get(key), default)
@@ -63,7 +66,10 @@ def to_float(value, default: int=None):
     if default is None:
         return None
     else:
-        return float(value or 0.0)
+        try:
+            return float(value or 0.0)
+        except ValueError:
+            return None
 
 def float_ENV(key, default: float=None):
     return to_float(ENV.get(key), default)

@@ -2,11 +2,15 @@ import glob
 import json
 import os
 import random
+import threading
 import time
 from typing import Any, Dict
 
 from config import ENV, bool_ENV, int_ENV
-from utils import get_dir_fileprefix
+import client
+import server
+import rforward
+from utils import get_dir_fileprefix, server_config
 from video import rank_video
 
 def play(player: Dict[str, Any], index: int, video_basepath: str):
@@ -16,6 +20,16 @@ def play(player: Dict[str, Any], index: int, video_basepath: str):
     if 'PLAY_SCRIPT' in player:
         # Offline
         ENV['PLAY_SCRIPT'] = player['PLAY_SCRIPT']
+
+        # Offline server and clients
+        threads = []
+        threads.append(threading.Thread(target=server.serve))
+        threads.append(threading.Thread(target=client.run))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+    
     else:
         # Online
         if 'PAIA_ID' in ENV:
@@ -28,12 +42,26 @@ def play(player: Dict[str, Any], index: int, video_basepath: str):
             ENV['PAIA_USERNAME'] = str(player['PAIA_USERNAME'])
         if 'PAIA_PASSWORD' in ENV:
             ENV['PAIA_PASSWORD'] = str(player['PAIA_PASSWORD'])
+        
+        params = server_config()
+        # Online server
+        threads = []
+        # Run server
+        threads.append(threading.Thread(target=server.serve))
+        # Remote port forwarding with SSH
+        threads.append(threading.Thread(target=rforward.rforward, args=params))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
     
     dirname, file_prefix = get_dir_fileprefix('RECORDING', base_dir_default='records')
     base_path = os.path.join(dirname, file_prefix + '_0') # path without extension
 
     with open(video_basepath + '.rec', 'a') as fout:
         fout.write(f'{ENV["PLAYER_ID"]}\n{base_path}\n')
+    
+    time.sleep(60)
 
 def read_rec(video_basepath):
     video_prefix = None
@@ -45,6 +73,7 @@ def read_rec(video_basepath):
             i = 0
             player = {}
             for line in lines:
+                line = line.strip('\n')
                 if i == 0:
                     video_prefix = line
                 elif i == 1:
@@ -56,11 +85,15 @@ def read_rec(video_basepath):
                     players.append(player)
                     player = {}
                 i += 1
-    return video_prefix, pickup_seed, players
+    return video_prefix, pickup_seed, players, i
 
-def competition(is_continue=True):
+def competition(is_continue: bool=None):
+    if is_continue is None:
+        is_continue = bool_ENV('GAME_CONTINUE', True)
     players_path = ENV.get('GAME_PLAYERS', 'game/players.json')
-    game_players = json.load(players_path)
+    game_players = []
+    with open(players_path, 'r') as fin:
+        game_players = json.load(fin)
     video_dir, video_prefix = get_dir_fileprefix('VIDEO', use_dir=False, base_dir_default='video')
     pickup_seed = None
     player_index = 0
@@ -69,10 +102,23 @@ def competition(is_continue=True):
         paths = glob.glob(f'{video_dir}/*.rec')
         paths.sort(key=lambda p: time.ctime(os.path.getmtime(p)))
         if len(paths) > 0:
-            video_prefix = os.path.splitext(os.path.basename(paths[-1]))
+            video_prefix = os.path.splitext(os.path.basename(paths[-1]))[0]
             video_basepath = os.path.join(video_dir, video_prefix)
-            video_prefix, pickup_seed, players = read_rec(video_basepath)
+            video_prefix, pickup_seed, players, i = read_rec(video_basepath)
             player_index = len(players)
+            if i == 0:
+                video_prefix = os.path.splitext(os.path.basename(paths[-1]))[0]
+            if i < 2:
+                is_continue = False
+            elif i % 2 == 1:
+                lines = []
+                with open(video_basepath + '.rec', 'r') as fin:
+                    lines = fin.readlines()
+                with open(video_basepath + '.rec', 'w') as fout:
+                    for line in lines[:-1]:
+                        fout.write(line)
+        else:
+            is_continue = False
 
     video_basepath = os.path.join(video_dir, video_prefix)
     if pickup_seed is None:
@@ -106,10 +152,14 @@ def competition(is_continue=True):
         with open(video_basepath + '.rec', 'w') as fout:
             fout.write(f'{video_prefix}\n{pickup_seed}\n')
 
-    while player_index < range(len(game_players)):
+    while player_index < len(game_players):
         play(game_players[player_index], player_index, video_basepath)
         player_index += 1
 
     ENV['RECORDING_RESULT_SECONDS'] = str(result_time)
-    _, _, rank_players = read_rec(video_basepath)
+    _, _, rank_players, _ = read_rec(video_basepath)
+    # sort the players
     rank_video(rank_players, video_basepath + '.mp4')
+
+if __name__ == '__main__':
+    competition(is_continue=True)
