@@ -13,7 +13,7 @@ from mlagents.trainers import demo_loader
 from mlagents.trainers.buffer import AgentBuffer, BufferKey, ObservationKeyPrefix
 from mlagents_envs.base_env import ActionTuple, BehaviorSpec
 
-from config import ENV, to_bool
+from config import bool_ENV
 import PAIA
 from utils import get_dir_fileprefix
 import unity
@@ -288,7 +288,7 @@ class Demo:
 
 def demo_to_paia(purename, paia_dir=None, paia_prefix=None, all_in_one: bool=None, remove_original: bool=True):
     if all_in_one is None:
-        all_in_one = to_bool(ENV.get('DEMO_ALL_IN_ONE'), True)
+        all_in_one = bool_ENV('DEMO_ALL_IN_ONE', True)
     
     dirname, file_prefix = get_dir_fileprefix('DEMO', base_dir_default='demo', use_dir_default=not all_in_one)
     if paia_dir is None:

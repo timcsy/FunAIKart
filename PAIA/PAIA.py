@@ -1,8 +1,6 @@
 # api_version: PAIAKart_1.0
 
-import datetime
 import io
-import logging
 import os
 from typing import List
 
@@ -12,7 +10,7 @@ from PIL import Image
 from mlagents_envs.base_env import BehaviorSpec, ActionTuple
 
 from communication.generated import PAIA_pb2
-from config import ENV, to_bool
+from config import bool_ENV
 from utils import get_dir_fileprefix
 
 Event = PAIA_pb2.Event
@@ -126,7 +124,7 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
 def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
     s = State()
     s.CopyFrom(state)
-    image_enable = to_bool(ENV.get('IMAGE_ENABLE'), False)
+    image_enable = bool_ENV('IMAGE_ENABLE', False)
     if image_enable:
         # Save the image to the disk
         dirpath, fileprefix = get_dir_fileprefix('IMAGE', base_dir_default='cameras')

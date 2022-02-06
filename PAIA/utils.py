@@ -2,25 +2,25 @@ from datetime import datetime
 from getpass import getpass
 import os
 
-from config import ENV, to_bool
+from config import ENV, bool_ENV
 
 def get_dir_fileprefix(name, base_dir=None, use_dir=None, dir_prefix=None, dir_timestamp=None, file_prefix=None, file_timestamp=None, base_dir_default='.', use_dir_default=True):
     if base_dir is None:
-        base_dir = ENV.get(name + '_BASE_DIR') or base_dir_default
+        base_dir = ENV.get(name + '_BASE_DIR', base_dir_default)
     if use_dir is None:
-        use_dir = to_bool(ENV.get(name + '_USE_DIR'), use_dir_default)
+        use_dir = bool_ENV(name + '_USE_DIR', use_dir_default)
     if dir_prefix is None:
-        dir_prefix = ENV.get(name + '_DIR_PREFIX') or ''
+        dir_prefix = ENV.get(name + '_DIR_PREFIX', '')
     if dir_timestamp is None:
-        dir_timestamp = to_bool(ENV.get(name + '_DIR_TIMESTAMP'))
+        dir_timestamp = bool_ENV(name + '_DIR_TIMESTAMP')
         if dir_timestamp is None:
             dir_timestamp = ENV.get(name + '_DIR_TIMESTAMP')
         elif dir_timestamp is True:
             dir_timestamp = '%Y%m%d%H%M%S'
     if file_prefix is None:
-        file_prefix = ENV.get(name + '_FILE_PREFIX') or ''
+        file_prefix = ENV.get(name + '_FILE_PREFIX', '')
     if file_timestamp is None:
-        file_timestamp = to_bool(ENV.get(name + '_FILE_TIMESTAMP'))
+        file_timestamp = bool_ENV(name + '_FILE_TIMESTAMP')
         if file_timestamp is None:
             file_timestamp = ENV.get(name + '_FILE_TIMESTAMP')
         elif file_timestamp is True:
@@ -52,7 +52,7 @@ def team_config():
     print('You can set the environment variable in .env file or by SET (Windows) or export (Other OS).')
     print('More information please check the README.')
     
-    team_port = int(input('ID Number of your team (e.g. 50051): ') or ENV.get('PAIA_ID') or 50051)
+    team_port = int(input('ID Number of your team (e.g. 50051): ') or ENV.get('PAIA_ID', 50051))
     ENV['PAIA_ID'] = str(team_port)
     return team_port
 
@@ -62,7 +62,7 @@ def server_config():
     forward_host='localhost'
     forward_port = team_port
     ssh_host = input('SSH IP of your team (e.g. 140.114.79.187): ') or ENV.get('PAIA_HOST')
-    ssh_port = int(input('SSH port of your team (e.g. 9487): ') or ENV.get('PAIA_PORT') or 22)
+    ssh_port = int(input('SSH port of your team (e.g. 9487): ') or ENV.get('PAIA_PORT', 22))
     ssh_user = input('SSH username: ') or ENV.get('PAIA_USERNAME')
     ssh_pass = getpass('SSH password: ') or ENV.get('PAIA_PASSWORD')
     return [remote_bind_port, forward_host, forward_port, ssh_host, ssh_port, ssh_user, ssh_pass]

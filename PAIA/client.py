@@ -9,12 +9,12 @@ import grpc
 import communication.generated.PAIA_pb2_grpc as PAIA_pb2_grpc
 
 import PAIA
-from config import ENV, to_bool
+from config import ENV, bool_ENV, int_ENV
 from utils import team_config
 
 def run() -> None:
-    id = ENV.get('PLAYER_ID') or ''
-    port = int(ENV.get('PAIA_ID') or 50051)
+    id = ENV.get('PLAYER_ID', '')
+    port = int_ENV('PAIA_ID', 50051)
     channel = grpc.insecure_channel(f'localhost:{port}')
     stub = PAIA_pb2_grpc.PAIAStub(channel)
 
@@ -64,7 +64,7 @@ def run() -> None:
 
 def import_brain(import_only=False):
     # Get the module (the definition of the MLPlay class) name
-    script_path = ENV.get('PLAY_SCRIPT') or 'ml/ml_play.py'
+    script_path = ENV.get('PLAY_SCRIPT', 'ml/ml_play.py')
     if not os.path.isabs(script_path):
         script_path = os.path.abspath(script_path)
     
@@ -83,15 +83,15 @@ def import_brain(import_only=False):
     return None
 
 def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
-    autosave_enable = to_bool(ENV.get('PLAY_AUTOSAVE'), True)
+    autosave_enable = bool_ENV('PLAY_AUTOSAVE', True)
     if not autosave_enable:
         return None
     if pickle_path is None:
-        prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play'
+        prefix = ENV.get('PLAY_AUTOSAVE_PREFIX', 'ml_play')
         if prefix:
             prefix = prefix + '_'
         filename = f'{prefix}{datetime.now().strftime("%Y%m%d%H%M%S")}.pickle'
-        autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR') or 'autosave'
+        autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR', 'autosave')
         pickle_path = os.path.join(autosave_dir, filename)
     if not os.path.exists(os.path.dirname(pickle_path)):
         os.makedirs(os.path.dirname(pickle_path))
@@ -106,16 +106,16 @@ def autosave(brain, pickle_path: str=None, is_restart: bool=False) -> str:
     return pickle_path
 
 def load():
-    is_continue = to_bool(ENV.get('PLAY_CONTINUE'), False)
-    autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR') or 'autosave'
+    is_continue = bool_ENV('PLAY_CONTINUE', False)
+    autosave_dir = ENV.get('PLAY_AUTOSAVE_DIR', 'autosave')
     pickle_path = None
     if is_continue:
-        use_newest = to_bool(ENV.get('PLAY_AUTOSAVE_USE_NEWEST'), True)
+        use_newest = bool_ENV('PLAY_AUTOSAVE_USE_NEWEST', True)
         if not use_newest:
             pickle_path = ENV.get('PLAY_AUTOSAVE_PATH')
         if pickle_path is None and os.path.exists(autosave_dir):
             # Find the newest autosaved kart_timestamp.pickle
-            prefix = ENV.get('PLAY_AUTOSAVE_PREFIX') or 'ml_play'
+            prefix = ENV.get('PLAY_AUTOSAVE_PREFIX', 'ml_play')
             newest_time = 0
             for entry in os.scandir(autosave_dir):
                 if entry.is_file():

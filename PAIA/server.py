@@ -14,7 +14,7 @@ import demo
 import PAIA
 import video
 import unity
-from config import ENV, to_bool
+from config import ENV, bool_ENV, int_ENV
 
 server = None
 
@@ -68,10 +68,10 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
             self.tmp_dir, _, self.output_video_path = unity.prepare_recording(episode=self.episode, recording_dir=self.recording_dir)
         if not unity.prepare_demo(episode=self.episode, purename=self.demo_purename) is None:
             self.has_demo = True
-        pickups = to_bool(ENV.get('PLAY_PICKUPS'))
+        pickups = bool_ENV('PLAY_PICKUPS')
         if pickups is None:
             is_zero = pickups == '0'
-            pickups = int(ENV.get('PLAY_PICKUPS') or 0)
+            pickups = int_ENV('PLAY_PICKUPS', 0)
             if pickups == 0 and not is_zero:
                 pickups = True
         unity.set_config('PickUps', pickups)
@@ -153,7 +153,7 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         if len(self.actions) == len(self.behavior_names) and self.env_ready:
             self.set_current()
             # end is the server side checking that if reach the max episode
-            MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
+            MAX_EPISODES = int_ENV('MAX_EPISODES', -1)
             end = MAX_EPISODES >= 0 and self.episode >= MAX_EPISODES
             restart = False
 
@@ -251,7 +251,7 @@ def serve():
     global server
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     PAIA_pb2_grpc.add_PAIAServicer_to_server(PAIAServicer(), server)
-    port = int(ENV.get('PAIA_ID') or 50051)
+    port = int_ENV('PAIA_ID', 50051)
     server.add_insecure_port(f'[::]:{port}')
     server.start()
     server.wait_for_termination()

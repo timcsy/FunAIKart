@@ -2,13 +2,13 @@ from datetime import datetime
 import sys
 from mlagents_envs import env_utils
 
-from config import ENV, to_bool
+from config import ENV, bool_ENV, int_ENV
 import demo
 import unity
 import video
 
 def manual():
-    MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
+    MAX_EPISODES = int_ENV('MAX_EPISODES', -1)
     unity_app = unity.get_unity_app()
 
     episode = 0
@@ -31,10 +31,10 @@ def manual():
         demo_name = unity.prepare_demo(episode=episode, purename=demo_purename)
         if not demo_name is None:
             has_demo = True
-        pickups = to_bool(ENV.get('PLAY_PICKUPS'))
+        pickups = bool_ENV('PLAY_PICKUPS')
         if pickups is None:
             is_zero = pickups == '0'
-            pickups = int(ENV.get('PLAY_PICKUPS') or 0)
+            pickups = int_ENV('PLAY_PICKUPS', 0)
             if pickups == 0 and not is_zero:
                 pickups = True
         unity.set_config('PickUps', pickups)
@@ -45,7 +45,7 @@ def manual():
         print(f'Episode {episode} finished')
 
         # Post-processing
-        id = ENV.get('PLAYER_ID') or ''
+        id = ENV.get('PLAYER_ID', '')
         usedtime, progress = demo.get_info(demo_name)
         if not tmp_dir is None and not output_video_path is None:
             video.generate_video(

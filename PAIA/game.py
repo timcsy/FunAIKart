@@ -1,41 +1,25 @@
-# Configuration settings for the SSH Server
-PAIA_ID=
-PAIA_HOST=
-PAIA_PORT=
-PAIA_USERNAME=
-PAIA_PASSWORD=
+import json
+from typing import Any, Dict
 
+from config import ENV
 
-# About Game playing
-# PLAY_PICKUPS: false for no pickups, true or int for using pickups, int for same pickups set
-PLAY_PICKUPS=true
-# PLAYER_ID: The ID to show in the game result
-PLAYER_ID="kart"
-PLAY_BASE_DIR="ml"
-PLAY_SCRIPT="${PLAY_BASE_DIR}/ml_play.py"
-PLAY_AUTOSAVE=true
-# Play the game for MAX_EPISODES rounds, use negative value for unlimit rounds
-MAX_EPISODES=1
+def play(player: Dict[str, Any]):
+    ENV['PLAYER_ID'] = str(player.get('PLAYER_ID', ENV.get('PLAYER_ID', '')))
+    if 'PLAY_SCRIPT' in player:
+        # Offline
+        ENV['PLAY_SCRIPT'] = player['PLAY_SCRIPT']
+    else:
+        # Online
+        if 'PAIA_ID' in ENV:
+            ENV['PAIA_ID'] = str(player['PAIA_ID'])
+        if 'PAIA_HOST' in ENV:
+            ENV['PAIA_HOST'] = str(player['PAIA_HOST'])
+        if 'PAIA_PORT' in ENV:
+            ENV['PAIA_PORT'] = str(player['PAIA_PORT'])
+        if 'PAIA_USERNAME' in ENV:
+            ENV['PAIA_USERNAME'] = str(player['PAIA_USERNAME'])
+        if 'PAIA_PASSWORD' in ENV:
+            ENV['PAIA_PASSWORD'] = str(player['PAIA_PASSWORD'])
 
-
-
-# Recording: Record the video of the game
-RECORDING_ENABLE=false
-RECORDING_BASE_DIR="records"
-# Set false if you want to store in the base directory
-RECORDING_USE_DIR=true
-RECORDING_DIR_PREFIX=${PLAYER_ID}
-# Set false to disable, or using Python-style strftime format
-RECORDING_DIR_TIMESTAMP=%Y%m%d_%H%M%S
-RECORDING_FILE_PREFIX=${PLAYER_ID}
-RECORDING_FILE_TIMESTAMP=false
-RECORDING_SAVE_REC=false
-RECORDING_RESULT_SECONDS=75
-RECORDING_PERIOD=1
-
-
-# Video: Video of the game competition
-VIDEO_WIDTH=1920
-VIDEO_HEIGHT=1080
-VIDEO_RANK_SECONDS=5
-VIDEO_PRESERVE_SECONDS=75
+def competition():
+    pass

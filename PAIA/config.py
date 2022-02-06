@@ -47,6 +47,27 @@ def to_bool(value, default=None):
         elif value.upper() == 'TRUE': return True
     return default
 
+def bool_ENV(key, default: bool=None):
+    return to_bool(ENV.get(key), default)
+
+def to_int(value, default: int=None):
+    if default is None:
+        return None
+    else:
+        return int(value or 0)
+
+def int_ENV(key, default: int=None):
+    return to_int(ENV.get(key), default)
+
+def to_float(value, default: int=None):
+    if default is None:
+        return None
+    else:
+        return float(value or 0.0)
+
+def float_ENV(key, default: float=None):
+    return to_float(ENV.get(key), default)
+
 # Logging Level
 if ENV.get('LOG_LEVEL') == 'CRITICAL': log_level = logging.CRITICAL
 elif ENV.get('LOG_LEVEL') == 'ERROR': log_level = logging.ERROR

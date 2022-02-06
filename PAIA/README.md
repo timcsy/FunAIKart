@@ -6,7 +6,7 @@
 將你所寫的 `MLPlay` 類別放在 `ml/ml_play.py` （可以改檔名）中，如下：
 ```python
 import logging # you can use functions in logging: debug, info, warning, error, critical, log
-from config import ENV
+from config import int_ENV
 import PAIA
 from demo import Demo
 
@@ -26,7 +26,7 @@ class MLPlay:
         #       state.observation.images.front.data and 
         #       state.observation.images.back.data to numpy array (range from 0 to 1)
         #       For example: img_array = PAIA.image_to_array(state.observation.images.front.data)
-        MAX_EPISODES = int(ENV.get('MAX_EPISODES') or -1)
+        MAX_EPISODES = int_ENV('MAX_EPISODES', -1)
 
         self.step_number += 1
         logging.info(f'Epispde: {self.episode_number}, Step: {self.step_number}')
@@ -133,11 +133,16 @@ Python 執行之前都會先匯入`.env` 設定檔中的環境變數。
 
 在 Python 中獲取環境變數的方法：
 ```python
-from config import ENV
+from config import ENV, bool_ENV, int_ENV, float_ENV
 ENV['環境變數名稱'] # 取得環境變數
-ENV['環境變數名稱'] = "值" # 設定環境變數
+ENV['環境變數名稱'] = "值" # 設定環境變數（值一定要先轉換為字串！）
+bool_ENV('環境變數名稱', 預設值) # 轉換環境變數為布林值，預設值可加可不加，不加的話是 None
+int_ENV('環境變數名稱', 預設值) # 轉換環境變數為整數，預設值可加可不加，不加的話是 None
+float_ENV('環境變數名稱', 預設值) # 轉換環境變數為浮點數，預設值可加可不加，不加的話是 None
 ```
 ENV 用法和一般的 Python dict ㄧ樣，而且 ENV 的值「必須」為「字串」型態！
+
+因此，提供了 `bool_ENV`, `int_ENV`, `float_ENV` 三個函數來方便作轉換。
 
 有時候程式執行不起來是因為安全性設定，請先檢查一下下載下來的執行檔是否可以執行。
 
