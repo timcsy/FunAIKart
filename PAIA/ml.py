@@ -28,7 +28,7 @@ def main():
             time.sleep(1)
         for thread in threads:
             thread.join()
-    if ENV.get('RUNNING_MODE') == 'MANUAL':
+    elif ENV.get('RUNNING_MODE') == 'MANUAL':
         # Play manually
         manual.manual()
     else:
