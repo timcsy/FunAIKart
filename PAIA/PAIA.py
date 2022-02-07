@@ -1,4 +1,4 @@
-# api_version: PAIAKart_1.0
+# api_version: PAIA_Kart_1.0
 
 import io
 import os
@@ -56,7 +56,7 @@ def image_to_image(data: bytes, format: str='JPEG') -> bytes:
         return imgByteArr.getvalue()
 
 def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarray], event: Event, reward: float=0.0) -> State:
-    state = State(api_version='PAIAKart_1.0')
+    state = State(api_version='PAIA_Kart_1.0')
     for index, obs_spec in enumerate(behavior_spec.observation_specs):
         # the first dimension is for batch (even if batch is not used)
         if obs_spec.name == 'RayPerceptionSensorFront':
@@ -155,7 +155,7 @@ def state_info(state: State, img_suffix: str='', img_dir: str=None) -> str:
 
 def init_action_object(id: str=None) -> Action:
     action = Action(
-        api_version='PAIAKart_1.0',
+        api_version='PAIA_Kart_1.0',
         id=id,
         command=Command.COMMAND_START
     )
@@ -163,7 +163,7 @@ def init_action_object(id: str=None) -> Action:
 
 def create_action_object(acceleration: bool=False, brake: bool=False, steering: float=0.0, command: Command=Command.COMMAND_GENERAL, id: str=None) -> Action:
     action = Action(
-        api_version='PAIAKart_1.0',
+        api_version='PAIA_Kart_1.0',
         id=id,
         command=command,
         acceleration=acceleration,
@@ -182,7 +182,7 @@ def convert_action_to_data(action: Action) -> ActionTuple:
 
 def convert_action_to_object(data: ActionTuple, command: Command, id: str=None) -> Action:
     action = Action(
-        api_version='PAIAKart_1.0',
+        api_version='PAIA_Kart_1.0',
         id=id,
         command=command,
         acceleration=data.discrete[0][0],

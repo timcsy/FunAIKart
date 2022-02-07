@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// api_version: PAIAKart_1.0
+// api_version: PAIA_Kart_1.0
 
 enum Event {
 	EVENT_NONE = 0;
