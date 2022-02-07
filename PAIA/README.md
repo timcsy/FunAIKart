@@ -113,12 +113,12 @@ class MLPlay:
 
         return action
 
-		def autosave(self):
+    def autosave(self):
         '''
         self.autosave() will be called when the game restarts,
         You can save some important information in case that accidents happen.
         '''
-				pass
+        pass
 ```
 
 修改 `decision` function，由 State 產生 Action。
