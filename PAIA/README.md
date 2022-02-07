@@ -1,52 +1,101 @@
 # PAIA 賽車機器學習平台
 
-## 遊戲下載
-Release：[PAIA Kart v1.0.0](https://github.com/timcsy/GameAIKart/releases/tag/v1.0.0)
-
-## 概覽
 PAIA 賽車機器學習平台是一個可以用人工智慧去玩賽車遊戲的平台。
 
-## 畫面
-
-### 遊戲截圖
 ![gameshot](https://i.imgur.com/TTw50oI.jpg)
 
-### 道具截圖
+## 目錄
+<!-- vscode-markdown-toc -->
+1. [遊戲下載並設定](#)
+2. [概覽](#-1)
+	* 2.1. [遊戲控制（手動）](#-1)
+	* 2.2. [道具](#-1)
+		* 2.2.1. [補充類道具](#-1)
+		* 2.2.2. [效果類道具](#-1)
+3. [PAIA 平台使用方法](#PAIA)
+	* 3.1. [主要的部分](#-1)
+	* 3.2. [環境建置](#-1)
+		* 3.2.1. [環境需求](#-1)
+		* 3.2.2. [環境變數（Environment Variables）](#EnvironmentVariables)
+	* 3.3. [執行方式](#-1)
+		* 3.3.1. [線上（Online）模式](#Online)
+		* 3.3.2. [離線（Offline）模式](#Offline)
+		* 3.3.3. [比賽模式](#-1)
+		* 3.3.4. [附註](#-1)
+4. [資料格式 Spec](#Spec)
+	* 4.1. [狀態資訊](#-1)
+	* 4.2. [動作資訊](#-1)
+5. [PAIA 工具](#PAIA-1)
+	* 5.1. [影像資料轉換](#-1)
+	* 5.2. [省略圖片的位元資訊](#-1)
+	* 5.3. [產生動作 Action 物件](#Action)
+6. [資料收集（Demo Recorder）](#DemoRecorder)
+7. [常見問題 FAQ](#FAQ)
+
+<!-- vscode-markdown-toc-config
+	numbering=true
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+##  1. <a name=''></a>遊戲下載並設定
+Release：[PAIA Kart v1.0.1](https://github.com/timcsy/GameAIKart/releases/tag/v1.0.1)
+
+解壓縮後，需要在 PAIA 資料夾底下進行：
+- 修改 `.env.template` 檔，調整設定，並儲存成 `.env` 在同樣的目錄下（PAIA 資料夾底下）
+  - Linux 或是 Mac 的用戶要記得先顯示隱藏的檔案
+- 新增 `ml` 資料夾（或自訂名稱），並在底下加入：
+  - `ml_play.py`：訓練用的檔案
+  - `inferencing.py`：比賽或是使用訓練結果的檔案
+  - 其他相關檔案
+  - 請將 `.env` 檔底下的 `PLAY_BASE_DIR` 設為 `ml` 資料夾路徑（或剛剛自訂的名稱）
+  - 如果要進行訓練
+    - 請將 `.env` 檔底下的 `PLAY_SCRIPT` 設為 `"${PLAY_BASE_DIR}/ml_play.py"`
+  - 如果要進行比賽或是使用訓練結果
+    - 請將 `.env` 檔底下的 `PLAY_SCRIPT` 設為 `"${PLAY_BASE_DIR}/inferencing.py"`
+- 記得安裝 Python 環境，參考下面的環境建置
+  - 在 PAIA 資料夾下執行 `pip install -r requirements.txt`
+- 其他設定請參閱以下文件
+
+
+
+##  2. <a name='-1'></a>概覽
+
+###  2.1. <a name='-1'></a>遊戲控制（手動）
+- 向上方向鍵：加速
+- 向下方向鍵：減速或倒退
+- 向左或向右方向鍵：左轉或右轉
+- 方向鍵可以同時使用
+
+###  2.2. <a name='-1'></a>道具
 
 | 油料（Gas） | 輪胎（Wheel） | 氮氣（Nitro） | 烏龜（Turtle） | 香蕉（Banana） |
 |---|---|---|---|---|
 | ![gas](https://user-images.githubusercontent.com/24825631/134625410-1458320f-49a2-44ac-9607-798d2a12f5ba.JPG) | ![wheel](https://user-images.githubusercontent.com/24825631/134625437-8472b5d1-fd00-45f1-a380-8ff18740d88d.JPG) | ![nitro](https://user-images.githubusercontent.com/24825631/134625458-288cac5a-4d49-433c-b81f-6d96e25a8dd4.JPG) | ![turtle](https://user-images.githubusercontent.com/24825631/134625493-76c6a6d2-4c6c-4962-9774-becfd7b6b838.JPG) | ![banana](https://user-images.githubusercontent.com/24825631/134625511-217e310f-31d0-4a7f-9d4d-7624d1d87137.JPG) |
 
-## 遊戲控制（手動）
-* 向上方向鍵：加速
-* 向下方向鍵：減速或倒退
-* 向左或向右方向鍵：左轉或右轉
-* 方向鍵可以同時使用
-
-## 遊戲道具
-
 在 .env 的 PLAY_PICKUPS 可以設定要不要使用道具。
 
-### 補充類道具
+####  2.2.1. <a name='-1'></a>補充類道具
 
 補充類道具如果用完就跑不動了，如果快沒了速度會變慢，所以要適時的補充。
 
-* 油料：補充油料
-* 輪胎：補充油料
+- 油料：補充油料
+- 輪胎：補充油料
 
-### 效果類道具
+####  2.2.2. <a name='-1'></a>效果類道具
 
-效果累到聚會維持一段時間，有不同效果。
+效果類道具會維持一段時間，有不同效果。
 
-* 氮氣：加速
-* 烏龜：減塑
-* 香蕉：打滑（影響轉動的量）
+- 氮氣：加速
+- 烏龜：減速
+- 香蕉：打滑（影響轉動的量）
 
 
-## 使用方法
 
-### 主要的部分
-將你所寫的 `MLPlay` 類別放在 `ml/ml_play.py` （可以改檔名）中，如下：
+##  3. <a name='PAIA'></a>PAIA 平台使用方法
+
+###  3.1. <a name='-1'></a>主要的部分
+將你所寫的 `MLPlay` 類別放在 `ml/ml_play.py` 中（可以改檔名），如下：
 ```python
 import logging # you can use functions in logging: debug, info, warning, error, critical, log
 from config import int_ENV
@@ -133,24 +182,27 @@ class MLPlay:
 
 如果是一般相對的路徑，會以終端機所在的位置為準，兩者可能不同（`ml_play.py` 要假設可以放在任意資料夾下）。
 
-### 環境建置
 
-#### 環境需求
-* Python 3
-* mlagents==0.26.0
-* pytorch（要用 pip install torch 裝）
-* numpy
-* Pillow
-* opencv-python
-* paramiko
-* ffmpeg-python
-* python-dotenv
+###  3.2. <a name='-1'></a>環境建置
 
-建議使用 Anaconda，
+####  3.2.1. <a name='-1'></a>環境需求
+- Python 3
+  - mlagents==0.26.0
+  - pytorch（要用 pip install torch 裝）
+  - numpy
+  - Pillow
+  - opencv-python
+  - paramiko
+  - ffmpeg-python
+  - python-dotenv
 
-執行 `pip install -r requirements.txt` 來安裝這些套件。
+如果沒有自己的虛擬環境，建議使用 Anaconda。
 
-#### 環境變數（Environment Variables）
+在 PAIA 資料夾下執行 `pip install -r requirements.txt` 來安裝這些套件。
+
+如果要啟動錄影功能，系統要再額外加裝 [ffmpeg](https://ffmpeg.org/download.html)。
+
+####  3.2.2. <a name='EnvironmentVariables'></a>環境變數（Environment Variables）
 Windows 設定：
 ```
 SET PAIA_ID=小組的識別號碼
@@ -162,12 +214,11 @@ SET PAIA_PASSWORD=小組的SSH密碼
 
 其他作業系統（Linux、macOS）設定：
 ```
-export \
-PAIA_ID=小組的識別號碼 \
-PAIA_HOST=小組的SSH主機IP \
-PAIA_PORT=小組的SSH主機port \
-PAIA_USERNAME=小組的SSH帳號 \
-PAIA_PASSWORD=小組的SSH密碼
+export PAIA_ID=小組的識別號碼
+export PAIA_HOST=小組的SSH主機IP
+export PAIA_PORT=小組的SSH主機port
+export PAIA_USERNAME=小組的SSH帳號
+export PAIA_PASSWORD=小組的SSH密碼
 ```
 
 如果沒有特別設定，在關閉終端機之後環境變數的設定會失效。
@@ -193,9 +244,10 @@ ENV 用法和一般的 Python dict ㄧ樣，而且 ENV 的值「必須」為「�
 因此，提供了 `bool_ENV`, `int_ENV`, `float_ENV` 三個函數來方便作轉換。
 
 
-有時候程式執行不起來是因為安全性設定，請先檢查一下下載下來的執行檔是否可以執行。
+有時候程式執行不起來是因為安全性設定，請先檢查一下下載下來的執行檔是否可以執行（詳見：[常見問題 FAQ](#FAQ)）。
 
-### 執行方式
+
+###  3.3. <a name='-1'></a>執行方式
 
 藉由修改 `.env` 中的 RUNNING_MODE 環境變數，我們可以切換遊戲模式。
 
@@ -206,13 +258,15 @@ python ml.py
 
 如果要頻繁切換遊戲模式，可以考慮用下面的做法：
 
-#### 線上（Online）模式
+####  3.3.1. <a name='Online'></a>線上（Online）模式
+線上模式是指遊戲端和玩家端分別在不同的電腦跑。
+
 遊戲端（與 Unity 在同一台機器上）：
 ```
 python ml.py online
 ```
 
-玩家端（用來作 training 或 inferencing 的）：
+玩家端（用來做 training 或 inferencing 的）：
 ```
 python ml.py play
 ```
@@ -220,7 +274,9 @@ python ml.py play
 開啟順序：
 開啟伺服器端 -> 執行玩家端（可以開始連進來）
 
-#### 離線（Offline）模式
+####  3.3.2. <a name='Offline'></a>離線（Offline）模式
+線上模式是指遊戲端和玩家端在同一台電腦跑。
+
 自動（training 或 inferencing）：
 ```
 python ml.py offline
@@ -231,20 +287,23 @@ python ml.py offline
 python ml.py manual
 ```
 
-#### 比賽模式
-修改 `game/players.json`，會進行錄影
+####  3.3.3. <a name='-1'></a>比賽模式
+修改 `game/players.json`，會進行錄影。
+
+跑比賽：
 ```
 python ml.py game
 ```
 
-#### 附註
+####  3.3.4. <a name='-1'></a>附註
 如果使用 Unity Editor，在 Restart 指令之後要自己重開遊戲，Build 版的就不用，會自動開啟。
 
 
-## 資料格式 Spec
+
+##  4. <a name='Spec'></a>資料格式 Spec
 參考 `communication/protos/PAIA.proto` 檔案
 
-### 狀態資訊
+###  4.1. <a name='-1'></a>狀態資訊
 事件（`PAIA.Event`）定義，用法可以參考上面主要的部分的範例：
 ```C++
 enum Event { // 事件
@@ -318,7 +377,7 @@ struct State { // 狀態資訊
 }
 ```
 
-### 動作資訊
+###  4.2. <a name='-1'></a>動作資訊
 動作指令（`PAIA.Command`）定義，用法可以參考上面主要的部分的範例：
 ```C++
 enum Command { // 想要做的指令
@@ -341,12 +400,14 @@ struct Action { // 動作資訊
 }
 ```
 
-## PAIA 工具
+
+
+##  5. <a name='PAIA-1'></a>PAIA 工具
 PAIA 套件裡面有一些工具，像是狀態（State）和動作（Action）的處理，可以使用。
 
-下面會列舉一些，其他部分可以自行參考 `PAIA.py` 檔。
+下面會列舉一些會用到的，其他部分可以自行參考 `PAIA.py` 檔。
 
-### 影像資料轉換
+###  5.1. <a name='-1'></a>影像資料轉換
 `PAIA.State` 所提供的影像格式為 bytes 形式的 PNG，存放於影像類別觀察資料的 `data` 欄位中。
 使用 `PAIA.image_to_array(data)` 可以轉換影像資料為 Numpy array 的形式：
 
@@ -360,7 +421,43 @@ img_back = PAIA.image_to_array(state.observation.images.back.data)
 注意轉換後的影像為三維度的 Numpy array，值的範圍在 0 到 1 之間。
 
 
-## 資料收集（Demo Recorder）
+###  5.2. <a name='-1'></a>省略圖片的位元資訊
+因為在印出 State 或是 Action 時也會把當中的 image 所有位元都印出來，造成很大的不方便，
+
+這裡提供了 `state_info()` 還有 `action_info()` 這兩個 function，會省略圖片，
+
+或是如果 .env 裡面 IMAGE_ENABLE 環境變數有設為 true 的話，會將圖片存到指定資料夾。
+
+用法：
+```python
+import PAIA
+
+s = PAIA.State()
+# 後綴檔名可以是圖片的編號（例如當前的回合、第幾步），也可以不加
+text = str(PAIA.state_info(s, 後綴檔名)) # 把 s 的去影像化資訊轉成字串
+print(text) # 顯示 text
+
+a = PAIA.Action()
+print(PAIA.action_info(a)) # 顯示 a
+```
+
+###  5.3. <a name='Action'></a>產生動作 Action 物件
+用法：
+```python
+import PAIA
+
+a0 = PAIA.create_action_object(acceleration=False, brake=False, steering=0) # 不動
+a1 = PAIA.create_action_object(acceleration=True, brake=False, steering=0.0) # 往前走，不轉彎
+a2 = PAIA.create_action_object(acceleration=True, brake=False, steering=-1.0) # 往前走，左轉
+a3 = PAIA.create_action_object(acceleration=True, brake=False, steering=1.0) # 往前走，右轉
+a4 = PAIA.create_action_object(acceleration=False, brake=True, steering=0.0) # 往後走或減速，不轉彎
+a5 = PAIA.create_action_object(acceleration=False, brake=True, steering=-1.0) # 往後走或減速，左轉
+a6 = PAIA.create_action_object(acceleration=False, brake=True, steering=1.0) # 往後走或減速，右轉
+```
+
+
+
+##  6. <a name='DemoRecorder'></a>資料收集（Demo Recorder）
 Demo 除了記錄手動玩的結果，用來進行 Imitation Learning（模仿學習，像是 Behavior Cloning）以外，也可以用來當作 Replay Buffer 使用。
 
 首先看到「步（Step）」的定義，為一個 `PAIA.Step`：
@@ -424,9 +521,69 @@ print(step) # 印出 step 資訊，且省略圖片
 steps = demo([0, 1], [3, 7])
 ```
 
-## FAQ
-Q1：遊戲程式沒有跳出來怎麼辦？
-A1：可以看看是否為安全性問題，每個系統有不同的解決方法。
 
-Q2：能不能使用相對路徑？
-A2：建議不使用，因為會發生執行環境當前路徑和腳本路徑不同的問題，所以建議使用 `os.path.dirname(os.path.abspath(__file__))` 來取得相對於腳本的資料夾。
+
+##  7. <a name='FAQ'></a>常見問題 FAQ
+
+Q：能不能使用相對路徑？
+
+A：建議不使用，因為會發生執行環境當前路徑和腳本路徑不同的問題，所以建議使用 `os.path.dirname(os.path.abspath(__file__))` 來取得相對於腳本的資料夾。
+
+
+Q：遊戲程式沒有跳出來怎麼辦？或是程式明明路徑是對的卻跳出 Provided filename does not match any environments？
+
+A：可以看看是否為安全性問題，先是能不能手動開啟 App（終端機會顯示遊戲程式所在位置），每個系統有不同的解決方法，Windows 請參考：[將排除項目新增到 Windows 安全性](https://support.microsoft.com/zh-tw/windows/%E5%B0%87%E6%8E%92%E9%99%A4%E9%A0%85%E7%9B%AE%E6%96%B0%E5%A2%9E%E5%88%B0-windows-%E5%AE%89%E5%85%A8%E6%80%A7-811816c0-4dfd-af4a-47e4-c301afe13b26)，Mac 請參考：[在 Mac 上安全地開啟 App](https://support.apple.com/zh-tw/HT202491)。
+
+
+Q：出現如下錯誤訊息？
+```
+TypeError: Invalid first argument to `register()`. typing.Dict[mlagents.trainers.settings.RewardSignalType, mlagents.trainers.settings.RewardSignalSettings] is not a class.
+```
+
+A：Python 3.9.10 以上目前與 mlagents-learn 套件不相容，請降級至3.9.9。參考：[Python 3.9.10 causes mlagents-learn not to work](https://github.com/Unity-Technologies/ml-agents/issues/5689)
+
+
+Q：有一些 Module 不能使用，或是遇到 ModuleNotFoundError？
+
+A：請先照前面的環境需求安裝套件，記得要先切換到 PAIA 目錄底下（裡面才有 `requirements.py` 檔）。
+
+
+Q：遇到 `pytorch` 的問題時？
+
+A：看看是不是下錯指令，`pip` 要裝 `torch`，`conda` 才是裝 `pytorch`，請參考[官網](https://pytorch.org/)說明。
+
+
+Q：如果遇到如以下的錯誤訊息該怎麼處理？
+```
+ERROR: Could not find a version that satisfies the requirement torch<1.9.0,>=1.8.0; platform_system != "Windows" and python_version >= "3.9" (from mlagents==0.26.0->-r requirements.txt (line 1)) (from versions: none)
+ERROR: No matching distribution found for torch<1.9.0,>=1.8.0; platform_system != "Windows" and python_version >= "3.9" (from mlagents==0.26.0->-r requirements.txt (line 1))
+```
+
+A：建議可以升級 mlagents 到較新版本，例如 `pip install mlagents==0.27.0` 或是 `pip install mlagents==0.28.0`，如果還是不行的話可以考慮降級 pytorch 版本到 >= 1.8.0 ~ < 1.9.0。
+
+
+Q：出現如下錯誤訊息？
+```
+ImportError: cannot import name 'resolve_types' from 'attr' (/opt/anaconda3/lib/python3.8/site-packages/attr/__init__.py)
+```
+
+A：試試安裝 `pip install cattrs==1.0.0`。
+
+
+Q：`python ml.py` 不能執行？
+
+A：請先檢查是否已經經切換工作目錄到 PAIA 資料夾底下再執行。如果是使用虛擬環境（venv）或是 Anaconda 等，請確定是否切換到正確環境。
+
+
+Q：我用 Command line 執行程式，但是遊戲好像有開起來不過一直黑畫面？
+
+A：請檢查你的 PLAY_SCRIPT 環境變數對應到的路徑存不存在，預設值會是 `ml/ml_play.py`。
+
+
+Q：出現像是下面的錯誤訊息？
+```
+self.actions[self.behavior_names[action.id]] = action
+KeyError: 'xxx87'
+```
+
+A：把 .env 裡面的 PLAYER_ID 改成數字試試看。

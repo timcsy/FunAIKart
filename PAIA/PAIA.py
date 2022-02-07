@@ -121,7 +121,7 @@ def convert_state_to_object(behavior_spec: BehaviorSpec, obs_list: List[np.ndarr
     state.reward = reward
     return state
 
-def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
+def state_info(state: State, img_suffix: str='', img_dir: str=None) -> str:
     s = State()
     s.CopyFrom(state)
     image_enable = bool_ENV('IMAGE_ENABLE', False)
@@ -135,8 +135,10 @@ def state_info(state: State, img_suffix: str=None, img_dir: str=None) -> str:
         
         if fileprefix:
             fileprefix = fileprefix + '_'
-        filepath_front = os.path.join(img_dir, f'{fileprefix}front_{img_suffix}.jpg')
-        filepath_back = os.path.join(img_dir, f'{fileprefix}back_{img_suffix}.jpg')
+        if img_suffix:
+            img_suffix = '_' + img_suffix
+        filepath_front = os.path.join(img_dir, f'{fileprefix}front{img_suffix}.jpg')
+        filepath_back = os.path.join(img_dir, f'{fileprefix}back{img_suffix}.jpg')
 
         with open(filepath_front, 'wb') as fout:
             fout.write(image_to_image(s.observation.images.front.data, format='JPEG'))
@@ -159,7 +161,7 @@ def init_action_object(id: str=None) -> Action:
     )
     return action
 
-def create_action_object(id: str=None, acceleration: bool=False, brake: bool=False, steering: float=0.0, command: Command=Command.COMMAND_GENERAL) -> Action:
+def create_action_object(acceleration: bool=False, brake: bool=False, steering: float=0.0, command: Command=Command.COMMAND_GENERAL, id: str=None) -> Action:
     action = Action(
         api_version='PAIAKart_1.0',
         id=id,

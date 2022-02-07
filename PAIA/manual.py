@@ -1,4 +1,5 @@
 from datetime import datetime
+import logging
 import sys
 from mlagents_envs import env_utils
 
@@ -10,6 +11,8 @@ import video
 def manual():
     MAX_EPISODES = int_ENV('MAX_EPISODES', -1)
     unity_app = unity.get_unity_app()
+    logging.info("Check this file if the game doesn't open:")
+    logging.info(unity_app)
 
     episode = 0
     tmp_dir = None

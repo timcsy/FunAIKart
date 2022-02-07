@@ -74,7 +74,8 @@ class PAIAServicer(PAIA_pb2_grpc.PAIAServicer):
         unity.set_config('PickUps', pickups)
         
         logging.info('Waiting for Unity side ...')
-        print(self.env_filepath)
+        logging.info("Check this file if the game doesn't open:")
+        logging.info(self.env_filepath)
         self.env = UnityEnvironment(file_name=self.env_filepath)
         self.env.reset()
         logging.info('--------------------------------')
