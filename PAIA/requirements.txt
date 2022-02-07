@@ -1,5 +1,5 @@
 mlagents==0.26.0
-pytorch
+torch
 numpy
 Pillow
 opencv-python

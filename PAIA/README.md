@@ -138,7 +138,7 @@ class MLPlay:
 #### 環境需求
 * Python 3
 * mlagents==0.26.0
-* pytorch
+* pytorch（要用 pip install torch 裝）
 * numpy
 * Pillow
 * opencv-python
