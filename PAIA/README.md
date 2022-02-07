@@ -6,14 +6,14 @@ PAIA 賽車機器學習平台是一個可以用人工智慧去玩賽車遊戲的
 
 ## 目錄
 <!-- vscode-markdown-toc -->
-1. [遊戲下載並設定](#)
-2. [概覽](#-1)
-	* 2.1. [遊戲控制（手動）](#-1)
-	* 2.2. [道具](#-1)
-		* 2.2.1. [補充類道具](#-1)
-		* 2.2.2. [效果類道具](#-1)
-3. [PAIA 平台使用方法](#PAIA)
-	* 3.1. [主要的部分](#-1)
+1. [遊戲下載並設定](#1)
+2. [概覽](#2)
+	* 2.1. [遊戲控制（手動）](#2_1)
+	* 2.2. [道具](#2_2)
+		* 2.2.1. [補充類道具](#2_2_1)
+		* 2.2.2. [效果類道具](#2_2_2)
+3. [PAIA 平台使用方法](#3)
+	* 3.1. [主要的部分](#3_1)
 	* 3.2. [環境建置](#-1)
 		* 3.2.1. [環境需求](#-1)
 		* 3.2.2. [環境變數（Environment Variables）](#EnvironmentVariables)
@@ -38,7 +38,7 @@ PAIA 賽車機器學習平台是一個可以用人工智慧去玩賽車遊戲的
 	/vscode-markdown-toc-config -->
 <!-- /vscode-markdown-toc -->
 
-##  1. <a name=''></a>遊戲下載並設定
+##  1. <a name='1'></a>遊戲下載並設定
 Release：[PAIA Kart v1.0.1](https://github.com/timcsy/GameAIKart/releases/tag/v1.0.1)
 
 解壓縮後，需要在 PAIA 資料夾底下進行：
@@ -59,15 +59,15 @@ Release：[PAIA Kart v1.0.1](https://github.com/timcsy/GameAIKart/releases/tag/v
 
 
 
-##  2. <a name='-1'></a>概覽
+##  2. <a name='2'></a>概覽
 
-###  2.1. <a name='-1'></a>遊戲控制（手動）
+###  2.1. <a name='2_1'></a>遊戲控制（手動）
 - 向上方向鍵：加速
 - 向下方向鍵：減速或倒退
 - 向左或向右方向鍵：左轉或右轉
 - 方向鍵可以同時使用
 
-###  2.2. <a name='-1'></a>道具
+###  2.2. <a name='2_2'></a>道具
 
 | 油料（Gas） | 輪胎（Wheel） | 氮氣（Nitro） | 烏龜（Turtle） | 香蕉（Banana） |
 |---|---|---|---|---|
@@ -75,7 +75,7 @@ Release：[PAIA Kart v1.0.1](https://github.com/timcsy/GameAIKart/releases/tag/v
 
 在 .env 的 PLAY_PICKUPS 可以設定要不要使用道具。
 
-####  2.2.1. <a name='-1'></a>補充類道具
+####  2.2.1. <a name='2_2_1'></a>補充類道具
 
 補充類道具如果用完就跑不動了，如果快沒了速度會變慢，所以要適時的補充。
 
