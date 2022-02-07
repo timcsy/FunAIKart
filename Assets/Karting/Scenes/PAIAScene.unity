@@ -8570,7 +8570,7 @@ GameObject:
   - component: {fileID: 881267371}
   m_Layer: 5
   m_Name: Wheel
-  m_TagString: Untagged
+  m_TagString: PickUps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -17160,7 +17160,7 @@ GameObject:
   - component: {fileID: 1816031364}
   m_Layer: 5
   m_Name: Gas
-  m_TagString: Untagged
+  m_TagString: PickUps
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -20531,11 +20531,11 @@ MonoBehaviour:
   Wheel:
     MaxAmount: 100
     PickUpAmount: 50
-    ConsumeRate: 0.5
+    ConsumeRate: 2
   Gas:
     MaxAmount: 100
     PickUpAmount: 50
-    ConsumeRate: 0.5
+    ConsumeRate: 2
   Nitro:
     Values:
     - 2.5

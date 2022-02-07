@@ -1,3 +1,4 @@
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
@@ -40,6 +41,14 @@ public class PickUpManager : MonoBehaviour
 
     void Start()
     {
+        // If PickUps is not enabled
+        string config_file = Application.persistentDataPath + "/kart/PickUps.config";
+        if (!File.Exists(config_file))
+        {
+            Wheel.ConsumeRate = 0;
+            Gas.ConsumeRate = 0;
+        }
+
         List<GameObject> ListOfCar = new List<GameObject>(GameObject.FindGameObjectsWithTag("Player"));
         foreach (GameObject c in ListOfCar)
             RegisterKart(c.GetComponent<PAIAKartAgent>());
