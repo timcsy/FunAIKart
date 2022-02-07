@@ -2,6 +2,7 @@ import glob
 import json
 import os
 import random
+import sys
 import threading
 import time
 from typing import Any, Dict
@@ -180,4 +181,6 @@ def competition(is_continue: bool=None):
     os.remove(video_basepath + '.rec')
 
 if __name__ == '__main__':
-    competition(is_continue=True)
+    if len(sys.argv) > 2:
+        ENV['GAME_CONTINUE'] = sys.argv[2]
+    competition()

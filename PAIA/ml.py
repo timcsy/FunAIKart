@@ -69,4 +69,6 @@ if __name__ == '__main__':
                     ENV['PLAY_PICKUPS'] = sys.argv[3] if len(sys.argv) > 3 else 'true'
         elif sys.argv[1] == 'game':
             ENV['RUNNING_MODE'] = 'GAME'
+            if len(sys.argv) > 2:
+                ENV['GAME_CONTINUE'] = sys.argv[2]
     main()
