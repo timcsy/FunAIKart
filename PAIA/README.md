@@ -1,5 +1,8 @@
 # PAIA 賽車機器學習平台
 
+## 遊戲下載
+Release：[PAIA Kart 1.0.0](https://github.com/timcsy/GameAIKart/releases/tag/1.0.0)
+
 ## 概覽
 PAIA 賽車機器學習平台是一個可以用人工智慧去玩賽車遊戲的平台。
 
