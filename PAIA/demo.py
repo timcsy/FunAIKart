@@ -65,6 +65,7 @@ class Demo:
         return demo
 
     def create_episode(self) -> None:
+        self._episodes.append([])
         self._index += 1
     
     def create_step(self, state: PAIA.State, action: PAIA.Action) -> None:
