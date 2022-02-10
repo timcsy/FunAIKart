@@ -227,7 +227,6 @@ def download(usernames: List[str]):
                         shutil.rmtree(targetdir)
                     zip_ref.extractall(targetdir)
                 os.remove(filepath)
-                print('h3')
 
                 script_path = glob.glob(f'{targetdir}/{inferencing}')
                 if len(script_path) == 0:
