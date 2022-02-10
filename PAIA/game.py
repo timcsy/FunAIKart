@@ -201,7 +201,7 @@ def competition(is_continue: bool=None):
 
 
 def download(usernames: List[str]):
-    host = ENV.get('HOST', 'http://localhost:49550')
+    host = ENV.get('GAME_HOST', 'http://localhost:49550')
     dirname = ENV.get('GAME_MODEL_DIR', 'models')
     players_path = ENV.get('GAME_PLAYERS', 'game/players.json')
     players = []
