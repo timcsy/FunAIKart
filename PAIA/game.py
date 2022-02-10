@@ -221,12 +221,13 @@ def download(usernames: List[str]):
                 with open(filepath, 'wb') as fout:
                     shutil.copyfileobj(response, fout)
                 import zipfile
-                with zipfile.ZipFile(filepath, 'r', encoding="utf-8") as zip_ref:
+                with zipfile.ZipFile(filepath, 'r') as zip_ref:
                     targetdir = os.path.join(dirname, username)
                     if os.path.exists(targetdir):
                         shutil.rmtree(targetdir)
                     zip_ref.extractall(targetdir)
                 os.remove(filepath)
+                print('h3')
 
                 script_path = glob.glob(f'{targetdir}/{inferencing}')
                 if len(script_path) == 0:
