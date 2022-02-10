@@ -119,8 +119,10 @@ def load():
             newest_time = 0
             for entry in os.scandir(autosave_dir):
                 if entry.is_file():
+                    has_prefix = False
                     if prefix:
                         prefix = prefix + '_'
+                        has_prefix = True
                     if entry.name.startswith(prefix) and entry.name.endswith('.pickle'):
                         try:
                             time = int(entry.name[len(prefix):-7])
@@ -129,6 +131,8 @@ def load():
                                 pickle_path = os.path.join(autosave_dir, entry.name)
                         except ValueError:
                             pass
+                    if has_prefix:
+                        prefix = prefix[:-1]
         if pickle_path is not None:
             with open(pickle_path, 'rb') as fin:
                 import_brain(import_only=True)

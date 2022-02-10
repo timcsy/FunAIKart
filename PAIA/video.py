@@ -1,13 +1,18 @@
+import datetime
 import glob
 import json
 import math
 import os
+import sys
 import subprocess
 
+import cv2
 import ffmpeg
 from PIL import Image, ImageDraw, ImageFont
+import ffmpeg_streaming
+from ffmpeg_streaming import Formats
 
-from config import bool_ENV, int_ENV
+from config import ENV, bool_ENV, int_ENV
 
 def insert_player_id(id: str, input_path, output_path, info_time: int=None):
     if info_time is None:
@@ -103,7 +108,9 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
 
     return image
 
-def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, result_duration: int=None, width: int=None, height: int=None, save_rec=None, remove_original: bool=True):
+def generate_video(video_dir, output_path, id: str, usedtime: float, progress: float, username: str=None, result_duration: int=None, width: int=None, height: int=None, save_rec=None, remove_original: bool=True):
+    if username is None:
+        username = ENV.get('PAIA_USERNAME', '')
     if result_duration is None:
         result_duration = int_ENV('RECORDING_RESULT_SECONDS', 10)
     if save_rec is None:
@@ -151,9 +158,15 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
             os.rmdir(os.path.abspath(video_dir))
     
     if save_rec:
-        rec_path = os.path.join(os.path.dirname(output_path), os.path.splitext(os.path.basename(output_path))[0] + '.rec')
+        rec_path = os.path.join(os.path.dirname(output_path), os.path.splitext(os.path.basename(output_path))[0] + '.json')
         with open(rec_path, 'w') as fout:
-            fout.write(f'{id}\n{usedtime}\n{progress}')
+            obj = {
+                'id': id,
+                'usedtime': usedtime,
+                'progress': progress,
+                'username': username
+            }
+            fout.write(json.dumps(obj, indent=4))
 
     return result
 
@@ -283,6 +296,31 @@ def rank_video(players, output_path, preserve_time: int=None, result_time: int=N
     os.remove('tmp_rank.jpg')
     
     return rank_img
+
+def poster(video_basepath):
+    # Show the thumbnail of the video
+    vc = cv2.VideoCapture(video_basepath + '.mp4')
+
+    if vc.isOpened():
+        _, frame = vc.read()
+        cv2.imwrite(video_basepath + '.jpg', frame)
+    vc.release()
+
+def monitor(ffmpeg, duration, time_, time_left, process):
+    per = round(time_ / duration * 100)
+    sys.stdout.write(
+        "\rTranscoding...(%s%%) %s left [%s%s]" %
+        (per, datetime.timedelta(seconds=int(time_left)), '#' * per, '-' * (100 - per))
+    )
+    sys.stdout.flush()
+
+def live(video_basepath):
+    video = ffmpeg_streaming.input(video_basepath + '.mp4')
+    hls = video.hls(Formats.h264())
+    hls.auto_generate_representations()
+    output_path = video_basepath + '.m3u8'
+    hls.output(output_path, monitor=monitor, async_run=False)
+
 
 if __name__ == '__main__':
     # Example input

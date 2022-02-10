@@ -1,21 +1,28 @@
 import glob
 import json
+import logging
 import os
 import random
 import sys
 import threading
 import time
-from typing import Any, Dict
+from typing import Any, Dict, List
+import urllib
+import shutil
+import hashlib
+import zipfile
+math_round = round
 
 from config import ENV, bool_ENV, int_ENV
 import client
 import server
 import rforward
 from utils import get_dir_fileprefix, server_config
-from video import rank_video
+from video import rank_video, poster, live
 
-def play(player: Dict[str, Any], index: int, video_basepath: str):
+def play(player: Dict[str, Any], index: int):
     ENV['PLAYER_ID'] = str(player.get('PLAYER_ID', ENV.get('PLAYER_ID', '')))
+    ENV['PAIA_USERNAME'] = str(player.get('username', ENV.get('PAIA_USERNAME', '')))
     ENV['RECORDING_FILE_PREFIX'] = f'{index}_{ENV["PLAYER_ID"]}'
 
     if 'PLAY_SCRIPT' in player:
@@ -58,69 +65,58 @@ def play(player: Dict[str, Any], index: int, video_basepath: str):
     
     dirname, file_prefix = get_dir_fileprefix('RECORDING', base_dir_default='records')
     recording_base_path = os.path.join(dirname, file_prefix + '_0') # path without extension
-
-    with open(video_basepath + '.rec', 'a') as fout:
-        fout.write(f'{ENV["PLAYER_ID"]}\n{recording_base_path}\n')
     
     time.sleep(60)
+    return recording_base_path
 
 def read_rec(video_basepath):
     video_prefix = None
     pickup_seed = None
+    processing = None
     players = []
-    if os.path.exists(video_basepath + '.rec'):
-        with open(video_basepath + '.rec', 'r') as fin:
-            lines = fin.readlines()
-            i = 0
-            player = {}
-            for line in lines:
-                line = line.strip('\n')
-                if i == 0:
-                    video_prefix = line
-                elif i == 1:
-                    pickup_seed = line
-                elif i % 2 == 0:
-                    player['id'] = line
-                elif i % 2 == 1:
-                    player['recording_base_path'] = line
-                    players.append(player)
-                    player = {}
-                i += 1
-    return video_prefix, pickup_seed, players, i
+    if os.path.exists(video_basepath + '.json'):
+        with open(video_basepath + '.json', 'r') as fin:
+            rec: Dict[str, Any] = json.load(fin)
+            video_prefix = rec.get('video_prefix')
+            pickup_seed = rec.get('pickup_seed')
+            processing = rec.get('processing')
+            if 'players' in rec and isinstance(rec['players'], list):
+                players = rec['players']
+    return video_prefix, pickup_seed, players, processing
 
 def competition(is_continue: bool=None):
     if is_continue is None:
         is_continue = bool_ENV('GAME_CONTINUE', True)
     players_path = ENV.get('GAME_PLAYERS', 'game/players.json')
-    game_players = []
+    game_players = [] # { "PLAYER_ID", "PLAY_SCRIPT" (or using SSH), "username" }
     with open(players_path, 'r') as fin:
         game_players = json.load(fin)
     video_dir, video_prefix = get_dir_fileprefix('VIDEO', use_dir=False, base_dir_default='video')
     pickup_seed = None
+    players = []
     player_index = 0
 
     if is_continue:
-        paths = glob.glob(f'{video_dir}/*.rec')
+        paths = glob.glob(f'{video_dir}/*.json')
         paths.sort(key=lambda p: time.ctime(os.path.getmtime(p)))
         if len(paths) > 0:
             video_prefix = os.path.splitext(os.path.basename(paths[-1]))[0]
             video_basepath = os.path.join(video_dir, video_prefix)
-            video_prefix, pickup_seed, players, i = read_rec(video_basepath)
-            player_index = len(players)
-            if i == 0:
-                video_prefix = os.path.splitext(os.path.basename(paths[-1]))[0]
-            if i < 2:
+            _video_prefix, _pickup_seed, _players, _processing = read_rec(video_basepath)
+            if not _processing:
                 is_continue = False
-            elif i % 2 == 1:
-                lines = []
-                with open(video_basepath + '.rec', 'r') as fin:
-                    lines = fin.readlines()
-                with open(video_basepath + '.rec', 'w') as fout:
-                    for line in lines[:-1]:
-                        fout.write(line)
+            else:
+                player_index = len(_players)
+                if _video_prefix is None:
+                    _video_prefix = os.path.splitext(os.path.basename(paths[-1]))[0]
+                if _video_prefix is None or _pickup_seed is None:
+                    is_continue = False
+                else:
+                    video_prefix, pickup_seed, players = _video_prefix, _pickup_seed, _players
         else:
             is_continue = False
 
+    print(video_dir, video_prefix)
     video_basepath = os.path.join(video_dir, video_prefix)
     if pickup_seed is None:
         # pickup_seed is not set before
@@ -150,26 +146,39 @@ def competition(is_continue: bool=None):
     if not is_continue:
         if not os.path.exists(video_dir):
             os.makedirs(video_dir)
-        with open(video_basepath + '.rec', 'w') as fout:
-            fout.write(f'{video_prefix}\n{pickup_seed}\n')
+        with open(video_basepath + '.json', 'w') as fout:
+            rec = {
+                'processing': True,
+                'video_prefix': video_prefix,
+                'pickup_seed': pickup_seed
+            }
+            json.dump(rec, fout, indent=4)
 
     while player_index < len(game_players):
-        play(game_players[player_index], player_index, video_basepath)
+        recording_base_path = play(game_players[player_index], player_index)
+        players.append({
+            'id': ENV["PLAYER_ID"],
+            'recording_base_path': recording_base_path,
+            'username': ENV["PAIA_USERNAME"]
+        })
+        with open(video_basepath + '.json', 'w') as fout:
+            rec = {
+                'video_prefix': video_prefix,
+                'pickup_seed': pickup_seed,
+                'players': players
+            }
+            json.dump(rec, fout, indent=4)
         player_index += 1
+
 
     ENV['RECORDING_RESULT_SECONDS'] = str(result_time)
     _, _, players, _ = read_rec(video_basepath)
     rank_players = []
     for i in range(len(players)):
-        with open(players[i]['recording_base_path'] + '.rec', 'r') as fin:
-            lines = fin.readlines()
-            p = {
-                'id': lines[0].strip('\n'),
-                'usedtime': float(lines[1].strip('\n')),
-                'progress': round(float(lines[2].strip('\n')), 2),
-                'video_path': players[i]['recording_base_path'] + '.mp4',
-                'index': i
-            }
+        with open(players[i]['recording_base_path'] + '.json', 'r') as fin:
+            p = json.load(fin) # Already has id, usedtime, progress, username
+            p['video_path'] = players[i]['recording_base_path'] + '.mp4'
+            p['index'] = i
             rank_players.append(p)
 
     # sort the players
@@ -178,9 +187,133 @@ def competition(is_continue: bool=None):
         rank_players[i]['rank'] = i + 1
     rank_players.sort(key=lambda p: p['index'])
     rank_video(rank_players, video_basepath + '.mp4')
-    os.remove(video_basepath + '.rec')
+    poster(video_basepath)
+    live(video_basepath)
+    rank_players.sort(key=lambda p: p['rank'])
+    
+    paths = glob.glob(video_basepath + '*')
+    zf = zipfile.ZipFile(video_basepath + '.zip', 'w', zipfile.ZIP_DEFLATED)
+    for path in paths:
+        zf.write(path)
+        os.remove(path)
+    
+    return rank_players, video_basepath
+
+
+def download(usernames: List[str]):
+    host = ENV.get('HOST', 'http://localhost:49550')
+    dirname = ENV.get('GAME_MODEL_DIR', 'models')
+    players_path = ENV.get('GAME_PLAYERS', 'game/players.json')
+    players = []
+
+    for username in usernames:
+        id = None
+        try:
+            team = hashlib.md5(username.encode()).hexdigest()
+            with urllib.request.urlopen(f'{host}/api/models/{team}') as response:
+                filename = response.info().get_filename()
+                if not os.path.exists(dirname):
+                    os.makedirs(dirname)
+                filepath = os.path.join(dirname, filename)
+                inferencing = response.info()['inferencing']
+                id = response.info()['player']
+                with open(filepath, 'wb') as fout:
+                    shutil.copyfileobj(response, fout)
+                import zipfile
+                with zipfile.ZipFile(filepath, 'r') as zip_ref:
+                    targetdir = os.path.join(dirname, username)
+                    if os.path.exists(targetdir):
+                        shutil.rmtree(targetdir)
+                    zip_ref.extractall(targetdir)
+                os.remove(filepath)
+                sccript_path = os.path.abspath(glob.glob(f'{targetdir}/**/{inferencing}')[0])
+            players.append({
+                'PLAYER_ID': id,
+                'PLAY_SCRIPT': sccript_path,
+                'username': username
+            })
+        except:
+            logging.info(username + ' is using the default no action script.')
+            if id is None:
+                id = username
+            players.append({
+                'PLAYER_ID': id,
+                'PLAY_SCRIPT': 'no_action.py',
+                'username': username
+            })
+            pass
+    if not os.path.exists(os.path.dirname(players_path)):
+        os.makedirs(os.path.dirname(players_path))
+    with open(players_path, 'w') as fout:
+        fout.write(json.dumps(players, indent=4))
+
+def get_teamname(username, game_nodes):
+    teamnames = [node['game'] for node in game_nodes if node.get('player') == username]
+    if len(teamnames) > 0:
+        return teamnames[0]
+    else:
+        return None
+
+def recursive_competition(parent, game_nodes):
+    children = [node for node in game_nodes if node.get('next') == parent['game']]
+    usernames = []
+    for child in children:
+        if 'player' in child:
+            usernames.append(child['player'])
+        else:
+            usernames.append(recursive_competition(child, game_nodes))
+    download(usernames)
+    round = 0
+    points = { username: 0 for username in usernames }
+    while True:
+        round += 1
+        round_text = f'{parent["game"]}'
+        print(f'{round_text}：', usernames)
+        rank_players, video_basepath  = competition()
+        rank = [p.get('username') for p in rank_players]
+        for i in range(len(rank)):
+            print(rank)
+            print(points)
+            points[rank[i]] += 3 - i
+            rank_players[i]['points'] = points[rank[i]]
+        with open(video_basepath + '.json', 'w') as fout:
+            info = {
+                'game': os.path.basename(video_basepath),
+                'round': round_text,
+                'result': {
+                    get_teamname(rank_players[i]['username'], game_nodes): {
+                        '名次': i + 1,
+                        '積分': rank_players[i]['points'],
+                        '玩家名稱': rank_players[i]['id'],
+                        '花費時間（秒）': math_round(rank_players[i]['usedtime'], 2),
+                        '完成進度（%）': int(math_round(rank_players[i]['progress'] * 100, 0))
+                    }
+                    for i in range(len(rank_players))
+                }
+            }
+            json.dump(info, fout, indent=4)
+        # argmax = [k for k in points.keys() if points[k] == max(points.values())]
+        # if round >= 3:
+        #     if len(argmax) > 1:
+        #         download(argmax)
+        #         usernames = argmax
+        #     else:
+        #         break
+        return usernames[0]
+    return usernames[0]
+
+def schedule():
+    schedule = ENV.get('GAME_SCHEDULE', 'game/schedule.json')
+    game_nodes = []
+    with open(schedule, 'r') as fin:
+        game_nodes = json.load(fin)
+    
+    root = [node for node in game_nodes if not 'next' in node][0]
+    recursive_competition(root, game_nodes)
 
 if __name__ == '__main__':
     if len(sys.argv) > 2:
         ENV['GAME_CONTINUE'] = sys.argv[2]
-    competition()
+    # competition()
+    # download(['funai0305', 'funai0101'])
+    schedule()
