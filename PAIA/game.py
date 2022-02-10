@@ -76,7 +76,7 @@ def read_rec(video_basepath):
     processing = None
     players = []
     if os.path.exists(video_basepath + '.json'):
-        with open(video_basepath + '.json', 'r') as fin:
+        with open(video_basepath + '.json', 'r', encoding="utf-8") as fin:
             rec: Dict[str, Any] = json.load(fin)
             video_prefix = rec.get('video_prefix')
             pickup_seed = rec.get('pickup_seed')
@@ -90,7 +90,7 @@ def competition(is_continue: bool=None):
         is_continue = bool_ENV('GAME_CONTINUE', True)
     players_path = ENV.get('GAME_PLAYERS', 'game/players.json')
     game_players = [] # { "PLAYER_ID", "PLAY_SCRIPT" (or using SSH), "username" }
-    with open(players_path, 'r') as fin:
+    with open(players_path, 'r', encoding="utf-8") as fin:
         game_players = json.load(fin)
     video_dir, video_prefix = get_dir_fileprefix('VIDEO', use_dir=False, base_dir_default='video')
     pickup_seed = None
@@ -176,7 +176,7 @@ def competition(is_continue: bool=None):
     _, _, players, _ = read_rec(video_basepath)
     rank_players = []
     for i in range(len(players)):
-        with open(players[i]['recording_base_path'] + '.json', 'r') as fin:
+        with open(players[i]['recording_base_path'] + '.json', 'r', encoding="utf-8") as fin:
             p = json.load(fin) # Already has id, usedtime, progress, username
             p['video_path'] = players[i]['recording_base_path'] + '.mp4'
             p['index'] = i
@@ -221,7 +221,7 @@ def download(usernames: List[str]):
                 with open(filepath, 'wb') as fout:
                     shutil.copyfileobj(response, fout)
                 import zipfile
-                with zipfile.ZipFile(filepath, 'r') as zip_ref:
+                with zipfile.ZipFile(filepath, 'r', encoding="utf-8") as zip_ref:
                     targetdir = os.path.join(dirname, username)
                     if os.path.exists(targetdir):
                         shutil.rmtree(targetdir)
@@ -332,7 +332,7 @@ def to_cpu(inferencing):
 def schedule():
     schedule = ENV.get('GAME_SCHEDULE', 'game/schedule.json')
     game_nodes = []
-    with open(schedule, 'r') as fin:
+    with open(schedule, 'r', encoding="utf-8") as fin:
         game_nodes = json.load(fin)
     
     root = [node for node in game_nodes if not 'next' in node][0]
