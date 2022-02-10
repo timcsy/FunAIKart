@@ -1,3 +1,4 @@
+import ast
 import glob
 import json
 import logging
@@ -216,7 +217,7 @@ def download(usernames: List[str]):
                     os.makedirs(dirname)
                 filepath = os.path.join(dirname, filename)
                 inferencing = response.info()['inferencing']
-                id = response.info()['player']
+                id = ast.literal_eval(response.info()['player'])
                 with open(filepath, 'wb') as fout:
                     shutil.copyfileobj(response, fout)
                 import zipfile
@@ -226,13 +227,23 @@ def download(usernames: List[str]):
                         shutil.rmtree(targetdir)
                     zip_ref.extractall(targetdir)
                 os.remove(filepath)
-                sccript_path = os.path.abspath(glob.glob(f'{targetdir}/**/{inferencing}')[0])
+
+                script_path = glob.glob(f'{targetdir}/{inferencing}')
+                if len(script_path) == 0:
+                    script_path = os.path.abspath(glob.glob(f'{targetdir}/**/{inferencing}')[0])
+                else:
+                    script_path = script_path[0]
+                script_path = os.path.abspath(script_path)
+                if os.path.exists(script_path):
+                    to_cpu(script_path)
+
             players.append({
                 'PLAYER_ID': id,
-                'PLAY_SCRIPT': sccript_path,
+                'PLAY_SCRIPT': script_path,
                 'username': username
             })
-        except:
+        except Exception as e:
+            print(e)
             logging.info(username + ' is using the default no action script.')
             if id is None:
                 id = username
@@ -301,6 +312,22 @@ def recursive_competition(parent, game_nodes):
         #         break
         return usernames[0]
     return usernames[0]
+
+def to_cpu(inferencing):
+    #read input file
+    fin = open(inferencing, "r")
+    #read file contents to string
+    data = fin.read()
+    #replace all occurrences of the required string
+    data = data.replace("self.device = 'cuda'", "self.device = 'cpu'")
+    #close the input file
+    fin.close()
+    #open the input file in write mode
+    fin = open(inferencing, "w")
+    #overrite the input file with the resulting data
+    fin.write(data)
+    #close the file
+    fin.close()
 
 def schedule():
     schedule = ENV.get('GAME_SCHEDULE', 'game/schedule.json')
