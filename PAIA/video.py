@@ -92,7 +92,7 @@ def result_image(width, height, id, usedtime, progress, video_dir, duration=10):
 
     image.save(os.path.join(video_dir, 'result.jpg'))
 
-    with open(os.path.join(video_dir, 'img.txt'), 'r') as fin:
+    with open(os.path.join(video_dir, 'img.txt'), 'r', encoding="utf-8") as fin:
         lines = fin.read().splitlines()
         last_index = 0
         while -last_index < len(lines):
@@ -117,7 +117,7 @@ def generate_video(video_dir, output_path, id: str, usedtime: float, progress: f
         save_rec = bool_ENV('RECORDING_SAVE_REC', False)
     
     try:
-        with open(os.path.join(video_dir, 'size.txt'), 'r') as fin:
+        with open(os.path.join(video_dir, 'size.txt'), 'r', encoding="utf-8") as fin:
             sizes = fin.read().split('x')
             width = width or int(sizes[0])
             height = height or int(sizes[1])
