@@ -183,7 +183,7 @@ def competition(is_continue: bool=None):
             rank_players.append(p)
 
     # sort the players
-    rank_players.sort(key=lambda p: (-p['progress'], p['usedtime']))
+    rank_players.sort(key=lambda p: (-int(round(p['progress'] * 100, 0)), round(p['usedtime'], 2)))
     for i in range(len(rank_players)):
         rank_players[i]['rank'] = i + 1
     rank_players.sort(key=lambda p: p['index'])
