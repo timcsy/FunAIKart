@@ -11,6 +11,7 @@ from typing import Any, Dict, List
 import urllib
 import shutil
 import hashlib
+import requests
 import zipfile
 math_round = round
 
@@ -258,6 +259,39 @@ def download(usernames: List[str]):
     with open(players_path, 'w') as fout:
         fout.write(json.dumps(players, indent=4))
 
+def upload_game(video_basepath):
+    host = ENV.get('GAME_HOST', 'http://localhost:49550')
+    password = ENV.get('ADMIN_PASSWORD', '')
+    game_api = host + '/api/upload/game'
+    video_file = open(video_basepath + '.zip', 'rb')
+    api_response = requests.post(game_api, files = {'files': video_file}, data={'password': password})
+
+    if api_response.ok:
+        print("Upload completed videos successfully!")
+        print(api_response.text)
+    else:
+        print("Something went wrong when uploading videos!")
+
+    result_file = open(video_basepath + '.json', 'rb')
+    api_response = requests.post(game_api, files = {'files': result_file}, data={'password': password})
+
+    if api_response.ok:
+        print("Upload completed game result successfully!")
+        print(api_response.text)
+    else:
+        print("Something went wrong when uploading game result!")
+
+def extract_game(video_basepath):
+    game_name = os.path.basename(video_basepath)
+    host = ENV.get('GAME_HOST', 'http://localhost:49550')
+    game_api = host + '/api/extract/' + game_name
+    r = requests.get(game_api)
+    if r.status_code == requests.codes.ok:
+        print(r.text)
+        print('Successfully extracted!')
+    else:
+        print(r.text)
+
 def get_teamname(username, game_nodes):
     teamnames = [node['game'] for node in game_nodes if node.get('player') == username]
     if len(teamnames) > 0:
@@ -303,6 +337,8 @@ def recursive_competition(parent, game_nodes):
                 }
             }
             json.dump(info, fout, indent=4)
+        upload_game(video_basepath)
+        extract_game(video_basepath)
         # argmax = [k for k in points.keys() if points[k] == max(points.values())]
         # if round >= 3:
         #     if len(argmax) > 1:
